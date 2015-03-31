@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+
+<project name="GoldriathPluginQuests" default="default" basedir=".">
+    <description>Builds, tests, and runs the project GoldriathPluginQuests.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <target name="-post-jar">
+        <echo level="info" message="---- Finalizing Build" />
+
+        <!-- Rename unmapped (no libaries) .jar file -->
+        <copy file="${dist.jar}" tofile="${dist.dir}/${ant.project.name}-unmapped.jar" />
+        <delete file="${dist.dir}/${ant.project.name}.jar" />
+
+        <!-- Generate mapped (with libraries) .jar file -->
+        <jar compress="${jar.compress}"  destfile="${dist.jar}">
+
+            <zipfileset src="${dist.dir}/${ant.project.name}-unmapped.jar" excludes="META-INF/*" />
+
+            <zipgroupfileset dir="${dist.dir}/lib/" includes="BukkitLib*" />
+
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}" />
+            </manifest>
+        </jar>
+
+        <!-- Delete /dist/README.txt -->
+        <delete file="${dist.dir}/README.TXT" />
+
+        <!-- Delete /dist/lib folder -->
+        <delete dir="${dist.dir}/lib/" />
+
+        <echo level="info" message="---- Done" />
+    </target>
+</project>

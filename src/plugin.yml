@@ -1,0 +1,13 @@
+name: GoldriathPluginQuests
+version: 1.1
+main: me.dirkjan.goldriathpluginquests.GoldriathPluginQuests
+commands:
+    resetquest:
+        usage: /<command> <player>
+        description: resets all quest progress
+    newmobspawn:
+        usage: /<command> <name> <type> <lvl>
+        description: sets a new mobspawn
+    removemobspawn:
+        usage: /<command> <name>
+        description: removes a mobspawn
