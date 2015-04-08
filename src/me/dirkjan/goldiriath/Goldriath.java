@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
+import me.dirkjan.goldiriath.skills.SkillManager;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
@@ -27,7 +28,8 @@ public class Goldriath extends JavaPlugin {
     public Map<UUID, Stage> questmap;
     public List<MobSpawn> mobSpawns;
     public BukkitCommandHandler handler;
-
+    SkillManager sm = new SkillManager(plugin);
+    
     @Override
     public void onLoad() {
         plugin = this;
@@ -36,7 +38,7 @@ public class Goldriath extends JavaPlugin {
         spawnConfig = new YamlConfig(plugin, "spawn.yml", false);
         questmap = new HashMap<>();
         mobSpawns = new ArrayList<>();
-        handler = new BukkitCommandHandler(plugin);
+        handler = new BukkitCommandHandler(plugin);       
     }
 
     @Override
@@ -53,9 +55,10 @@ public class Goldriath extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable() {      
         questSave();
         spawnSave();
+        sm.save();
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 

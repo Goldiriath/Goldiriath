@@ -7,7 +7,7 @@ public abstract class Skill {
     private final SkillType type;
     private final Player player;
     private final int lvl;
-
+    
     protected Skill(SkillType type, Player player, int lvl) {
         this.type = type;
         this.player = player;

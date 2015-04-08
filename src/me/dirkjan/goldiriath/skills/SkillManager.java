@@ -27,6 +27,9 @@ public class SkillManager {
                     String skillstring = skill.getClass().toString();
                     int lvlString = skill.getLvl();
                     String typestring = skill.getType().toString();
+                    section.set("skillname.", skillstring);
+                    section.set("skill lvl.", lvlString);
+                    section.set("skilltype.", typestring);
             }
             
         }
