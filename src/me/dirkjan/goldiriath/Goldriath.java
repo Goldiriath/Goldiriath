@@ -25,6 +25,7 @@ public class Goldriath extends JavaPlugin {
     public Logger logger;
     public YamlConfig questConfig;
     public YamlConfig spawnConfig;
+    public YamlConfig mobgearConfig;
     public Map<UUID, Stage> questmap;
     public List<MobSpawn> mobSpawns;
     public BukkitCommandHandler handler;
@@ -175,5 +176,5 @@ public class Goldriath extends JavaPlugin {
 
         }
         spawnConfig.save();
-    }
+    }  
 }

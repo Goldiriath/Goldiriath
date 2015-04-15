@@ -24,14 +24,12 @@ public class SkillManager {
             ConfigurationSection section = skillConfig.createSection(uuid.toString());
             for (Skill skill : skillmap.get(uuid)) {
                 section.set(skill.getType().getName() + ".lvl", skill.getLvl());
-                    String skillstring = skill.getClass().toString();
-                    int lvlString = skill.getLvl();
-                    String typestring = skill.getType().toString();
-                    section.set("skillname.", skillstring);
-                    section.set("skill lvl.", lvlString);
-                    section.set("skilltype.", typestring);
+                int lvl = skill.getLvl();
+                String typestring = skill.getType().toString();
+                section.set("skill lvl.", lvl);
+                section.set("skilltype.", typestring);
             }
-            
+
         }
         skillConfig.save();
 
@@ -40,6 +38,12 @@ public class SkillManager {
     public void load() {
         skillmap.clear();
         skillConfig.load();
-        
+        for (String uuid : skillConfig.getKeys(false)) {
+            ConfigurationSection section = skillConfig.getConfigurationSection(uuid);
+            String skillsString = section.getString(uuid + "skilltype");
+            SkillType type = SkillType.fromName(skillsString);
+            int lvl = section.getInt(uuid + "skill lvl");
+
+        }
     }
 }

@@ -76,17 +76,18 @@ public class MobSpawn {
         Entity mob = location.getWorld().spawnEntity(location, type);
         LivingEntity le = (LivingEntity) mob;
         le.setCustomName(name);
-        if (le.getCustomName().equals("zombie")) {
-            if (lvl == 1) {
+        if (le.getCustomName().equals("zombie(lvl5)")) {
+            if (lvl == 5) {
                 le.setCanPickupItems(false);
-                le.getEquipment().setBoots(null);
-                le.getEquipment().setChestplate(null);
+                le.getEquipment().setBoots(new ItemStack(Material.LEATHER_BOOTS));
+                le.getEquipment().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
                 le.getEquipment().setLeggings(null);
-                le.getEquipment().setHelmet(new ItemStack(Material.BEDROCK));
+                le.getEquipment().setHelmet(null);
+                le.getEquipment().setItemInHand(Items.WOODEN_SWORD.getItem());
                 le.getEquipment().setBootsDropChance(0);
                 le.getEquipment().setChestplateDropChance(0);
                 le.getEquipment().setHelmetDropChance(0);
-                le.getEquipment().setItemInHandDropChance(0);
+                le.getEquipment().setItemInHandDropChance(1);
                 le.getEquipment().setLeggingsDropChance(0);
 
             }
