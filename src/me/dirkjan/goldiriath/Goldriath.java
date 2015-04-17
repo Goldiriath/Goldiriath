@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
 import me.dirkjan.goldiriath.skills.SkillManager;
+import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
@@ -25,11 +26,10 @@ public class Goldriath extends JavaPlugin {
     public Logger logger;
     public YamlConfig questConfig;
     public YamlConfig spawnConfig;
-    public YamlConfig mobgearConfig;
     public Map<UUID, Stage> questmap;
     public List<MobSpawn> mobSpawns;
     public BukkitCommandHandler handler;
-    SkillManager sm = new SkillManager(plugin);
+    public SkillManager sm;
     
     @Override
     public void onLoad() {
@@ -37,15 +37,18 @@ public class Goldriath extends JavaPlugin {
         logger = plugin.getLogger();
         questConfig = new YamlConfig(plugin, "quests.yml", false);
         spawnConfig = new YamlConfig(plugin, "spawn.yml", false);
+        sm = new SkillManager(plugin);
         questmap = new HashMap<>();
         mobSpawns = new ArrayList<>();
-        handler = new BukkitCommandHandler(plugin);       
+        handler = new BukkitCommandHandler(plugin);    
     }
 
     @Override
     public void onEnable() {
+        BukkitLib.init(plugin);
         plugin.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
         questLoad();
+        sm.load();
         spawnLoad();
         plugin.getLogger().info(mobSpawns.size() + " mobspawns loaded");
 

@@ -1,6 +1,7 @@
 package me.dirkjan.goldiriath.skills;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import me.dirkjan.goldiriath.Goldriath;
@@ -10,7 +11,8 @@ import org.bukkit.configuration.ConfigurationSection;
 public class SkillManager {
 
     private final Goldriath plugin;
-    public final YamlConfig skillConfig;
+    public YamlConfig skillConfig;
+
     private final HashMap<UUID, Set<Skill>> skillmap = new HashMap<>();
 
     public SkillManager(Goldriath plugin) {
@@ -26,8 +28,8 @@ public class SkillManager {
                 section.set(skill.getType().getName() + ".lvl", skill.getLvl());
                 int lvl = skill.getLvl();
                 String typestring = skill.getType().toString();
-                section.set("skill lvl.", lvl);
-                section.set("skilltype.", typestring);
+                section.set(".lvl", lvl);
+                section.set(".type", typestring);
             }
 
         }
@@ -39,10 +41,14 @@ public class SkillManager {
         skillmap.clear();
         skillConfig.load();
         for (String uuid : skillConfig.getKeys(false)) {
-            ConfigurationSection section = skillConfig.getConfigurationSection(uuid);
-            String skillsString = section.getString(uuid + "skilltype");
+            Set<Skill> skills = new HashSet<>();
+            for(String skill : skillConfig.getKeys(false)){
+                String skillsString = skillConfig.getString(uuid + "." + skill + ".type");
             SkillType type = SkillType.fromName(skillsString);
-            int lvl = section.getInt(uuid + "skill lvl");
+            int lvl = skillConfig.getInt(uuid +"." + skill + ".lvl");
+            }
+        
+            
 
         }
     }
