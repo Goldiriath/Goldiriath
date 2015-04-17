@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.commands;
 
 import java.util.UUID;
-import me.dirkjan.goldiriath.Goldriath;
+import me.dirkjan.goldiriath.Goldiriath;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import org.bukkit.ChatColor;
@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(permission = "goldriathpluginquests.resetquest")
-public class Command_resetquest extends BukkitCommand<Goldriath> {
+public class Command_resetquest extends BukkitCommand<Goldiriath> {
 
     @Override
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {

@@ -2,7 +2,7 @@ package me.dirkjan.goldiriath;
 
 import net.pravian.bukkitlib.config.YamlConfig;
 
-public interface ConfigSavable {
+public interface ConfigContainer {
 
     public void loadFrom(YamlConfig config);
 

@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class PlayerListener implements Listener {
 
-    private final Goldriath plugin;
+    private final Goldiriath plugin;
 
-    public PlayerListener(Goldriath plugin) {
+    public PlayerListener(Goldiriath plugin) {
         this.plugin = plugin;
     }
 

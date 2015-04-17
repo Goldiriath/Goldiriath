@@ -4,10 +4,10 @@ import org.bukkit.entity.Player;
 
 public abstract class Skill {
 
-    private final SkillType type;
-    private final Player player;
-    private final int lvl;
-    
+    protected final SkillType type;
+    protected final Player player;
+    protected final int lvl;
+
     protected Skill(SkillType type, Player player, int lvl) {
         this.type = type;
         this.player = player;
@@ -26,5 +26,7 @@ public abstract class Skill {
     public int getLvl() {
         return lvl;
     }
+
+    public abstract void use(); // Should be called when the skill is used
 
 }

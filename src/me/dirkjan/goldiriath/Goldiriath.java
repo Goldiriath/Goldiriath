@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
-import me.dirkjan.goldiriath.skills.SkillManager;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -18,51 +17,66 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
-//work with players id
 
-public class Goldriath extends JavaPlugin {
+public class Goldiriath extends JavaPlugin {
 
-    public static Goldriath plugin;
+    public static Goldiriath plugin;
     public Logger logger;
     public YamlConfig questConfig;
     public YamlConfig spawnConfig;
     public Map<UUID, Stage> questmap;
     public List<MobSpawn> mobSpawns;
-    public BukkitCommandHandler handler;
-    public SkillManager sm;
-    
+    public BukkitCommandHandler<Goldiriath> handler;
+    public PlayerManager pm;
+
     @Override
     public void onLoad() {
         plugin = this;
         logger = plugin.getLogger();
+
         questConfig = new YamlConfig(plugin, "quests.yml", false);
         spawnConfig = new YamlConfig(plugin, "spawn.yml", false);
-        sm = new SkillManager(plugin);
+
         questmap = new HashMap<>();
         mobSpawns = new ArrayList<>();
-        handler = new BukkitCommandHandler(plugin);    
+
+        pm = new PlayerManager(plugin);
+
+        handler = new BukkitCommandHandler<>(plugin);
     }
 
     @Override
     public void onEnable() {
         BukkitLib.init(plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
-        questLoad();
-        sm.load();
-        spawnLoad();
-        plugin.getLogger().info(mobSpawns.size() + " mobspawns loaded");
 
-        handler.setCommandLocation(Command_resetquest.class.getPackage());
+        // Register events
+        plugin.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
+
+
+        // Load configs
+        questLoad();
+        spawnLoad();
+        logger.info(mobSpawns.size() + " mobspawns loaded");
+
+        // TODO: Move this somewhere else
         for (MobSpawn mobspawn : mobSpawns) {
             mobspawn.startspawning();
         }
+
+        // Setup command handler
+        handler.setCommandLocation(Command_resetquest.class.getPackage());
     }
 
     @Override
-    public void onDisable() {      
+    public void onDisable() {
+
+        // Save configs
         questSave();
         spawnSave();
-        sm.save();
+
+        pm.saveAll();
+
+        // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }
 
@@ -179,5 +193,5 @@ public class Goldriath extends JavaPlugin {
 
         }
         spawnConfig.save();
-    }  
+    }
 }

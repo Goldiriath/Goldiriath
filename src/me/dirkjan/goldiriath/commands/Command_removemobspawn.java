@@ -1,6 +1,6 @@
 package me.dirkjan.goldiriath.commands;
 
-import static me.dirkjan.goldiriath.Goldriath.plugin;
+import static me.dirkjan.goldiriath.Goldiriath.plugin;
 import me.dirkjan.goldiriath.MobSpawn;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;

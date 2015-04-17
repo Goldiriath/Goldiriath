@@ -1,36 +1,79 @@
 package me.dirkjan.goldiriath;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import me.dirkjan.goldiriath.skills.Skill;
+import me.dirkjan.goldiriath.skills.SkillType;
 import net.pravian.bukkitlib.config.YamlConfig;
+import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.entity.Player;
 
 public class PlayerManager {
 
-    private final Goldriath plugin;
+    private final Goldiriath plugin;
     private final Map<UUID, PlayerData> datamap;
 
-    public PlayerManager(Goldriath plugin) {
+    public PlayerManager(Goldiriath plugin) {
         this.plugin = plugin;
         this.datamap = new HashMap<>();
     }
 
     public PlayerData getData(Player player) {
+        return getData(player, true);
+    }
+
+    public PlayerData getData(Player player, boolean shouldLoad) {
+
+        // If the playerdata map has the player stored already, use that
         PlayerData data = datamap.get(player.getUniqueId());
-        if (data != null) {
+        if (data != null || !shouldLoad) {
             return data;
         }
+
+        // Load data from config
+        final YamlConfig config = createPlayerConfig(player);
+        config.load();
+
+        // Parse data from config
         data = new PlayerData(player);
-        final YamlConfig config = new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
-        data.getSkills();
+        data.loadFrom(config);
+
         return data;
     }
 
-    public static class PlayerData implements ConfigSavable {
+    public void logout(Player player) { // Should be called when the player logs out
+
+        final PlayerData data = getData(player, false); // false: Don't load the config if it isn't present
+
+        if (data == null) {
+            LoggerUtils.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");
+            return;
+        }
+
+        // Save the config
+        final YamlConfig config = createPlayerConfig(player);
+        data.saveTo(config);
+        config.save(); // Note: saveTo() does not actually save the config
+    }
+
+    public void saveAll() {
+
+        for (PlayerData data : datamap.values()) {
+            final YamlConfig config = createPlayerConfig(data.getPlayer());
+            data.saveTo(config);
+            config.save(); // Note: saveTo() does not actually save the config
+        }
+    }
+
+    private YamlConfig createPlayerConfig(Player player) {
+        return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
+    }
+
+    public static class PlayerData implements ConfigContainer {
 
         private final Player player;
         private final Set<Skill> skills;
@@ -45,18 +88,71 @@ public class PlayerManager {
         }
 
         public Set<Skill> getSkills() {
-            return skills;
+            return Collections.unmodifiableSet(skills); // Contents of returned set can not be modified!
+        }
+
+        public void addSkill(Skill skill) {
+            skills.add(skill);
+        }
+
+        public void removeSkill(Skill skill) {
+            skills.remove(skill);
         }
 
         @Override
         public void loadFrom(YamlConfig config) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+            // Load skills
+            if (config.isConfigurationSection("skills")) {
+
+                // Temp skills holder
+                final Set<Skill> tempSkills = new HashSet<>();
+
+                // Loop through loaded skills
+                for (String skillName : config.getConfigurationSection("skills").getKeys(false)) {
+
+                    // Find the appropriate skill type
+                    SkillType type = null;
+                    for (SkillType loopType : SkillType.values()) {
+                        if (!loopType.getName().equalsIgnoreCase(skillName)) {
+                            continue;
+                        }
+
+                        type = loopType;
+                        break;
+                    }
+
+                    if (type == null) {
+                        LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + player.getName() + ". Skill type not found!");
+                        continue; // Next skill
+                    }
+
+                    int lvl = config.getInt("skills." + skillName + ".lvl", -1);
+
+                    if (lvl == -1) {
+                        LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + player.getName() + ". Skill level could not be parsed!");
+                        continue; // Next skill
+                    }
+
+                    // Create and the skill
+                    final Skill skill = type.create(player, lvl);
+                    tempSkills.add(skill);
+                }
+
+                // Add the loaded skills
+                skills.addAll(tempSkills);
+            }
         }
 
         @Override
         public void saveTo(YamlConfig config) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // Save skill
+            for (Skill skill : skills) {
+                String basePath = "skills." + skill.getType().getName().toLowerCase();
+                config.set(basePath + "lvl", skill.getLvl());
+            }
         }
 
     }
+
 }

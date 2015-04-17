@@ -1,6 +1,6 @@
 package me.dirkjan.goldiriath;
 
-import static me.dirkjan.goldiriath.Goldriath.plugin;
+import static me.dirkjan.goldiriath.Goldiriath.plugin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -103,6 +103,6 @@ public class MobSpawn {
                 tick();
 
             }
-        }.runTaskTimer(Goldriath.plugin, 20, 20);
+        }.runTaskTimer(Goldiriath.plugin, 20, 20);
     }
 }

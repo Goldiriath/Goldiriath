@@ -1,6 +1,6 @@
 package me.dirkjan.goldiriath.commands;
 
-import me.dirkjan.goldiriath.Goldriath;
+import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.MobSpawn;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
@@ -13,7 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 @CommandPermissions(permission = "goldriathpluginquests.newmobspawn", source = SourceType.PLAYER)
-public class Command_newmobspawn extends BukkitCommand<Goldriath> {
+public class Command_newmobspawn extends BukkitCommand<Goldiriath> {
 
     @Override
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {

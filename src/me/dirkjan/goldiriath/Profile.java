@@ -34,6 +34,6 @@ public enum Profile {
             public void run() {
                 Util.msg(player, msgprofile, message);
             }
-        }.runTaskLater(Goldriath.plugin, delay);
+        }.runTaskLater(Goldiriath.plugin, delay);
     }
 }
