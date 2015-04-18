@@ -30,7 +30,7 @@ public class MobSpawner implements Service {
 
     public MobSpawner(Goldiriath plugin) {
         this.plugin = plugin;
-        this.config = new YamlConfig(plugin, "mobs.yml", false);
+        this.config = new YamlConfig(plugin, "mobs.yml");
         this.spawns = new ArrayList<>();
     }
 

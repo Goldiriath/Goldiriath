@@ -32,7 +32,7 @@ public class Goldiriath extends JavaPlugin {
         config = new YamlConfig(plugin, "config.yml");
 
         // TODO: Get rid of this
-        questConfig = new YamlConfig(plugin, "quests.yml", false);
+        questConfig = new YamlConfig(plugin, "quests.yml");
         questmap = new HashMap<>();
 
         pm = new PlayerManager(plugin);

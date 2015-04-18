@@ -1,4 +1,4 @@
-name: GoldiriathPluginQuests
+name: GoldiriathPlugin
 version: 1.2
 main: me.dirkjan.goldiriath.Goldiriath
 commands:

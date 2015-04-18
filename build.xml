@@ -2,7 +2,7 @@
 <!-- You may freely edit this file. See commented blocks below for -->
 <!-- some examples of how to customize the build. -->
 
-<project name="GoldriathPluginQuests" default="default" basedir=".">
+<project name="Goldriath" default="default" basedir=".">
     <description>Builds, tests, and runs the project GoldriathPluginQuests.</description>
     <import file="nbproject/build-impl.xml"/>
     <target name="-post-jar">
