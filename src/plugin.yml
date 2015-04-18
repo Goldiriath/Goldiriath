@@ -12,9 +12,3 @@ commands:
     resetquest:
         usage: /<command> <player>
         description: Resets all quest progress.
-    newmobspawn:
-        usage: /<command> <name> <type> <lvl>
-        description: Sets a new mobspawn.
-    removemobspawn:
-        usage: /<command> <name>
-        description: Removes a mobspawn.
