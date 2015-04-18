@@ -44,14 +44,14 @@ public enum SkillType {
         }
         return null;
     }
-    
-    public static SkillType fromName(String name){
-        for(SkillType type : SkillType.values()){
-            if(type.getName().equalsIgnoreCase(name)){
-               return type;
+
+    public static SkillType fromName(String name) {
+        for (SkillType type : SkillType.values()) {
+            if (type.getName().equalsIgnoreCase(name)) {
+                return type;
             }
         }
         return null; //TODO FIX
     }
-    
+
 }

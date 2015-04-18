@@ -1,0 +1,18 @@
+#
+# Goldiriath v1.2 Configuration file
+#
+
+mobspawner:
+    enabled: true
+
+    # Radius for mob spawners
+    radius: 10
+
+    # Maximum amount of mobs in the spawner radius
+    max_mobs: 5
+
+    # Minimum delay after a spawn in ticks
+    # 400 ticks = 20 * 20 ticks = 20 seconds
+    spawn_threshold: 400
+
+

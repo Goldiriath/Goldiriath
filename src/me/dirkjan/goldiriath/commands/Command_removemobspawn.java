@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.commands;
 
 import static me.dirkjan.goldiriath.Goldiriath.plugin;
-import me.dirkjan.goldiriath.MobSpawn;
+import me.dirkjan.goldiriath.MobSpawner.MobSpawn;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
 import org.bukkit.ChatColor;
@@ -16,13 +16,13 @@ public class Command_removemobspawn {
             return false;
         }
 
-        for (MobSpawn mobspawn : plugin.mobSpawns) {
+        for (MobSpawn mobspawn : plugin.ms.getSpawns()) {
             if (!args[0].equals(mobspawn.getName())) {
                 sender.sendMessage(ChatColor.RED + "that mobspawn doesnt exist");
                 return true;
             }
             sender.sendMessage(ChatColor.GREEN + "done");
-            plugin.mobSpawns.remove(mobspawn);
+            plugin.ms.remove(mobspawn);
             return true;
         }
 

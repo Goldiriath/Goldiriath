@@ -58,7 +58,7 @@ public class PlayerManager {
         final YamlConfig config = createPlayerConfig(player);
         data.saveTo(config);
         config.save(); // Note: saveTo() does not actually save the config
-        
+
         if (datamap.remove(player.getUniqueId()) == null) {
             LoggerUtils.warning("Could not remove playerdata for player " + player.getName() + ". Playerdata not present!");
         }
@@ -77,7 +77,7 @@ public class PlayerManager {
         return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
     }
 
-    public static class PlayerData implements ConfigContainer {
+    public static class PlayerData implements Configurable {
 
         private final Player player;
         private final Set<Skill> skills;

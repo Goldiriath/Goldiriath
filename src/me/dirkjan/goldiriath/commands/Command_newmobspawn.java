@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.commands;
 
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.MobSpawn;
+import me.dirkjan.goldiriath.MobSpawner.MobSpawn;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -22,7 +22,7 @@ public class Command_newmobspawn extends BukkitCommand<Goldiriath> {
         }
 
         String name = args[0];
-        for (MobSpawn mobspawn : plugin.mobSpawns) {
+        for (MobSpawn mobspawn : plugin.ms.getSpawns()) {
             if (mobspawn.getName().equals(name)) {
                 sender.sendMessage(ChatColor.RED + "that name is already used");
                 return true;
@@ -47,14 +47,9 @@ public class Command_newmobspawn extends BukkitCommand<Goldiriath> {
         }
         final Location location = playerSender.getLocation();
 
-        MobSpawn mobspawn = new MobSpawn();
-        mobspawn.setName(name);
-        mobspawn.setLocation(location);
-        mobspawn.setEntityType(type);
-        mobspawn.setLvl(lvl);
+        MobSpawn mobspawn = plugin.ms.new MobSpawn(name, type, location, lvl);
         sender.sendMessage(ChatColor.GREEN + "done");
-        plugin.mobSpawns.add(mobspawn);
-        mobspawn.startspawning();
+        plugin.ms.add(mobspawn);
         plugin.saveConfig();
         return true;
 

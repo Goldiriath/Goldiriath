@@ -1,8 +1,6 @@
 package me.dirkjan.goldiriath;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -10,37 +8,35 @@ import me.dirkjan.goldiriath.commands.Command_resetquest;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Goldiriath extends JavaPlugin {
 
     public static Goldiriath plugin;
     public Logger logger;
+    public YamlConfig config;
     public YamlConfig questConfig;
-    public YamlConfig spawnConfig;
     public Map<UUID, Stage> questmap;
-    public List<MobSpawn> mobSpawns;
     public BukkitCommandHandler<Goldiriath> handler;
     public PlayerManager pm;
+    public MobSpawner ms;
 
     @Override
     public void onLoad() {
         plugin = this;
         logger = plugin.getLogger();
 
-        questConfig = new YamlConfig(plugin, "quests.yml", false);
-        spawnConfig = new YamlConfig(plugin, "spawn.yml", false);
+        config = new YamlConfig(plugin, "config.yml");
 
+        // TODO: Get rid of this
+        questConfig = new YamlConfig(plugin, "quests.yml", false);
         questmap = new HashMap<>();
-        mobSpawns = new ArrayList<>();
 
         pm = new PlayerManager(plugin);
+        ms = new MobSpawner(plugin);
 
         handler = new BukkitCommandHandler<>(plugin);
     }
@@ -52,16 +48,12 @@ public class Goldiriath extends JavaPlugin {
         // Register events
         plugin.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
 
-
         // Load configs
-        questLoad();
-        spawnLoad();
-        logger.info(mobSpawns.size() + " mobspawns loaded");
+        config.load();
+        questConfigLoad();
 
-        // TODO: Move this somewhere else
-        for (MobSpawn mobspawn : mobSpawns) {
-            mobspawn.startspawning();
-        }
+        // Start services
+        ms.start();
 
         // Setup command handler
         handler.setCommandLocation(Command_resetquest.class.getPackage());
@@ -72,9 +64,10 @@ public class Goldiriath extends JavaPlugin {
 
         // Save configs
         questSave();
-        spawnSave();
-
         pm.saveAll();
+
+        // Stop services
+        ms.stop();
 
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
@@ -85,7 +78,7 @@ public class Goldiriath extends JavaPlugin {
         return handler.handleCommand(sender, cmd, commandLabel, args);
     }
 
-    private void questLoad() {
+    private void questConfigLoad() {
         questmap.clear();
         questConfig.load();
         //quests:
@@ -127,71 +120,4 @@ public class Goldiriath extends JavaPlugin {
         questConfig.save();
     }
 
-    private void spawnLoad() {
-        spawnConfig.load();
-        mobSpawns.clear();
-        //spawns:
-        //  [name]:
-        //    location:[location]
-        //    type:[type]
-        //    lvl:[lvl]
-        if (!spawnConfig.isConfigurationSection("spawns")) {
-            return;
-        }
-
-        ConfigurationSection spawns = spawnConfig.getConfigurationSection("spawns");
-        for (String name : spawns.getKeys(false)) {
-            String locationString = spawns.getString(name + ".location");
-            if (locationString == null) {
-                plugin.getLogger().severe("location error");
-                continue;
-            }
-
-            SerializableBlockLocation block = new SerializableBlockLocation(locationString);
-            Location spawnLocation = block.deserialize();
-            if (spawnLocation == null) {
-                continue;
-            }
-
-            String typeString = spawns.getString(name + ".type");
-            if (typeString == null) {
-                plugin.getLogger().severe("type error");
-                continue;
-            }
-            EntityType type = EntityType.fromName(typeString);
-            plugin.getLogger().info(typeString);
-            if (type == null) {
-                plugin.getLogger().severe("name error");
-                continue;
-            }
-
-            int lvl = spawns.getInt(name + ".lvl", 1);
-
-            MobSpawn spawn = new MobSpawn();
-            spawn.setLocation(spawnLocation);
-            spawn.setEntityType(type);
-            spawn.setLvl(lvl);
-            spawn.setName(name);
-
-            mobSpawns.add(spawn);
-        }
-
-    }
-
-    private void spawnSave() {
-        spawnConfig.clear();
-
-        for (MobSpawn spawn : mobSpawns) {
-            String stringName = spawn.getName();
-            SerializableBlockLocation location = new SerializableBlockLocation(spawn.getLocation());
-            String stringLocation = location.serialize();
-            String stringType = spawn.getEntityType().toString();
-            int lvl = spawn.getLvl();
-            spawnConfig.set("spawns." + stringName + ".location", stringLocation);
-            spawnConfig.set("spawns." + stringName + ".type", stringType);
-            spawnConfig.set("spawns." + stringName + ".lvl", lvl);
-
-        }
-        spawnConfig.save();
-    }
 }
