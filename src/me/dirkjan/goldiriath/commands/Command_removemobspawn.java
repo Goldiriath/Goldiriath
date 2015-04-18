@@ -1,7 +1,8 @@
 package me.dirkjan.goldiriath.commands;
 
-import static me.dirkjan.goldiriath.Goldiriath.plugin;
+import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.MobSpawner.MobSpawn;
+import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
 import org.bukkit.ChatColor;
@@ -9,7 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(permission = "goldriathpluginquests.removemobspawn", source = SourceType.PLAYER)
-public class Command_removemobspawn {
+public class Command_removemobspawn extends BukkitCommand<Goldiriath> {
 
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
         if (args.length < 1) {

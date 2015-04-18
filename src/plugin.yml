@@ -1,13 +1,16 @@
-name: GoldiriathPlugin
-version: 1.2
+name: Goldiriath
+version: 0.0.1
 main: me.dirkjan.goldiriath.Goldiriath
 commands:
+    goldiriath:
+        usage: /<command> [reload]
+        description: Shows information about the Goldiriath plugin.
     resetquest:
         usage: /<command> <player>
-        description: resets all quest progress
+        description: Resets all quest progress
     newmobspawn:
         usage: /<command> <name> <type> <lvl>
-        description: sets a new mobspawn
+        description: Sets a new mobspawn
     removemobspawn:
         usage: /<command> <name>
-        description: removes a mobspawn
+        description: Removes a mobspawn

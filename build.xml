@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- You may freely edit this file. See commented blocks below for -->
-<!-- some examples of how to customize the build. -->
-
 <project name="Goldriath" default="default" basedir=".">
     <description>Builds, tests, and runs the project GoldriathPluginQuests.</description>
     <import file="nbproject/build-impl.xml"/>
+	
+	<target name="-pre-jar">
+        <buildnumber file="build.properties" />
+
+        <propertyfile file="appinfo.properties">
+            <entry key="program.buildnumber" value="${build.number}" />
+            <entry key="program.builddate" type="date" value="now" pattern="dd/MM/yyyy hh:mm aa" />
+        </propertyfile>
+		
+        <copy file="appinfo.properties" todir="${build.classes.dir}" />
+        <delete file="appinfo.properties" />
+    </target>
+	
     <target name="-post-jar">
         <echo level="info" message="---- Finalizing Build" />
 

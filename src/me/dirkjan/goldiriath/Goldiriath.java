@@ -1,13 +1,16 @@
 package me.dirkjan.goldiriath;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Goldiriath extends JavaPlugin {
 
     public static Goldiriath plugin;
+    public static String name = "";
+    public static String buildVersion = "0.0";
+    public static String buildNumber = "0";
+    public static String buildDate = "";
     public Logger logger;
     public YamlConfig config;
     public YamlConfig questConfig;
@@ -28,6 +35,8 @@ public class Goldiriath extends JavaPlugin {
     public void onLoad() {
         plugin = this;
         logger = plugin.getLogger();
+
+        loadBuildProperties();
 
         config = new YamlConfig(plugin, "config.yml");
 
@@ -63,7 +72,7 @@ public class Goldiriath extends JavaPlugin {
     public void onDisable() {
 
         // Save configs
-        questSave();
+        questConfigSave();
         pm.saveAll();
 
         // Stop services
@@ -76,6 +85,28 @@ public class Goldiriath extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         return handler.handleCommand(sender, cmd, commandLabel, args);
+    }
+
+    private void loadBuildProperties()
+    {
+        try
+        {
+            name = plugin.getName();
+            buildVersion = plugin.getDescription().getVersion();
+
+            final Properties props = new Properties();
+            try (InputStream in = plugin.getResource("appinfo.properties")) {
+                props.load(in);
+            }
+
+            buildNumber = props.getProperty("program.buildnumber");
+            buildDate = props.getProperty("program.builddate");
+        }
+        catch (Exception ex)
+        {
+            logger.warning("Could not load build  properties!");
+            logger.warning(ExceptionUtils.getFullStackTrace(ex));
+        }
     }
 
     private void questConfigLoad() {
@@ -108,7 +139,7 @@ public class Goldiriath extends JavaPlugin {
         }
     }
 
-    private void questSave() {
+    private void questConfigSave() {
         questConfig.clear();
         ConfigurationSection quests = questConfig.createSection("quests.quest1");
         for (UUID key : questmap.keySet()) {
