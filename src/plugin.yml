@@ -1,6 +1,6 @@
 name: GoldiriathPluginQuests
 version: 1.2
-main: me.dirkjan.goldriathpluginquests.GoldiriathPluginQuests
+main: me.dirkjan.goldiriath.Goldiriath
 commands:
     resetquest:
         usage: /<command> <player>
