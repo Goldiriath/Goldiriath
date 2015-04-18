@@ -87,10 +87,8 @@ public class Goldiriath extends JavaPlugin {
         return handler.handleCommand(sender, cmd, commandLabel, args);
     }
 
-    private void loadBuildProperties()
-    {
-        try
-        {
+    private void loadBuildProperties() {
+        try {
             name = plugin.getName();
             buildVersion = plugin.getDescription().getVersion();
 
@@ -101,9 +99,7 @@ public class Goldiriath extends JavaPlugin {
 
             buildNumber = props.getProperty("program.buildnumber");
             buildDate = props.getProperty("program.builddate");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             logger.warning("Could not load build  properties!");
             logger.warning(ExceptionUtils.getFullStackTrace(ex));
         }

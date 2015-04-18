@@ -5,12 +5,16 @@ commands:
     goldiriath:
         usage: /<command> [reload]
         description: Shows information about the Goldiriath plugin.
+    mobspawn:
+        usage: /<command> dev <on | off>
+        description: Manages mobspawns.
+        aliases: [ms,mobmanage]
     resetquest:
         usage: /<command> <player>
-        description: Resets all quest progress
+        description: Resets all quest progress.
     newmobspawn:
         usage: /<command> <name> <type> <lvl>
-        description: Sets a new mobspawn
+        description: Sets a new mobspawn.
     removemobspawn:
         usage: /<command> <name>
-        description: Removes a mobspawn
+        description: Removes a mobspawn.

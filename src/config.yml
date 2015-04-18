@@ -5,8 +5,12 @@
 mobspawner:
     enabled: true
 
+    # Development mode
+    # When this is set to true, all mobspawns will be disabled and presented as signs.
+    dev_mode: true
+
     # Radius for mob spawners
-    radius: 10
+    radius: 20
 
     # Maximum amount of mobs in the spawner radius
     max_mobs: 5
