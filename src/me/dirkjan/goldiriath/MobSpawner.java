@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
+import net.pravian.bukkitlib.util.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,6 +20,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -61,7 +63,10 @@ public class MobSpawner implements Service, Listener {
     public void remove(MobSpawn spawn) {
         if (!spawns.remove(spawn)) {
             plugin.logger.warning("Could not remove mobspawn! Mobspawn not present!");
+            return;
         }
+
+        saveConfig();
     }
 
     @Override
@@ -105,13 +110,10 @@ public class MobSpawner implements Service, Listener {
             spawnTask.cancel();
         } catch (Exception ignored) {
         }
-    }
 
-    private void clearSign(SignChangeEvent event) {
-        event.setLine(0, "");
-        event.setLine(1, "");
-        event.setLine(2, "");
-        event.setLine(3, "");
+        // Unregister events
+        SignChangeEvent.getHandlerList().unregister(this);
+        BlockBreakEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler
@@ -124,7 +126,7 @@ public class MobSpawner implements Service, Listener {
 
         // Ensure player has the required permission
         if (!event.getPlayer().hasPermission("goldiriath.mobspawn")) {
-            clearSign(event);
+            event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You do not have permission to create MobSpawn signs!");
             return;
         }
@@ -132,13 +134,13 @@ public class MobSpawner implements Service, Listener {
         // Validate name
         final String name = event.getLine(1).toLowerCase();
         if (name.length() < 2) {
-            clearSign(event);
+            event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "MobSpawn name it too short!");
             return;
         }
         for (MobSpawn spawn : spawns) {
             if (spawn.getName().equalsIgnoreCase(name)) {
-                clearSign(event);
+                event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "MobSpawn name already in use!");
                 return;
             }
@@ -147,7 +149,7 @@ public class MobSpawner implements Service, Listener {
         // Validate type
         final EntityType type = EntityType.fromName(event.getLine(2));
         if (type == null) {
-            clearSign(event);
+            event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "Entity type not found!");
             return;
         }
@@ -157,7 +159,7 @@ public class MobSpawner implements Service, Listener {
         try {
             lvl = Integer.parseInt(event.getLine(3));
         } catch (NumberFormatException ex) {
-            clearSign(event);
+            event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "Could not parse level!");
             return;
         }
@@ -174,6 +176,46 @@ public class MobSpawner implements Service, Listener {
         }.runTask(plugin);
 
         player.sendMessage(ChatColor.GREEN + "Created mobspawn sign: " + name + "!");
+    }
+
+    @EventHandler
+    public void onSignDelete(BlockBreakEvent event) {
+        if (event.getBlock().getType() != Material.SIGN_POST) {
+            return;
+        }
+
+        final Sign sign = (Sign) event.getBlock().getState();
+
+        if (!ChatColor.stripColor(sign.getLine(0)).toLowerCase().equals("[mobspawn]")) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        if (!player.hasPermission("goldiriath.mobspawn")) {
+            player.sendMessage(ChatColor.RED + "You do not have permission to delete MobSpawn signs!");
+            event.setCancelled(true);
+            return;
+        }
+
+        MobSpawn spawn = null;
+        for (MobSpawn loopSpawn : spawns) {
+            if (!loopSpawn.getLocation().equals(event.getBlock().getLocation())) {
+                plugin.logger.info(LocationUtils.format(loopSpawn.getLocation()) + " != " + LocationUtils.format(event.getBlock().getLocation()));
+                continue;
+            }
+
+            spawn = loopSpawn;
+            break;
+        }
+
+        if (spawn == null) {
+            plugin.logger.warning("Could not delete mob spawn at location " + LocationUtils.format(event.getBlock().getLocation()) + ". Could not find assocated spawner!");
+            player.sendMessage(ChatColor.RED + "Warning: Could not find associated mob spawn!");
+            return;
+        }
+
+        remove(spawn);
+        player.sendMessage(ChatColor.GREEN + "Deleted MobSpawn: " + spawn.getName());
     }
 
     private void loadConfig() {
@@ -220,7 +262,6 @@ public class MobSpawner implements Service, Listener {
 
                 // TODO fix deprecation
                 EntityType type = EntityType.fromName(typeString);
-                plugin.getLogger().info(typeString);
                 if (type == null) {
                     plugin.logger.warning("Could not load mobspawn '" + name + "'. Could not determine type!");
                     continue;
@@ -257,8 +298,14 @@ public class MobSpawner implements Service, Listener {
     private void saveConfig() {
 
         // Save spawns
-        config.set("spawns", null);
+        config.clear();
+
         for (MobSpawn spawn : spawns) {
+            if (!spawn.isValid()) {
+                plugin.logger.info("Not saving mobspawn: " + spawn.getName() + ". Mobspawn is invalid!");
+                continue;
+            }
+
             final String name = spawn.getName().toLowerCase();
             config.set("spawns." + name + ".location", new SerializableBlockLocation(spawn.getLocation()).serialize());
             config.set("spawns." + name + ".type", spawn.getEntityType().toString());

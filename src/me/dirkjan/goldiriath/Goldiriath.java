@@ -77,7 +77,6 @@ public class Goldiriath extends JavaPlugin {
 
         // Stop services
         ms.stop();
-
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }
