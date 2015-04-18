@@ -58,6 +58,10 @@ public class PlayerManager {
         final YamlConfig config = createPlayerConfig(player);
         data.saveTo(config);
         config.save(); // Note: saveTo() does not actually save the config
+        
+        if (datamap.remove(player.getUniqueId()) == null) {
+            LoggerUtils.warning("Could not remove playerdata for player " + player.getName() + ". Playerdata not present!");
+        }
     }
 
     public void saveAll() {
