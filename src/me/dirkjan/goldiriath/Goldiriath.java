@@ -31,7 +31,7 @@ public class Goldiriath extends JavaPlugin {
     public Map<UUID, Stage> questmap;
     public BukkitCommandHandler<Goldiriath> handler;
     public PlayerManager pm;
-    public MobSpawner ms;
+    public MobSpawnManager msm;
 
     @Override
     public void onLoad() {
@@ -47,7 +47,7 @@ public class Goldiriath extends JavaPlugin {
         questmap = new HashMap<>();
 
         pm = new PlayerManager(plugin);
-        ms = new MobSpawner(plugin);
+        msm = new MobSpawnManager(plugin);
 
         handler = new BukkitCommandHandler<>(plugin);
     }
@@ -65,7 +65,7 @@ public class Goldiriath extends JavaPlugin {
         questConfigLoad();
 
         // Start services
-        ms.start();
+        msm.start();
 
         // Setup command handler
         handler.setCommandLocation(Command_resetquest.class.getPackage());
@@ -79,7 +79,7 @@ public class Goldiriath extends JavaPlugin {
         pm.saveAll();
 
         // Stop services
-        ms.stop();
+        msm.stop();
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }

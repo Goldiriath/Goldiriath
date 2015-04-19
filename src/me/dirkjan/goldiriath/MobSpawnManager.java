@@ -2,8 +2,11 @@ package me.dirkjan.goldiriath;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
 import net.pravian.bukkitlib.util.LocationUtils;
@@ -22,26 +25,30 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class MobSpawner implements Service, Listener {
+public class MobSpawnManager implements Service, Listener {
 
     private final Goldiriath plugin;
     private final YamlConfig config;
     private BukkitTask spawnTask;
     //
     private final List<MobSpawn> spawns;
+    private final Set<Profile> profiles;
     private boolean enabled;
     private boolean devMode;
     private int radiusSquared;
     private int maxMobs;
     private int spawnThreshold;
 
-    public MobSpawner(Goldiriath plugin) {
+    public MobSpawnManager(Goldiriath plugin) {
         this.plugin = plugin;
         this.config = new YamlConfig(plugin, "mobs.yml");
         this.spawns = new ArrayList<>();
+        this.profiles = new HashSet<>();
         this.devMode = false;
     }
 
@@ -154,17 +161,19 @@ public class MobSpawner implements Service, Listener {
         }
 
         // Validate level
-        int lvl = 0;
-        try {
-            lvl = Integer.parseInt(event.getLine(3));
-        } catch (NumberFormatException ex) {
-            event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "Could not parse level!");
-            return;
+        Profile profile = null;
+        if (!event.getLine(3).isEmpty()) {
+            profile = determineProfile(event.getLine(3));
+
+            if (profile == null) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "Invalid MobSpawn profile: " + event.getLine(3));
+                return;
+            }
         }
 
-        final MobSpawn spawn = plugin.ms.new MobSpawn(name, type, event.getBlock().getLocation(), lvl);
-        plugin.ms.add(spawn);
+        final MobSpawn spawn = plugin.msm.new MobSpawn(name, type, event.getBlock().getLocation(), profile);
+        plugin.msm.add(spawn);
 
         // Update sign next tick
         new BukkitRunnable() {
@@ -229,13 +238,28 @@ public class MobSpawner implements Service, Listener {
         maxMobs = plugin.config.getInt(ConfigPaths.MOBSPAWNER_MAX_MOBS);
         spawnThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_SPAWN_THRESHOLD);
 
+        // Load Profiles
+        final ConfigurationSection profileSection = plugin.config.getConfigurationSection(ConfigPaths.MOBSPAWNER_PROFILES.getPath());
+        for (String profileName : profileSection.getKeys(false)) {
+            final ConfigurationSection currentProfile = profileSection.getConfigurationSection(profileName);
+            profileName = profileName.toLowerCase().trim();
+
+            final ItemStack carryItem = Util.parseItem(currentProfile.getString("item", null));
+            final ItemStack helmet = Util.parseItem(currentProfile.getString("helmet", null));
+            final ItemStack chestplate = Util.parseItem(currentProfile.getString("chestplate", null));
+            final ItemStack leggings = Util.parseItem(currentProfile.getString("leggings", null));
+            final ItemStack boots = Util.parseItem(currentProfile.getString("boots", null));
+
+            profiles.add(new Profile(profileName, profileName, carryItem, helmet, chestplate, leggings, boots));
+        }
+
         // Load spawns
         if (config.isConfigurationSection("spawns")) {
             //spawns:
             //  [name]:
-            //    location:[location]
-            //    type:[type]
-            //    lvl:[lvl]
+            //    location: [location]
+            //    type: [type]
+            //    (profile: [profilename])
 
             ConfigurationSection spawnsConfig = config.getConfigurationSection("spawns");
 
@@ -246,7 +270,6 @@ public class MobSpawner implements Service, Listener {
                     plugin.logger.warning("Could not load mobspawn '" + name + "'. Location not defined!");
                     continue;
                 }
-
                 final Location location = new SerializableBlockLocation(locationString).deserialize();
                 if (location == null) {
                     plugin.logger.warning("Could not load mobspawn '" + name + "'. Could not deserialize location!");
@@ -260,16 +283,20 @@ public class MobSpawner implements Service, Listener {
                 }
 
                 // TODO fix deprecation
-                EntityType type = EntityType.fromName(typeString);
+                final EntityType type = EntityType.fromName(typeString);
                 if (type == null) {
                     plugin.logger.warning("Could not load mobspawn '" + name + "'. Could not determine type!");
                     continue;
                 }
 
-                int lvl = spawnsConfig.getInt(name + ".lvl", 1); // 1 = default lvl
+                final String profileString = spawnsConfig.getString(name + ".profile", null);
+                final Profile profile = determineProfile(profileString);
+                if (profileString != null && profile == null) {
+                    plugin.logger.warning("Ignoring profile '" + profileString + "' for mobspawn '" + name + "'. Profile could not be determined!");
+                }
 
                 // Setup and add mobspawn
-                final MobSpawn spawn = new MobSpawn(name, type, location, lvl);
+                final MobSpawn spawn = new MobSpawn(name, type, location, profile);
                 spawns.add(spawn);
             }
 
@@ -308,7 +335,9 @@ public class MobSpawner implements Service, Listener {
             final String name = spawn.getName().toLowerCase();
             config.set("spawns." + name + ".location", new SerializableBlockLocation(spawn.getLocation()).serialize());
             config.set("spawns." + name + ".type", spawn.getEntityType().toString());
-            config.set("spawns." + name + ".lvl", spawn.getLvl());
+            if (spawn.getProfile() != null) {
+                config.set("spawns." + name + ".profile", spawn.getProfile().getName().toLowerCase());
+            }
         }
 
         config.save();
@@ -319,6 +348,10 @@ public class MobSpawner implements Service, Listener {
         for (MobSpawn spawn : spawns) {
             updateDevModeSign(spawn);
         }
+    }
+
+    public boolean isDevMode() {
+        return devMode;
     }
 
     private void updateDevModeSign(MobSpawn spawn) {
@@ -339,12 +372,107 @@ public class MobSpawner implements Service, Listener {
         sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
         sign.setLine(1, spawn.getName());
         sign.setLine(2, spawn.getEntityType().toString());
-        sign.setLine(3, spawn.getLvl() + "");
+        sign.setLine(3, (spawn.getProfile() == null ? "" : spawn.getProfile().getName()));
         sign.update();
     }
 
-    public boolean isDevMode() {
-        return devMode;
+    private Profile determineProfile(String profileName) {
+        if (profileName == null) {
+            return null;
+        }
+
+        for (Profile loopProfile : profiles) {
+            if (loopProfile.getName().equalsIgnoreCase(profileName)) {
+                return loopProfile;
+            }
+        }
+
+        return null;
+    }
+
+    public class Profile {
+
+        private final String name;
+        private final String customName;
+        private final ItemStack carryItem;
+        private final ItemStack helmet;
+        private final ItemStack chestplate;
+        private final ItemStack leggings;
+        private final ItemStack boots;
+
+        public Profile(String name, String customName, ItemStack carryItem, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+            this.name = name;
+            this.customName = customName;
+            this.carryItem = carryItem;
+            this.helmet = helmet;
+            this.chestplate = chestplate;
+            this.leggings = leggings;
+            this.boots = boots;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCustomName() {
+            return customName;
+        }
+
+        public ItemStack getCarryItem() {
+            return carryItem;
+        }
+
+        public ItemStack getHelmet() {
+            return helmet;
+        }
+
+        public ItemStack getChestplate() {
+            return chestplate;
+        }
+
+        public ItemStack getLeggings() {
+            return leggings;
+        }
+
+        public ItemStack getBoots() {
+            return boots;
+        }
+
+        public void setup(LivingEntity entity) {
+            final EntityEquipment equipment = entity.getEquipment();
+
+            entity.setCanPickupItems(false);
+            equipment.setItemInHandDropChance(0);
+            equipment.setHelmetDropChance(0);
+            equipment.setChestplateDropChance(0);
+            equipment.setLeggingsDropChance(0);
+            equipment.setBootsDropChance(0);
+
+            if (customName != null) {
+                entity.setCustomName(name);
+            }
+
+            if (carryItem != null) {
+                equipment.setItemInHand(carryItem);;
+            }
+
+            if (helmet != null) {
+                equipment.setHelmet(helmet);
+            }
+
+            if (chestplate != null) {
+                equipment.setChestplate(chestplate);
+            }
+
+            if (leggings != null) {
+                equipment.setLeggings(leggings);
+            }
+
+            if (boots != null) {
+                equipment.setBoots(boots);
+            }
+        }
+
     }
 
     // Instance per mob spawn
@@ -353,14 +481,15 @@ public class MobSpawner implements Service, Listener {
         private final String name;
         private final EntityType type;
         private final Location location;
-        private final int lvl;
+        private final @Nullable
+        Profile profile;
         private long lastSpawn;
 
-        public MobSpawn(String name, EntityType type, Location location, int lvl) {
+        public MobSpawn(String name, EntityType type, Location location, Profile profile) {
             this.name = name;
             this.type = type;
             this.location = location;
-            this.lvl = lvl;
+            this.profile = profile;
             this.lastSpawn = 0;
         }
 
@@ -372,8 +501,8 @@ public class MobSpawner implements Service, Listener {
             return location;
         }
 
-        public int getLvl() {
-            return lvl;
+        public Profile getProfile() {
+            return profile;
         }
 
         public String getName() {
@@ -385,7 +514,7 @@ public class MobSpawner implements Service, Listener {
         }
 
         public boolean isValid() {
-            return type != null && location != null && lvl > 0 && name != null;
+            return type != null && location != null && name != null;
         }
 
         protected boolean tick() { // True if the tick resulted in a mob spawn
@@ -425,25 +554,10 @@ public class MobSpawner implements Service, Listener {
 
             final LivingEntity le = (LivingEntity) location.getWorld().spawnEntity(location, type);
 
-            // TODO: Properly implement
-            /*
-             le.setCustomName(name);
-             if (le.getCustomName().equals("zombie(lvl5)")) {
-             if (lvl == 5) {
-             le.setCanPickupItems(false);
-             le.getEquipment().setBoots(new ItemStack(Material.LEATHER_BOOTS));
-             le.getEquipment().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-             le.getEquipment().setLeggings(null);
-             le.getEquipment().setHelmet(null);
-             le.getEquipment().setItemInHand(Items.WOODEN_SWORD.getItem());
-             le.getEquipment().setBootsDropChance(0);
-             le.getEquipment().setChestplateDropChance(0);
-             le.getEquipment().setHelmetDropChance(0);
-             le.getEquipment().setItemInHandDropChance(1);
-             le.getEquipment().setLeggingsDropChance(0);
+            if (profile != null) {
+                profile.setup(le);
+            }
 
-             }
-             }*/
             return le;
         }
     }

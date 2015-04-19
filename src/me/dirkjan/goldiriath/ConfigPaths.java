@@ -9,9 +9,8 @@ public enum ConfigPaths implements PathContainer {
     MOBSPAWNER_RADIUS("mobspawner.radius"),
     MOBSPAWNER_MAX_MOBS("mobspawner.max_mobs"),
     MOBSPAWNER_SPAWN_THRESHOLD("mobspawner.spawn_threshold"),
-
-    INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled"),
-    ;
+    MOBSPAWNER_PROFILES("mobspawner.profiles"),
+    INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled"),;
 
     private final String path;
 

@@ -21,17 +21,17 @@ public class Command_mobspawn extends BukkitCommand<Goldiriath> {
         if (args[0].equals("dev")) {
 
             if (args.length == 1) {
-                msg("MobSpawn development mode is " + (plugin.ms.isDevMode() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+                msg("MobSpawn development mode is " + (plugin.msm.isDevMode() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
                 return true;
             }
 
             if (args[1].equals("on")) {
-                plugin.ms.setDevMode(true);
+                plugin.msm.setDevMode(true);
             } else {
-                plugin.ms.setDevMode(false);
+                plugin.msm.setDevMode(false);
             }
 
-            msg("MobSpawn development mode " + (plugin.ms.isDevMode() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
+            msg("MobSpawn development mode " + (plugin.msm.isDevMode() ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled"));
             return true;
         }
 
