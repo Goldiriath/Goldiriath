@@ -1,10 +1,8 @@
 package me.dirkjan.goldiriath;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -36,7 +34,7 @@ public class MobSpawnManager implements Service, Listener {
     private final YamlConfig config;
     private BukkitTask spawnTask;
     //
-    private final List<MobSpawn> spawns;
+    private final Set<MobSpawn> spawns;
     private final Set<Profile> profiles;
     private boolean enabled;
     private boolean devMode;
@@ -47,13 +45,13 @@ public class MobSpawnManager implements Service, Listener {
     public MobSpawnManager(Goldiriath plugin) {
         this.plugin = plugin;
         this.config = new YamlConfig(plugin, "mobs.yml");
-        this.spawns = new ArrayList<>();
+        this.spawns = new HashSet<>();
         this.profiles = new HashSet<>();
         this.devMode = false;
     }
 
-    public List<MobSpawn> getSpawns() {
-        return Collections.unmodifiableList(spawns);
+    public Set<MobSpawn> getSpawns() {
+        return Collections.unmodifiableSet(spawns);
     }
 
     public void add(MobSpawn spawn) {
