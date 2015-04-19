@@ -2,6 +2,7 @@
 # Goldiriath v0.0.1 pre-alpha configuration
 #
 
+# Sign based mob spawner
 mobspawner:
     enabled: true
 
@@ -19,4 +20,7 @@ mobspawner:
     # 400 ticks = 20 * 20 ticks = 20 seconds
     spawn_threshold: 400
 
+# If enabled, dispensers will never run out
+infinite_dispenser:
+    enabled: true
 

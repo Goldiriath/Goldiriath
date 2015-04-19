@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath;
 
+import me.dirkjan.goldiriath.listener.PlayerListener;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
+import me.dirkjan.goldiriath.listener.BlockListener;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -55,7 +57,8 @@ public class Goldiriath extends JavaPlugin {
         BukkitLib.init(plugin);
 
         // Register events
-        plugin.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
+        new PlayerListener(plugin).register();
+        new BlockListener(plugin).register();
 
         // Load configs
         config.load();

@@ -71,6 +71,10 @@ public class MobSpawner implements Service, Listener {
 
     @Override
     public void start() {
+        if (spawnTask != null) {
+            stop();
+        }
+
         loadConfig();
 
         // Update spawns
@@ -81,11 +85,6 @@ public class MobSpawner implements Service, Listener {
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
-
-        try {
-            spawnTask.cancel();
-        } catch (Exception ignored) {
-        }
 
         spawnTask = new BukkitRunnable() {
 

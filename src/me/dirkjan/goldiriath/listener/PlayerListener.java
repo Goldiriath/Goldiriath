@@ -1,6 +1,10 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.listener;
 
 import java.util.UUID;
+import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.Items;
+import me.dirkjan.goldiriath.Profile;
+import me.dirkjan.goldiriath.Stage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -8,18 +12,15 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-public class PlayerListener implements Listener {
-
-    private final Goldiriath plugin;
+public class PlayerListener extends GoldiriathListener {
 
     public PlayerListener(Goldiriath plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -107,6 +108,14 @@ public class PlayerListener implements Listener {
             event.getDrops().add(Items.WOODEN_SWORD.getItem());
         }
 
+    }
+
+    @Override
+    public void unregister() {
+        PlayerInteractEntityEvent.getHandlerList().unregister(this);
+        EntityDamageByEntityEvent.getHandlerList().unregister(this);
+        EntityDamageEvent.getHandlerList().unregister(this);
+        EntityDeathEvent.getHandlerList().unregister(this);
     }
 
 }
