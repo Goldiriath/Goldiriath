@@ -69,7 +69,7 @@ public class PlayerListener extends GoldiriathListener {
                 Profile.CAPTAIN.msg(20, player, "we're searching the coast for other survivors of bodies but we're finding very little");
                 Profile.CAPTAIN.msg(40, player, "scouts found an old temple to the east, the treasure in there should keep us fed for a while");
                 Profile.CAPTAIN.msg(60, player, "here's some equipment, you go check it out");
-                player.getInventory().addItem(Items.WOODEN_SWORD.getItem());
+                player.getInventory().addItem(Items.BAD_SWORD_WOOD.getItem());
 
             }
         }
@@ -105,7 +105,7 @@ public class PlayerListener extends GoldiriathListener {
         }
         if (killed.getCustomName() != null && killed.getCustomName().equals("zombie")) {
             event.getDrops().removeAll(event.getDrops());
-            event.getDrops().add(Items.WOODEN_SWORD.getItem());
+            event.getDrops().add(Items.BAD_SWORD_WOOD.getItem());
         }
 
     }
