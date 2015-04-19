@@ -244,13 +244,18 @@ public class MobSpawnManager implements Service, Listener {
             final ConfigurationSection currentProfile = profileSection.getConfigurationSection(profileName);
             profileName = profileName.toLowerCase().trim();
 
+            String customName = currentProfile.getString("name", null);
             final ItemStack carryItem = Util.parseItem(currentProfile.getString("item", null));
             final ItemStack helmet = Util.parseItem(currentProfile.getString("helmet", null));
             final ItemStack chestplate = Util.parseItem(currentProfile.getString("chestplate", null));
             final ItemStack leggings = Util.parseItem(currentProfile.getString("leggings", null));
             final ItemStack boots = Util.parseItem(currentProfile.getString("boots", null));
 
-            profiles.add(new Profile(profileName, profileName, carryItem, helmet, chestplate, leggings, boots));
+            if (customName != null) {
+                customName = ChatColor.translateAlternateColorCodes('&', customName);
+            }
+
+            profiles.add(new Profile(profileName, customName, carryItem, helmet, chestplate, leggings, boots));
         }
 
         // Load spawns
@@ -449,7 +454,7 @@ public class MobSpawnManager implements Service, Listener {
             equipment.setBootsDropChance(0);
 
             if (customName != null) {
-                entity.setCustomName(name);
+                entity.setCustomName(customName);
             }
 
             if (carryItem != null) {
