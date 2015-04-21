@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends GoldiriathListener {
 
@@ -109,6 +110,11 @@ public class PlayerListener extends GoldiriathListener {
         }
 
     }
+    
+    @EventHandler
+    public void onPlayerQuitEvent(PlayerQuitEvent event){
+        plugin.pm.logout(event.getPlayer());
+    }
 
     @Override
     public void unregister() {
@@ -116,6 +122,7 @@ public class PlayerListener extends GoldiriathListener {
         EntityDamageByEntityEvent.getHandlerList().unregister(this);
         EntityDamageEvent.getHandlerList().unregister(this);
         EntityDeathEvent.getHandlerList().unregister(this);
+        PlayerQuitEvent.getHandlerList().unregister(this);
     }
 
 }

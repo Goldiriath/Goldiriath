@@ -4,6 +4,7 @@ import net.pravian.bukkitlib.config.PathContainer;
 
 public enum ConfigPaths implements PathContainer {
 
+    DEFAULT_MONEY("default_money"),
     MOBSPAWNER_ENABLED("mobspawner.enabled"),
     MOBSPAWNER_DEV_MODE("mobspawner.dev_mode"),
     MOBSPAWNER_RADIUS("mobspawner.radius"),

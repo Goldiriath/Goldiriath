@@ -77,10 +77,11 @@ public class PlayerManager {
         return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
     }
 
-    public static class PlayerData implements Configurable {
+    public class PlayerData implements Configurable {
 
         private final Player player;
         private final Set<Skill> skills;
+        private int money;
 
         private PlayerData(Player player) {
             this.player = player;
@@ -101,6 +102,24 @@ public class PlayerManager {
 
         public void removeSkill(Skill skill) {
             skills.remove(skill);
+        }
+
+        public int getMoney() {
+            return money;
+        }
+
+        public int addMoney(int added) {
+            money += added;
+            return money;
+        }
+
+        public int removeMoney(int remove) {
+            money -= remove;
+            return money;
+        }
+
+        public boolean hasMoney(int has) {
+            return money >= has;
         }
 
         @Override
@@ -146,6 +165,9 @@ public class PlayerManager {
                 // Add the loaded skills
                 skills.addAll(tempSkills);
             }
+
+            // Load money
+            money = config.getInt("money", plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
         }
 
         @Override
@@ -155,6 +177,7 @@ public class PlayerManager {
                 String basePath = "skills." + skill.getType().getName().toLowerCase();
                 config.set(basePath + "lvl", skill.getLvl());
             }
+            config.set("money", money);
         }
 
     }
