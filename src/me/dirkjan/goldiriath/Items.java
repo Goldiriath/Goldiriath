@@ -97,8 +97,6 @@ public enum Items {
     CRAFTED_LEGGINGS_LEATHER8(Material.LEATHER_LEGGINGS, "crafted leather leggings", 8, "made by a player"),
     GOOD_LEGGINGS_LEATHER8(Material.LEATHER_LEGGINGS, "rare leather leggings", 8, "an amazing leather leggings"),
     AMAZING_LEGGINGS_LEATHER8(Material.LEATHER_LEGGINGS, "legandary leather leggings", 8, "the best leather leggings");
-    
-    
 
     private final ItemStack stack;
 

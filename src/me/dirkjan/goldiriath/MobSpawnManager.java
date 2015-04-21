@@ -41,6 +41,7 @@ public class MobSpawnManager implements Service, Listener {
     private int radiusSquared;
     private int maxMobs;
     private int spawnThreshold;
+    private int playerRadiusThresholdSquared;
 
     public MobSpawnManager(Goldiriath plugin) {
         this.plugin = plugin;
@@ -99,8 +100,16 @@ public class MobSpawnManager implements Service, Listener {
                     return;
                 }
 
+                spawnLoop:
                 for (MobSpawn spawn : spawns) {
-                    spawn.tick();
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.getLocation().distanceSquared(spawn.getLocation()) > playerRadiusThresholdSquared) {
+                            continue;
+                        }
+
+                        spawn.tick();
+                        break spawnLoop;
+                    }
                 }
             }
         }.runTaskTimer(Goldiriath.plugin, 2, 2); // Run every other tick
@@ -232,9 +241,11 @@ public class MobSpawnManager implements Service, Listener {
         enabled = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_ENABLED);
         devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
         radiusSquared = plugin.config.getInt(ConfigPaths.MOBSPAWNER_RADIUS);
-        radiusSquared = radiusSquared * radiusSquared;
+        radiusSquared *= radiusSquared;
         maxMobs = plugin.config.getInt(ConfigPaths.MOBSPAWNER_MAX_MOBS);
         spawnThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_SPAWN_THRESHOLD);
+        playerRadiusThresholdSquared = plugin.config.getInt(ConfigPaths.MOBSPAWNER_PLAYER_RADIUS_THRESHOLD);
+        playerRadiusThresholdSquared *= playerRadiusThresholdSquared;
 
         // Load Profiles
         final ConfigurationSection profileSection = plugin.config.getConfigurationSection(ConfigPaths.MOBSPAWNER_PROFILES.getPath());
@@ -456,7 +467,7 @@ public class MobSpawnManager implements Service, Listener {
             }
 
             if (carryItem != null) {
-                equipment.setItemInHand(carryItem);;
+                equipment.setItemInHand(carryItem);
             }
 
             if (helmet != null) {
@@ -564,4 +575,5 @@ public class MobSpawnManager implements Service, Listener {
             return le;
         }
     }
+
 }

@@ -20,6 +20,11 @@ mobspawner:
     # 400 ticks = 20 * 20 ticks = 20 seconds
     spawn_threshold: 400
 
+
+    # The radius in which a player must reside in order to start spawning mobs
+    # Set to 0 to always spawn.
+    player_radius_threshold: 50
+
     profiles:
         hellzombie:
             name: &4Zombie of Hell
