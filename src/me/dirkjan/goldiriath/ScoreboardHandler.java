@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Score;
 
@@ -15,8 +16,8 @@ public class ScoreboardHandler {
                 
     public void updateMoney(Player player){
         int money = plugin.pm.getData(player).getMoney();        
-        Score score = plugin.pm.getData(player).getSidebar().getScore("money");
-        score.setScore(money);
+        Score score = plugin.pm.getData(player).getSidebar().getScore("money " + ChatColor.GOLD + money);
+        score.setScore(1);
     }
     
 }
