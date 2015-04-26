@@ -1,6 +1,5 @@
 package me.dirkjan.goldiriath;
 
-import me.dirkjan.goldiriath.listener.PlayerListener;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.commands.Command_resetquest;
 import me.dirkjan.goldiriath.listener.BlockListener;
+import me.dirkjan.goldiriath.listener.PlayerListener;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -32,7 +32,8 @@ public class Goldiriath extends JavaPlugin {
     public BukkitCommandHandler<Goldiriath> handler;
     public PlayerManager pm;
     public MobSpawnManager msm;
-
+    public ScoreboardHandler sch;
+    
     @Override
     public void onLoad() {
         plugin = this;
@@ -48,6 +49,7 @@ public class Goldiriath extends JavaPlugin {
 
         pm = new PlayerManager(plugin);
         msm = new MobSpawnManager(plugin);
+        sch = new ScoreboardHandler(plugin);
 
         handler = new BukkitCommandHandler<>(plugin);
     }
@@ -66,7 +68,7 @@ public class Goldiriath extends JavaPlugin {
 
         // Start services
         msm.start();
-
+        
         // Setup command handler
         handler.setCommandLocation(Command_resetquest.class.getPackage());
     }

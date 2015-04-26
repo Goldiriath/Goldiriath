@@ -10,7 +10,10 @@ import me.dirkjan.goldiriath.skills.Skill;
 import me.dirkjan.goldiriath.skills.SkillType;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LoggerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 
 public class PlayerManager {
 
@@ -36,12 +39,14 @@ public class PlayerManager {
 
         // Load data from config
         final YamlConfig config = createPlayerConfig(player);
-        config.load();
+        if (config.exists()) {
+            config.load();
+        }
 
         // Parse data from config
         data = new PlayerData(player);
         data.loadFrom(config);
-
+        datamap.put(player.getUniqueId(), data);
         return data;
     }
 
@@ -77,20 +82,32 @@ public class PlayerManager {
         return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
     }
 
-    public static class PlayerData implements Configurable {
+    public class PlayerData implements Configurable {
 
         private final Player player;
+        private final Objective sidebar;
         private final Set<Skill> skills;
+        private int money;
 
         private PlayerData(Player player) {
             this.player = player;
+            this.sidebar = Bukkit.getScoreboardManager().getNewScoreboard().registerNewObjective("sidebar", "dummy");
             this.skills = new HashSet<>();
+            sidebar.setDisplayName("Statistics");
+            sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+            player.setScoreboard(sidebar.getScoreboard());
         }
 
         public Player getPlayer() {
             return player;
         }
 
+        public Objective getSidebar() {
+            return sidebar;
+        }
+
+        
+        
         public Set<Skill> getSkills() {
             return Collections.unmodifiableSet(skills); // Contents of returned set can not be modified!
         }
@@ -101,6 +118,24 @@ public class PlayerManager {
 
         public void removeSkill(Skill skill) {
             skills.remove(skill);
+        }
+
+        public int getMoney() {
+            return money;
+        }
+
+        public int addMoney(int added) {
+            money += added;
+            return money;
+        }
+
+        public int removeMoney(int remove) {
+            money -= remove;
+            return money;
+        }
+
+        public boolean hasMoney(int has) {
+            return money >= has;
         }
 
         @Override
@@ -146,6 +181,9 @@ public class PlayerManager {
                 // Add the loaded skills
                 skills.addAll(tempSkills);
             }
+
+            // Load money
+            money = config.getInt("money", plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
         }
 
         @Override
@@ -155,6 +193,7 @@ public class PlayerManager {
                 String basePath = "skills." + skill.getType().getName().toLowerCase();
                 config.set(basePath + "lvl", skill.getLvl());
             }
+            config.set("money", money);
         }
 
     }

@@ -2,6 +2,9 @@
 # Goldiriath v0.0.1 pre-alpha configuration
 #
 
+# Default money
+default_money: 10
+
 # Sign based mob spawner
 mobspawner:
     enabled: true

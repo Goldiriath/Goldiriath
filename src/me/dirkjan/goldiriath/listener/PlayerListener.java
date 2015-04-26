@@ -12,10 +12,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends GoldiriathListener {
 
@@ -109,6 +112,17 @@ public class PlayerListener extends GoldiriathListener {
         }
 
     }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerQuitEvent(PlayerQuitEvent event){
+        plugin.pm.logout(event.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerJoinEvent(PlayerJoinEvent event){
+        plugin.pm.getData(event.getPlayer());
+        plugin.sch.updateMoney(event.getPlayer());
+    }
 
     @Override
     public void unregister() {
@@ -116,6 +130,7 @@ public class PlayerListener extends GoldiriathListener {
         EntityDamageByEntityEvent.getHandlerList().unregister(this);
         EntityDamageEvent.getHandlerList().unregister(this);
         EntityDeathEvent.getHandlerList().unregister(this);
+        PlayerQuitEvent.getHandlerList().unregister(this);
     }
 
 }
