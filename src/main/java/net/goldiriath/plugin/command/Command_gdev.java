@@ -2,17 +2,17 @@ package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(permission = "goldiriath.gdev", source = SourceType.PLAYER)
-public class Command_gdev extends BukkitCommand<Goldiriath> {
+@CommandOptions(description = "Development command", subPermission = "gdev", usage = "/<command> <values...>", source = SourceType.PLAYER)
+public class Command_gdev extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
         if (args.length != 1) {
             return false;

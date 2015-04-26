@@ -1,18 +1,21 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions()
-public class Command_goldiriath extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "Shows information about this plugin",
+        usage = "/<command> [reload]",
+        aliases = "go")
+public class Command_goldiriath extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         if (args.length == 1) {
             if (!args[0].equals("reload")) {
                 return false;
@@ -21,9 +24,9 @@ public class Command_goldiriath extends BukkitCommand<Goldiriath> {
             if (!sender.hasPermission("goldiriath.reload")) {
                 return noPerms();
             }
-
-            plugin.onDisable();
-            plugin.onEnable();
+            
+            plugin.disable();
+            plugin.enable();
 
             final String message = String.format("%s v%s-%s reloaded.",
                     plugin.getName(),

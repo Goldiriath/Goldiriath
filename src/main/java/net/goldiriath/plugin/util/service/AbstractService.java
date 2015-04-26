@@ -1,12 +1,10 @@
 package net.goldiriath.plugin.util.service;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.RegistrableListener;
-import net.pravian.bukkitlib.implementation.BukkitLogger;
+import net.goldiriath.plugin.util.logging.GLogger;
 
 public abstract class AbstractService extends RegistrableListener implements Service {
 

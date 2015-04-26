@@ -3,20 +3,25 @@ package net.goldiriath.plugin.command;
 import com.google.common.collect.Lists;
 import java.util.List;
 import net.goldiriath.plugin.Goldiriath;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandPermissions(permission = "goldiriath.glog", source = SourceType.PLAYER)
-public class Command_glog extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "Manage player logging",
+        usage = "/<command> <list | add | remove>",
+        subPermission = "glog",
+        source = SourceType.PLAYER,
+        aliases = "gl")
+public class Command_glog extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
         if (args.length != 1) {
             return false;

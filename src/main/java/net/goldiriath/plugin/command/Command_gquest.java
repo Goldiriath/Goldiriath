@@ -1,24 +1,28 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.questing.quest.Quest;
+import net.goldiriath.plugin.game.questing.quest.Stage;
 import net.goldiriath.plugin.player.data.DataQuests;
-import net.goldiriath.plugin.questing.quest.Quest;
-import net.goldiriath.plugin.questing.quest.Stage;
-import net.goldiriath.plugin.questing.script.ScriptContext;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandPermissions(permission = "goldiriath.gquest", source = SourceType.PLAYER)
-public class Command_gquest extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "View and set a player's current quest stage",
+        usage = "/<command> <player> <list | <quest> [newstage]>",
+        subPermission = "gquest",
+        source = SourceType.PLAYER,
+        aliases = "gq")
+public class Command_gquest extends SimpleCommand<Goldiriath> {
 
     // /<command> <player> <list | <quest> [newstage]>
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
         if (args.length == 0) {
             return false;

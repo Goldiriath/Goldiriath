@@ -2,7 +2,6 @@ package net.goldiriath.plugin.util;
 
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.util.Registrable;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
