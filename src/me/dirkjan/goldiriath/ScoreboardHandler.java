@@ -14,8 +14,9 @@ public class ScoreboardHandler {
     }
    
                 
-    public void updateMoney(Player player){
-        int money = plugin.pm.getData(player).getMoney();        
+    public void update(Player player){
+        plugin.pm.getData(player).getSidebar().getScoreboard().resetScores("money");
+        int money = plugin.pm.getData(player).getMoney();
         Score score = plugin.pm.getData(player).getSidebar().getScore("money " + ChatColor.GOLD + money);
         score.setScore(1);
     }

@@ -8,7 +8,6 @@ import me.dirkjan.goldiriath.Stage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -81,24 +80,21 @@ public class PlayerListener extends GoldiriathListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        EntityType hit = event.getEntityType();
+        Entity hit = event.getEntity();
         Entity damager = event.getDamager();
         double damage = event.getDamage();
         if (damage < 1) {
             event.setCancelled(true);
         }
-
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityDamageEvent(EntityDamageEvent event) {
-        EntityType hit = event.getEntityType();
-        double damage = event.getDamage();
-
-        if (hit.equals(EntityType.VILLAGER)) {
-            event.setCancelled(true);
+        if(hit instanceof Player){
+            Player player = (Player) hit;
+            double health = plugin.pm.getData(player).getHealth();
+            health -= damage;
+            plugin.pm.getData(player).setHealth(health);
         }
+        
     }
+  
 
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
@@ -121,9 +117,9 @@ public class PlayerListener extends GoldiriathListener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event){
         plugin.pm.getData(event.getPlayer());
-        plugin.sch.updateMoney(event.getPlayer());
+        plugin.sch.update(event.getPlayer());
     }
-
+      
     @Override
     public void unregister() {
         PlayerInteractEntityEvent.getHandlerList().unregister(this);

@@ -88,6 +88,8 @@ public class PlayerManager {
         private final Objective sidebar;
         private final Set<Skill> skills;
         private int money;
+        private double health;
+        private int mana;
 
         private PlayerData(Player player) {
             this.player = player;
@@ -138,6 +140,24 @@ public class PlayerManager {
             return money >= has;
         }
 
+        public double getHealth() {
+            return health;
+        }
+
+        public void setHealth(double health) {
+            this.health = health;
+        }
+
+        public int getMana() {
+            return mana;
+        }
+
+        public void setMana(int mana) {
+            this.mana = mana;
+        }
+        
+        
+
         @Override
         public void loadFrom(YamlConfig config) {
 
@@ -184,6 +204,8 @@ public class PlayerManager {
 
             // Load money
             money = config.getInt("money", plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
+            health = config.getInt("health", plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
+            mana = config.getInt("mana", plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
         }
 
         @Override
@@ -194,6 +216,8 @@ public class PlayerManager {
                 config.set(basePath + "lvl", skill.getLvl());
             }
             config.set("money", money);
+            config.set("heath", health);
+            config.set("mana", mana);
         }
 
     }

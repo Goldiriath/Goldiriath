@@ -5,6 +5,12 @@
 # Default money
 default_money: 10
 
+#Default health
+default_health: 100
+
+#default mana
+default_mana: 100
+
 # Sign based mob spawner
 mobspawner:
     enabled: true
