@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath;
 
+import me.dirkjan.goldiriath.util.Configurable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,8 +107,6 @@ public class PlayerManager {
             return sidebar;
         }
 
-        
-        
         public Set<Skill> getSkills() {
             return Collections.unmodifiableSet(skills); // Contents of returned set can not be modified!
         }

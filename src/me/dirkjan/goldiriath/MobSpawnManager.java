@@ -1,5 +1,7 @@
 package me.dirkjan.goldiriath;
 
+import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.Util;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;

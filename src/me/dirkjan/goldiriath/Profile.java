@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath;
 
+import me.dirkjan.goldiriath.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.util;
 
 public interface Service {
 

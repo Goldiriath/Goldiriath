@@ -72,7 +72,7 @@ public class PlayerListener extends GoldiriathListener {
                 Profile.CAPTAIN.msg(20, player, "we're searching the coast for other survivors of bodies but we're finding very little");
                 Profile.CAPTAIN.msg(40, player, "scouts found an old temple to the east, the treasure in there should keep us fed for a while");
                 Profile.CAPTAIN.msg(60, player, "here's some equipment, you go check it out");
-                player.getInventory().addItem(Items.BAD_SWORD_WOOD1.getItem());
+                //player.getInventory().addItem(Items.BAD_SWORD_WOOD1.getItem());
 
             }
         }
@@ -108,18 +108,18 @@ public class PlayerListener extends GoldiriathListener {
         }
         if (killed.getCustomName() != null && killed.getCustomName().equals("zombie")) {
             event.getDrops().removeAll(event.getDrops());
-            event.getDrops().add(Items.BAD_SWORD_WOOD1.getItem());
+            //event.getDrops().add(Items.BAD_SWORD_WOOD1.getItem());
         }
 
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
         plugin.pm.logout(event.getPlayer());
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoinEvent(PlayerJoinEvent event){
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
         plugin.pm.getData(event.getPlayer());
         plugin.sch.updateMoney(event.getPlayer());
     }
