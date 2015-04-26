@@ -4,35 +4,52 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public enum SkillType {
 
-    ARCHER("archer", 1, Archer.class),
-    SWORD("sword", 1, Sword.class),
-    MAGIC("magic", 1, Magic.class),
-    ASSASSIN("assassin", 1, Assassin.class);
+    MAGIC("Magic", Material.POTION, 1, Magic.class),
+    ARCHER("Archer", Material.BOW, 1, Archer.class),
+    SWORD("Sword", Material.STONE_SWORD, 1, Sword.class),
+    ASSASSIN("Assassin", Material.SHEARS, SWORD, 1, Assassin.class);
 
-    private final Class<? extends Skill> skill;
     private final String name;
-    private final int reqlvl;
+    private final Material display;
+    private final SkillType reqSkill;
+    private final int reqLvl;
+    private final Class<? extends Skill> skill;
 
-    private SkillType(String name, int reqlvl, Class<? extends Skill> clazz) {
-        this.skill = clazz;
+    private SkillType(String name, Material display, int reqLvl, Class<? extends Skill> clazz) {
+        this(name, display, null, reqLvl, clazz);
+    }
+
+    private SkillType(String name, Material display, SkillType reqSkill, int reqLvl, Class<? extends Skill> clazz) {
         this.name = name;
-        this.reqlvl = reqlvl;
+        this.display = display;
+        this.reqSkill = reqSkill;
+        this.reqLvl = reqLvl;
+        this.skill = clazz;
     }
 
     public String getName() {
         return name;
     }
 
-    public Class<? extends Skill> getSkillClass() {
-        return skill;
+    public Material getDisplay() {
+        return display;
+    }
+
+    public SkillType getReqSkill() {
+        return reqSkill;
     }
 
     public int getReqlvl() {
-        return reqlvl;
+        return reqLvl;
+    }
+
+    public Class<? extends Skill> getSkillClass() {
+        return skill;
     }
 
     public Skill create(Player player, int lvl) {
