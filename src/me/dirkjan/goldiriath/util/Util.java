@@ -1,5 +1,6 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.util;
 
+import me.dirkjan.goldiriath.Profile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

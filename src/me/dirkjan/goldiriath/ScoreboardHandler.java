@@ -5,12 +5,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Score;
 
 public class ScoreboardHandler {
-    
+
     private final Goldiriath plugin;
-   
 
     public ScoreboardHandler(Goldiriath plugin) {
-        this.plugin = plugin;      
+        this.plugin = plugin;
     }
    
                 
@@ -20,5 +19,5 @@ public class ScoreboardHandler {
         Score score = plugin.pm.getData(player).getSidebar().getScore("money " + ChatColor.GOLD + money);
         score.setScore(1);
     }
-    
+
 }

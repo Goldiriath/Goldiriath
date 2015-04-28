@@ -33,7 +33,7 @@ public class Goldiriath extends JavaPlugin {
     public PlayerManager pm;
     public MobSpawnManager msm;
     public ScoreboardHandler sch;
-    
+
     @Override
     public void onLoad() {
         plugin = this;
@@ -68,7 +68,7 @@ public class Goldiriath extends JavaPlugin {
 
         // Start services
         msm.start();
-        
+
         // Setup command handler
         handler.setCommandLocation(Command_resetquest.class.getPackage());
     }
