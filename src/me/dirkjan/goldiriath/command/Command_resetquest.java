@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath.commands;
+package me.dirkjan.goldiriath.command;
 
 import java.util.UUID;
 import me.dirkjan.goldiriath.Goldiriath;

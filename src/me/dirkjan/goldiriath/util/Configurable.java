@@ -1,11 +1,11 @@
 package me.dirkjan.goldiriath.util;
 
-import net.pravian.bukkitlib.config.YamlConfig;
+import org.bukkit.configuration.ConfigurationSection;
 
 public interface Configurable {
 
-    public void loadFrom(YamlConfig config);
+    public void loadFrom(ConfigurationSection config);
 
-    public void saveTo(YamlConfig config);
+    public void saveTo(ConfigurationSection config);
 
 }

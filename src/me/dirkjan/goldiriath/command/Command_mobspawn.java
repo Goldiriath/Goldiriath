@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath.commands;
+package me.dirkjan.goldiriath.command;
 
 import me.dirkjan.goldiriath.Goldiriath;
 import net.pravian.bukkitlib.command.BukkitCommand;

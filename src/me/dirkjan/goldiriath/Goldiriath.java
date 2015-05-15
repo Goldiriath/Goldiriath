@@ -1,12 +1,14 @@
 package me.dirkjan.goldiriath;
 
+import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Logger;
-import me.dirkjan.goldiriath.commands.Command_resetquest;
+import me.dirkjan.goldiriath.command.Command_resetquest;
+import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
 import net.pravian.bukkitlib.BukkitLib;
@@ -16,6 +18,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Goldiriath extends JavaPlugin {
@@ -33,6 +36,7 @@ public class Goldiriath extends JavaPlugin {
     public PlayerManager pm;
     public MobSpawnManager msm;
     public ScoreboardHandler sch;
+    public ItemStorage is;
 
     @Override
     public void onLoad() {
@@ -48,9 +52,13 @@ public class Goldiriath extends JavaPlugin {
         questmap = new HashMap<>();
 
         pm = new PlayerManager(plugin);
-        msm = new MobSpawnManager(plugin);
         sch = new ScoreboardHandler(plugin);
 
+        // Services
+        msm = new MobSpawnManager(plugin);
+        is = new ItemStorage(plugin);
+
+        // Commands
         handler = new BukkitCommandHandler<>(plugin);
     }
 
@@ -58,16 +66,18 @@ public class Goldiriath extends JavaPlugin {
     public void onEnable() {
         BukkitLib.init(plugin);
 
-        // Register events
-        new PlayerListener(plugin).register();
-        new BlockListener(plugin).register();
-
         // Load configs
         config.load();
         questConfigLoad();
 
         // Start services
         msm.start();
+        is.start();
+
+        // Register events
+        new PlayerListener(plugin).register();
+        new BlockListener(plugin).register();
+
 
         // Setup command handler
         handler.setCommandLocation(Command_resetquest.class.getPackage());
@@ -76,12 +86,17 @@ public class Goldiriath extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        // Save configs
+        // Save configs - TODO get rid of this
         questConfigSave();
         pm.saveAll();
 
         // Stop services
         msm.stop();
+        is.stop();
+
+        // Unregister events
+        HandlerList.unregisterAll(plugin);
+
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
     }

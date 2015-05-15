@@ -2,13 +2,14 @@ package me.dirkjan.goldiriath.listener;
 
 import me.dirkjan.goldiriath.Goldiriath;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-abstract class GoldiriathListener implements EventContainer, Listener {
+public abstract class SimpleListener implements EventContainer, Listener {
 
     protected final Goldiriath plugin;
 
-    public GoldiriathListener(Goldiriath plugin) {
+    public SimpleListener(Goldiriath plugin) {
         this.plugin = plugin;
     }
 
@@ -18,5 +19,7 @@ abstract class GoldiriathListener implements EventContainer, Listener {
     }
 
     @Override
-    public abstract void unregister();
+    public final void unregister() {
+        HandlerList.unregisterAll(this);
+    }
 }

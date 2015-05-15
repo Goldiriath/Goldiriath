@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.item;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemFactory {
 
     private final Material type;
+    private short data = 0;
     private String name = null;
     private String[] lore = {};
     private ItemTier tier = null;
@@ -45,15 +46,18 @@ public class ItemFactory {
         return this;
     }
 
+    public ItemFactory withData(short data) {
+        this.data = data;
+        return this;
+    }
+
     public ItemStack build() {
-        final ItemStack item = new ItemStack(type, 1);
+        final ItemStack item = new ItemStack(type, 1, data);
         final ItemMeta meta = item.getItemMeta();
 
-        if (name != null) {
-            meta.setDisplayName(tier.getAdjective(type) + " " + type.toString().toLowerCase().replace('_', ' '));
-        }
+        meta.setDisplayName(name != null ? name : tier.getAdjective(type) + " " + type.toString().toLowerCase().replace('_', ' '));
 
-        final List loreList = new ArrayList();
+        final List<String> loreList = new ArrayList<>();
         loreList.add("Level " + level);
         loreList.addAll(Arrays.asList(lore));
         meta.setLore(loreList);

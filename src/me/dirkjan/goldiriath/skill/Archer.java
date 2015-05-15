@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath.skills;
+package me.dirkjan.goldiriath.skill;
 
 import org.bukkit.entity.Player;
 

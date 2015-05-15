@@ -4,7 +4,7 @@ import me.dirkjan.goldiriath.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public enum Profile {
+public enum ServerProfile { // TODO: Remove, redesign or something
 
     TORE("Tore"),
     ALICE("Alice"),
@@ -12,7 +12,7 @@ public enum Profile {
     //
     private final String name;
 
-    private Profile(String name) {
+    private ServerProfile(String name) {
         this.name = name;
 
     }
@@ -27,7 +27,7 @@ public enum Profile {
 
     public void msg(int delay, final Player player, final String message) {
 
-        final Profile msgprofile = this;
+        final ServerProfile msgprofile = this;
 
         new BukkitRunnable() {
 

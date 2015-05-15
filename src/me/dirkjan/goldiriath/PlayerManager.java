@@ -1,17 +1,18 @@
 package me.dirkjan.goldiriath;
 
-import me.dirkjan.goldiriath.util.Configurable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import me.dirkjan.goldiriath.skills.Skill;
-import me.dirkjan.goldiriath.skills.SkillType;
+import me.dirkjan.goldiriath.skill.Skill;
+import me.dirkjan.goldiriath.skill.SkillType;
+import me.dirkjan.goldiriath.util.Configurable;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -154,11 +155,11 @@ public class PlayerManager {
         public void setMana(int mana) {
             this.mana = mana;
         }
-        
-        
+
+
 
         @Override
-        public void loadFrom(YamlConfig config) {
+        public void loadFrom(ConfigurationSection config) {
 
             // Load skills
             if (config.isConfigurationSection("skills")) {
@@ -208,7 +209,7 @@ public class PlayerManager {
         }
 
         @Override
-        public void saveTo(YamlConfig config) {
+        public void saveTo(ConfigurationSection config) {
             // Save skill
             for (Skill skill : skills) {
                 String basePath = "skills." + skill.getType().getName().toLowerCase();

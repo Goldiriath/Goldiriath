@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class BlockListener extends GoldiriathListener {
+public class BlockListener extends SimpleListener {
 
     public BlockListener(Goldiriath plugin) {
         super(plugin);
@@ -30,9 +30,5 @@ public class BlockListener extends GoldiriathListener {
         disp.getInventory().setItem(0, item);
     }
 
-    @Override
-    public void unregister() {
-        BlockDispenseEvent.getHandlerList().unregister(this);
-    }
 
 }

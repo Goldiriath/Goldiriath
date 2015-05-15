@@ -2,8 +2,7 @@ package me.dirkjan.goldiriath.listener;
 
 import java.util.UUID;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.Items;
-import me.dirkjan.goldiriath.Profile;
+import me.dirkjan.goldiriath.ServerProfile;
 import me.dirkjan.goldiriath.Stage;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,13 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerListener extends GoldiriathListener {
+public class PlayerListener extends SimpleListener {
 
     public PlayerListener(Goldiriath plugin) {
         super(plugin);
@@ -38,26 +36,26 @@ public class PlayerListener extends GoldiriathListener {
             if (!plugin.questmap.containsKey(uuid)) {
                 plugin.questmap.put(uuid, Stage.STAGE_A);
                 player.setLevel(1);
-                Profile.TORE.msg(player, "ah, you're finaly awake");
-                Profile.TORE.msg(player, "you have been sleeping for three days");
-                Profile.TORE.msg(player, "the night i found you a ship stranded on the beach to the north");
-                Profile.TORE.msg(player, "you should go have a look after you repay me");
-                Profile.TORE.msg(player, "get me 3 eggs from the chickens in the back and we'll call it even");
+                ServerProfile.TORE.msg(player, "ah, you're finaly awake");
+                ServerProfile.TORE.msg(player, "you have been sleeping for three days");
+                ServerProfile.TORE.msg(player, "the night i found you a ship stranded on the beach to the north");
+                ServerProfile.TORE.msg(player, "you should go have a look after you repay me");
+                ServerProfile.TORE.msg(player, "get me 3 eggs from the chickens in the back and we'll call it even");
             } else {
                 if (plugin.questmap.get(uuid).equals(Stage.STAGE_A)) {
                     if (player.getInventory().contains(Material.EGG, 3)) {
                         player.getInventory().remove(Material.EGG);
                         plugin.questmap.put(uuid, Stage.STAGE_B);
-                        Profile.TORE.msg(player, "thank you, now you should go look at the ship");
-                        Profile.TORE.msg(player, "go out of my house and to the left");
-                        Profile.TORE.msg(player, "now go before i decide to change my mind and make you work here for a month");
+                        ServerProfile.TORE.msg(player, "thank you, now you should go look at the ship");
+                        ServerProfile.TORE.msg(player, "go out of my house and to the left");
+                        ServerProfile.TORE.msg(player, "now go before i decide to change my mind and make you work here for a month");
                         player.teleport(location);
                     } else {
-                        Profile.TORE.msg(player, "go get those eggs or you're not getting out of here");
+                        ServerProfile.TORE.msg(player, "go get those eggs or you're not getting out of here");
                     }
                 } else {
                     if (plugin.questmap.get(uuid).equals(Stage.STAGE_B)) {
-                        Profile.TORE.msg(player, "how did you even get in here");
+                        ServerProfile.TORE.msg(player, "how did you even get in here");
                     }
                 }
             }
@@ -67,10 +65,10 @@ public class PlayerListener extends GoldiriathListener {
             event.setCancelled(true);
             if (plugin.questmap.get(uuid).equals(Stage.STAGE_B)) {
                 plugin.questmap.put(uuid, Stage.STAGE_C);
-                Profile.CAPTAIN.msg(player, "great looks like you survived.");
-                Profile.CAPTAIN.msg(20, player, "we're searching the coast for other survivors of bodies but we're finding very little");
-                Profile.CAPTAIN.msg(40, player, "scouts found an old temple to the east, the treasure in there should keep us fed for a while");
-                Profile.CAPTAIN.msg(60, player, "here's some equipment, you go check it out");
+                ServerProfile.CAPTAIN.msg(player, "great looks like you survived.");
+                ServerProfile.CAPTAIN.msg(20, player, "we're searching the coast for other survivors of bodies but we're finding very little");
+                ServerProfile.CAPTAIN.msg(40, player, "scouts found an old temple to the east, the treasure in there should keep us fed for a while");
+                ServerProfile.CAPTAIN.msg(60, player, "here's some equipment, you go check it out");
                 //player.getInventory().addItem(Items.BAD_SWORD_WOOD1.getItem());
 
             }
@@ -92,9 +90,9 @@ public class PlayerListener extends GoldiriathListener {
             health -= damage;
             plugin.pm.getData(player).setHealth(health);
         }
-        
+
     }
-  
+
 
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
@@ -119,14 +117,6 @@ public class PlayerListener extends GoldiriathListener {
         plugin.pm.getData(event.getPlayer());
         plugin.sch.update(event.getPlayer());
     }
-      
-    @Override
-    public void unregister() {
-        PlayerInteractEntityEvent.getHandlerList().unregister(this);
-        EntityDamageByEntityEvent.getHandlerList().unregister(this);
-        EntityDamageEvent.getHandlerList().unregister(this);
-        EntityDeathEvent.getHandlerList().unregister(this);
-        PlayerQuitEvent.getHandlerList().unregister(this);
-    }
+
 
 }

@@ -1,0 +1,20 @@
+
+evagarna:
+    name: '&cEvagarna'
+    type: IRON_SWORD
+    data: 2
+    level: 8
+    tier: crafted
+    lore:
+    - '&2The <name> is a very rare sword that deals massive amounts of damage.'
+    - '&2There are many who fear its existence, for good reason.'
+
+goliath:
+    name: '&4G&co&4l&ci&4a&ct&4h'
+    type: DIAMOND_SWORD
+    data: 2
+    level: 16
+    tier: legendary
+    lore:
+    - '&4There''s no sword quite like it, it''s just amazingly good at what it does:'
+    - '&4Killing people'

@@ -1,12 +1,13 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.mobspawn;
 
-import me.dirkjan.goldiriath.util.Service;
-import me.dirkjan.goldiriath.util.Util;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javax.annotation.Nullable;
+import me.dirkjan.goldiriath.ConfigPaths;
+import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.Util;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
 import net.pravian.bukkitlib.util.LocationUtils;
@@ -17,15 +18,13 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -53,28 +52,52 @@ public class MobSpawnManager implements Service, Listener {
         this.devMode = false;
     }
 
+
+    // Public/protected methods
     public Set<MobSpawn> getSpawns() {
         return Collections.unmodifiableSet(spawns);
     }
 
-    public void add(MobSpawn spawn) {
+    public void addSpawn(MobSpawn spawn) {
         if (!spawn.isValid()) {
-            plugin.logger.warning("Could not add mobspawn! Mobspawn not valid");
+            plugin.logger.warning("Could not add mobspawn: " + spawn.getName() + ". Mobspawn not valid");
             return;
         }
 
         spawns.add(spawn);
-
         saveConfig();
     }
 
-    public void remove(MobSpawn spawn) {
+    public void removeSpawn(MobSpawn spawn) {
         if (!spawns.remove(spawn)) {
-            plugin.logger.warning("Could not remove mobspawn! Mobspawn not present!");
+            plugin.logger.warning("Could not remove mobspawn: " + spawn.getName() + ". Mobspawn not present!");
             return;
         }
 
         saveConfig();
+    }
+
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
+        for (MobSpawn spawn : spawns) {
+            updateDevModeSign(spawn);
+        }
+    }
+
+    public boolean isDevMode() {
+        return devMode;
+    }
+
+    protected int getRadiusSquared() {
+        return radiusSquared;
+    }
+
+    protected int getMaxMobs() {
+        return maxMobs;
+    }
+
+    protected int getSpawnThreshold() {
+        return spawnThreshold;
     }
 
     @Override
@@ -85,15 +108,17 @@ public class MobSpawnManager implements Service, Listener {
 
         loadConfig();
 
-        // Update spawns
+        // Update sign visibility
         setDevMode(devMode);
 
         if (!enabled) {
             return;
         }
 
+        // Register events
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
+        // Start ticking
         spawnTask = new BukkitRunnable() {
 
             @Override
@@ -127,10 +152,10 @@ public class MobSpawnManager implements Service, Listener {
         }
 
         // Unregister events
-        SignChangeEvent.getHandlerList().unregister(this);
-        BlockBreakEvent.getHandlerList().unregister(this);
+        HandlerList.unregisterAll(this);
     }
 
+    // Listeners
     @EventHandler
     public void onSignEdit(SignChangeEvent event) {
         final Player player = event.getPlayer();
@@ -181,8 +206,8 @@ public class MobSpawnManager implements Service, Listener {
             }
         }
 
-        final MobSpawn spawn = plugin.msm.new MobSpawn(name, type, event.getBlock().getLocation(), profile);
-        plugin.msm.add(spawn);
+        final MobSpawn spawn = new MobSpawn(this, name, type, event.getBlock().getLocation(), profile);
+        plugin.msm.addSpawn(spawn);
 
         // Update sign next tick
         new BukkitRunnable() {
@@ -231,8 +256,45 @@ public class MobSpawnManager implements Service, Listener {
             return;
         }
 
-        remove(spawn);
+        removeSpawn(spawn);
         player.sendMessage(ChatColor.GREEN + "Deleted MobSpawn: " + spawn.getName());
+    }
+
+    // Private methods
+    private void updateDevModeSign(MobSpawn spawn) {
+        if (!devMode) {
+            spawn.getLocation().getBlock().setType(Material.AIR);
+            return;
+        }
+
+        final Block spawner = spawn.getLocation().getBlock();
+        spawner.setType(Material.SIGN_POST);
+
+        if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
+            plugin.logger.warning("Could not set dev mode for mob spawner! Invalid sign state!");
+            return;
+        }
+
+        final Sign sign = (Sign) spawner.getState();
+        sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
+        sign.setLine(1, spawn.getName());
+        sign.setLine(2, spawn.getEntityType().toString());
+        sign.setLine(3, (spawn.getProfile() == null ? "" : spawn.getProfile().getName()));
+        sign.update();
+    }
+
+    private Profile determineProfile(String profileName) {
+        if (profileName == null) {
+            return null;
+        }
+
+        for (Profile loopProfile : profiles) {
+            if (loopProfile.getName().equalsIgnoreCase(profileName)) {
+                return loopProfile;
+            }
+        }
+
+        return null;
     }
 
     private void loadConfig() {
@@ -311,8 +373,8 @@ public class MobSpawnManager implements Service, Listener {
                     plugin.logger.warning("Ignoring profile '" + profileString + "' for mobspawn '" + name + "'. Profile could not be determined!");
                 }
 
-                // Setup and add mobspawn
-                final MobSpawn spawn = new MobSpawn(name, type, location, profile);
+                // Setup and addSpawn mobspawn
+                final MobSpawn spawn = new MobSpawn(this, name, type, location, profile);
                 spawns.add(spawn);
             }
 
@@ -358,224 +420,4 @@ public class MobSpawnManager implements Service, Listener {
 
         config.save();
     }
-
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
-        for (MobSpawn spawn : spawns) {
-            updateDevModeSign(spawn);
-        }
-    }
-
-    public boolean isDevMode() {
-        return devMode;
-    }
-
-    private void updateDevModeSign(MobSpawn spawn) {
-        if (!devMode) {
-            spawn.getLocation().getBlock().setType(Material.AIR);
-            return;
-        }
-
-        final Block spawner = spawn.getLocation().getBlock();
-        spawner.setType(Material.SIGN_POST);
-
-        if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
-            plugin.logger.warning("Could not set dev mode for mob spawner! Invalid sign state!");
-            return;
-        }
-
-        final Sign sign = (Sign) spawner.getState();
-        sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
-        sign.setLine(1, spawn.getName());
-        sign.setLine(2, spawn.getEntityType().toString());
-        sign.setLine(3, (spawn.getProfile() == null ? "" : spawn.getProfile().getName()));
-        sign.update();
-    }
-
-    private Profile determineProfile(String profileName) {
-        if (profileName == null) {
-            return null;
-        }
-
-        for (Profile loopProfile : profiles) {
-            if (loopProfile.getName().equalsIgnoreCase(profileName)) {
-                return loopProfile;
-            }
-        }
-
-        return null;
-    }
-
-    public class Profile {
-
-        private final String name;
-        private final String customName;
-        private final ItemStack carryItem;
-        private final ItemStack helmet;
-        private final ItemStack chestplate;
-        private final ItemStack leggings;
-        private final ItemStack boots;
-
-        public Profile(String name, String customName, ItemStack carryItem, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
-            this.name = name;
-            this.customName = customName;
-            this.carryItem = carryItem;
-            this.helmet = helmet;
-            this.chestplate = chestplate;
-            this.leggings = leggings;
-            this.boots = boots;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getCustomName() {
-            return customName;
-        }
-
-        public ItemStack getCarryItem() {
-            return carryItem;
-        }
-
-        public ItemStack getHelmet() {
-            return helmet;
-        }
-
-        public ItemStack getChestplate() {
-            return chestplate;
-        }
-
-        public ItemStack getLeggings() {
-            return leggings;
-        }
-
-        public ItemStack getBoots() {
-            return boots;
-        }
-
-        public void setup(LivingEntity entity) {
-            final EntityEquipment equipment = entity.getEquipment();
-
-            entity.setCanPickupItems(false);
-            equipment.setItemInHandDropChance(0);
-            equipment.setHelmetDropChance(0);
-            equipment.setChestplateDropChance(0);
-            equipment.setLeggingsDropChance(0);
-            equipment.setBootsDropChance(0);
-
-            if (customName != null) {
-                entity.setCustomName(customName);
-            }
-
-            if (carryItem != null) {
-                equipment.setItemInHand(carryItem);
-            }
-
-            if (helmet != null) {
-                equipment.setHelmet(helmet);
-            }
-
-            if (chestplate != null) {
-                equipment.setChestplate(chestplate);
-            }
-
-            if (leggings != null) {
-                equipment.setLeggings(leggings);
-            }
-
-            if (boots != null) {
-                equipment.setBoots(boots);
-            }
-        }
-
-    }
-
-    // Instance per mob spawn
-    public class MobSpawn {
-
-        private final String name;
-        private final EntityType type;
-        private final Location location;
-        private final @Nullable
-        Profile profile;
-        private long lastSpawn;
-
-        public MobSpawn(String name, EntityType type, Location location, Profile profile) {
-            this.name = name;
-            this.type = type;
-            this.location = location;
-            this.profile = profile;
-            this.lastSpawn = 0;
-        }
-
-        public EntityType getEntityType() {
-            return type;
-        }
-
-        public Location getLocation() {
-            return location;
-        }
-
-        public Profile getProfile() {
-            return profile;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public long getLastSpawn() {
-            return lastSpawn;
-        }
-
-        public boolean isValid() {
-            return type != null && location != null && name != null;
-        }
-
-        protected boolean tick() { // True if the tick resulted in a mob spawn
-            if (!isValid()) {
-                return false;
-            }
-
-            int closemobs = 0;
-            for (Entity entity : location.getWorld().getLivingEntities()) {
-                if (entity instanceof LivingEntity && entity.getLocation().distanceSquared(location) < radiusSquared) {
-                    closemobs++;
-                }
-            }
-
-            if (closemobs > maxMobs) {
-                return false;
-            }
-
-            if (getCurrentTicks() - lastSpawn < spawnThreshold) {
-                return false;
-            }
-
-            spawn();
-            return true;
-        }
-
-        private long getCurrentTicks() {
-            return location.getWorld().getFullTime();
-        }
-
-        public LivingEntity spawn() {
-            if (!isValid()) {
-                return null;
-            }
-
-            lastSpawn = getCurrentTicks();
-
-            final LivingEntity le = (LivingEntity) location.getWorld().spawnEntity(location, type);
-
-            if (profile != null) {
-                profile.setup(le);
-            }
-
-            return le;
-        }
-    }
-
 }

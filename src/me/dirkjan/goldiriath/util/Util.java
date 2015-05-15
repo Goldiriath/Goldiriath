@@ -1,13 +1,13 @@
 package me.dirkjan.goldiriath.util;
 
-import me.dirkjan.goldiriath.Profile;
+import me.dirkjan.goldiriath.ServerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class Util {
 
-    public static void msg(Player player, Profile profile, String message) {
+    public static void msg(Player player, ServerProfile profile, String message) {
         player.sendMessage(profile.getName() + ": " + message);
     }
 
