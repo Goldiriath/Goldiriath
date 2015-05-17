@@ -36,7 +36,7 @@ public class MobSpawnManager implements Service, Listener {
     private BukkitTask spawnTask;
     //
     private final Set<MobSpawn> spawns;
-    private final Set<Profile> profiles;
+    private final Set<MobSpawnProfile> profiles;
     private boolean enabled;
     private boolean devMode;
     private int radiusSquared;
@@ -51,7 +51,6 @@ public class MobSpawnManager implements Service, Listener {
         this.profiles = new HashSet<>();
         this.devMode = false;
     }
-
 
     // Public/protected methods
     public Set<MobSpawn> getSpawns() {
@@ -195,7 +194,7 @@ public class MobSpawnManager implements Service, Listener {
         }
 
         // Validate level
-        Profile profile = null;
+        MobSpawnProfile profile = null;
         if (!event.getLine(3).isEmpty()) {
             profile = determineProfile(event.getLine(3));
 
@@ -283,12 +282,12 @@ public class MobSpawnManager implements Service, Listener {
         sign.update();
     }
 
-    private Profile determineProfile(String profileName) {
+    private MobSpawnProfile determineProfile(String profileName) {
         if (profileName == null) {
             return null;
         }
 
-        for (Profile loopProfile : profiles) {
+        for (MobSpawnProfile loopProfile : profiles) {
             if (loopProfile.getName().equalsIgnoreCase(profileName)) {
                 return loopProfile;
             }
@@ -328,7 +327,7 @@ public class MobSpawnManager implements Service, Listener {
                 customName = ChatColor.translateAlternateColorCodes('&', customName);
             }
 
-            profiles.add(new Profile(profileName, customName, carryItem, helmet, chestplate, leggings, boots));
+            profiles.add(new MobSpawnProfile(profileName, customName, carryItem, helmet, chestplate, leggings, boots));
         }
 
         // Load spawns
@@ -368,7 +367,7 @@ public class MobSpawnManager implements Service, Listener {
                 }
 
                 final String profileString = spawnsConfig.getString(name + ".profile", null);
-                final Profile profile = determineProfile(profileString);
+                final MobSpawnProfile profile = determineProfile(profileString);
                 if (profileString != null && profile == null) {
                     plugin.logger.warning("Ignoring profile '" + profileString + "' for mobspawn '" + name + "'. Profile could not be determined!");
                 }

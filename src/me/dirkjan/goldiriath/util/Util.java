@@ -1,6 +1,7 @@
 package me.dirkjan.goldiriath.util;
 
-import me.dirkjan.goldiriath.ServerProfile;
+import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.quest.ServerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,21 +17,27 @@ public class Util {
             return null;
         }
 
+        if (parseString.startsWith("_")) {
+            return Goldiriath.plugin.is.getItem(parseString.substring(1));
+        }
+
         final String[] parts = parseString.split(":");
 
-        final Material type = Material.matchMaterial(parts[0]);
+        Material type = Material.matchMaterial(parts[0]);
+        if (type == null) {
+            type = Material.getMaterial(parts[0]);
+        }
+
         if (type == null) {
             return null;
         }
 
         final byte data;
         try {
-            if (parts.length == 1) {
-                data = 0;
-            } else if (parts.length == 2) {
-                data = Byte.parseByte(parts[1]);
+            if (parts.length == 2) {
+                data = new Integer(Integer.parseInt(parts[1])).byteValue();
             } else {
-                return null;
+                data = 0;
             }
         } catch (NumberFormatException ex) {
             return null;

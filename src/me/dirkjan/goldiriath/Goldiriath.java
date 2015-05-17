@@ -1,23 +1,21 @@
 package me.dirkjan.goldiriath;
 
-import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
+import me.dirkjan.goldiriath.player.PlayerManager;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.logging.Logger;
-import me.dirkjan.goldiriath.command.Command_resetquest;
+import me.dirkjan.goldiriath.command.Command_goldiriath;
 import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
+import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
+import me.dirkjan.goldiriath.quest.QuestManager;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,15 +26,18 @@ public class Goldiriath extends JavaPlugin {
     public static String buildVersion = "0.0";
     public static String buildNumber = "0";
     public static String buildDate = "";
+    //
     public Logger logger;
     public YamlConfig config;
-    public YamlConfig questConfig;
-    public Map<UUID, Stage> questmap;
-    public BukkitCommandHandler<Goldiriath> handler;
+    //
     public PlayerManager pm;
-    public MobSpawnManager msm;
     public ScoreboardHandler sch;
+    // Services
+    public MobSpawnManager msm;
     public ItemStorage is;
+    public QuestManager qm;
+    //
+    public BukkitCommandHandler<Goldiriath> ch;
 
     @Override
     public void onLoad() {
@@ -47,52 +48,48 @@ public class Goldiriath extends JavaPlugin {
 
         config = new YamlConfig(plugin, "config.yml");
 
-        // TODO: Get rid of this
-        questConfig = new YamlConfig(plugin, "quests.yml");
-        questmap = new HashMap<>();
-
         pm = new PlayerManager(plugin);
         sch = new ScoreboardHandler(plugin);
 
         // Services
         msm = new MobSpawnManager(plugin);
         is = new ItemStorage(plugin);
+        qm = new QuestManager(plugin);
 
         // Commands
-        handler = new BukkitCommandHandler<>(plugin);
+        ch = new BukkitCommandHandler<>(plugin);
     }
 
     @Override
     public void onEnable() {
         BukkitLib.init(plugin);
 
-        // Load configs
+        // Load config
         config.load();
-        questConfigLoad();
 
         // Start services
         msm.start();
         is.start();
+        qm.start();
 
         // Register events
         new PlayerListener(plugin).register();
         new BlockListener(plugin).register();
 
-
         // Setup command handler
-        handler.setCommandLocation(Command_resetquest.class.getPackage());
+        ch.setCommandLocation(Command_goldiriath.class.getPackage());
     }
 
     @Override
     public void onDisable() {
 
-        // Save configs - TODO get rid of this
-        questConfigSave();
+        // Save playerdata
         pm.saveAll();
 
         // Stop services
         msm.stop();
         is.stop();
+        qm.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);
@@ -103,7 +100,7 @@ public class Goldiriath extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        return handler.handleCommand(sender, cmd, commandLabel, args);
+        return ch.handleCommand(sender, cmd, commandLabel, args);
     }
 
     private void loadBuildProperties() {
@@ -122,48 +119,6 @@ public class Goldiriath extends JavaPlugin {
             logger.warning("Could not load build  properties!");
             logger.warning(ExceptionUtils.getFullStackTrace(ex));
         }
-    }
-
-    private void questConfigLoad() {
-        questmap.clear();
-        questConfig.load();
-        //quests:
-        // quest1:
-        //  [uuidhere]: stage-a
-        //  [uuidhere2]: stage-b
-        if (!questConfig.isConfigurationSection("quests.quest1")) {
-            return;
-        }
-        ConfigurationSection quests = questConfig.getConfigurationSection("quests.quest1");
-        for (String UUIDString : quests.getKeys(false)) {
-
-            UUID uuid;
-            try {
-                uuid = UUID.fromString(UUIDString);
-            } catch (IllegalArgumentException exception) {
-                continue;
-            }
-
-            Stage stage = Stage.fromString(quests.getString(UUIDString));
-            if (stage == null) {
-                continue;
-            }
-
-            questmap.put(uuid, stage);
-
-        }
-    }
-
-    private void questConfigSave() {
-        questConfig.clear();
-        ConfigurationSection quests = questConfig.createSection("quests.quest1");
-        for (UUID key : questmap.keySet()) {
-
-            Stage stage = questmap.get(key);
-            quests.set(key.toString(), stage.toString());
-
-        }
-        questConfig.save();
     }
 
 }

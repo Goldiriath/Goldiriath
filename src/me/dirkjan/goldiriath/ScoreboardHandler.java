@@ -11,9 +11,8 @@ public class ScoreboardHandler {
     public ScoreboardHandler(Goldiriath plugin) {
         this.plugin = plugin;
     }
-   
-                
-    public void update(Player player){
+
+    public void update(Player player) {
         plugin.pm.getData(player).getSidebar().getScoreboard().resetScores("money");
         int money = plugin.pm.getData(player).getMoney();
         Score score = plugin.pm.getData(player).getSidebar().getScore("money " + ChatColor.GOLD + money);

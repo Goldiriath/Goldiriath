@@ -4,7 +4,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-public class Profile {
+public class MobSpawnProfile {
 
     private final String name;
     private final String customName;
@@ -14,7 +14,7 @@ public class Profile {
     private final ItemStack leggings;
     private final ItemStack boots;
 
-    public Profile(String name, String customName, ItemStack carryItem, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+    public MobSpawnProfile(String name, String customName, ItemStack carryItem, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
         this.name = name;
         this.customName = customName;
         this.carryItem = carryItem;

@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemFactory {
 
     private final Material type;
-    private short data = 0;
+    private byte data = 0;
     private String name = null;
     private String[] lore = {};
     private ItemTier tier = null;
@@ -46,21 +46,26 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory withData(short data) {
+    public ItemFactory withData(byte data) {
         this.data = data;
         return this;
     }
 
+    @SuppressWarnings("deprecation") // data byte
     public ItemStack build() {
-        final ItemStack item = new ItemStack(type, 1, data);
-        final ItemMeta meta = item.getItemMeta();
+        final ItemStack item = new ItemStack(type, 1);
 
+        // Meta
+        final ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name != null ? name : tier.getAdjective(type) + " " + type.toString().toLowerCase().replace('_', ' '));
 
         final List<String> loreList = new ArrayList<>();
         loreList.add("Level " + level);
         loreList.addAll(Arrays.asList(lore));
         meta.setLore(loreList);
+
+        // Data
+        item.getData().setData(data);
 
         return item;
     }

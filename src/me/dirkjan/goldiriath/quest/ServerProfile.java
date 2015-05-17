@@ -1,5 +1,6 @@
-package me.dirkjan.goldiriath;
+package me.dirkjan.goldiriath.quest;
 
+import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

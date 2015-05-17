@@ -63,7 +63,7 @@ public class ItemStorage implements Service {
             }
 
             // Data
-            short data = Integer.valueOf(section.getInt("data", 0)).shortValue();
+            byte data = Integer.valueOf(section.getInt("data", 0)).byteValue();
             if (data < 0) {
                 logger.warning("Skipping item: " + id + ". Invalid data: " + data + "!");
                 continue;

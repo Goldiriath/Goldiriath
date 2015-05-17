@@ -1,20 +1,21 @@
 package me.dirkjan.goldiriath.mobspawn;
 
+import me.dirkjan.goldiriath.util.Validatable;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
-public class MobSpawn {
+public class MobSpawn implements Validatable {
 
     private final MobSpawnManager msm;
     private final String name;
     private final EntityType type;
     private final Location location;
-    private final Profile profile;
+    private final MobSpawnProfile profile;
     private long lastSpawn;
 
-    public MobSpawn(MobSpawnManager msm, String name, EntityType type, Location location, Profile profile) {
+    public MobSpawn(MobSpawnManager msm, String name, EntityType type, Location location, MobSpawnProfile profile) {
         this.msm = msm;
         this.name = name;
         this.type = type;
@@ -31,7 +32,7 @@ public class MobSpawn {
         return location;
     }
 
-    public Profile getProfile() {
+    public MobSpawnProfile getProfile() {
         return profile;
     }
 
@@ -43,6 +44,7 @@ public class MobSpawn {
         return lastSpawn;
     }
 
+    @Override
     public boolean isValid() {
         return type != null && location != null && name != null;
     }

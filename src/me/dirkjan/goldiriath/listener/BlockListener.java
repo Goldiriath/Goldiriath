@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class BlockListener extends SimpleListener {
+public class BlockListener extends RegistrableListener {
 
     public BlockListener(Goldiriath plugin) {
         super(plugin);
@@ -29,6 +29,5 @@ public class BlockListener extends SimpleListener {
         item.setAmount(item.getMaxStackSize());
         disp.getInventory().setItem(0, item);
     }
-
 
 }

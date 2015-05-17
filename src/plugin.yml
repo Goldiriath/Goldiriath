@@ -4,6 +4,7 @@ main: me.dirkjan.goldiriath.Goldiriath
 commands:
     goldiriath:
         usage: /<command> [reload]
+        aliases: [go]
         description: Shows information about the Goldiriath plugin.
     mobspawn:
         usage: /<command> dev <on | off>

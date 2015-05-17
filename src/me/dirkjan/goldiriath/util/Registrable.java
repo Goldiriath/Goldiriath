@@ -1,6 +1,6 @@
-package me.dirkjan.goldiriath.listener;
+package me.dirkjan.goldiriath.util;
 
-public interface EventContainer {
+public interface Registrable {
 
     public abstract void register();
 
