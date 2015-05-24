@@ -128,7 +128,7 @@ public class MobSpawnManager implements Service, Listener {
 
                 spawnLoop:
                 for (MobSpawn spawn : spawns) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
+                    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                         if (player.getLocation().distanceSquared(spawn.getLocation()) > playerRadiusThresholdSquared) {
                             continue;
                         }
