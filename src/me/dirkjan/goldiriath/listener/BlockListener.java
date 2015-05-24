@@ -2,7 +2,6 @@ package me.dirkjan.goldiriath.listener;
 
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
-import org.bukkit.Material;
 import org.bukkit.block.Dispenser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -20,14 +19,17 @@ public class BlockListener extends RegistrableListener {
             return;
         }
 
-        if (event.getBlock().getType() != Material.DISPENSER) {
+        if (!(event.getBlock().getState() instanceof Dispenser)) {
             return;
         }
 
         final Dispenser disp = (Dispenser) event.getBlock().getState();
         final ItemStack item = event.getItem().clone();
         item.setAmount(item.getMaxStackSize());
-        disp.getInventory().setItem(0, item);
+        for (int i = 0; i < disp.getInventory().getSize(); i++) {
+            disp.getInventory().setItem(i, item);
+        }
+        disp.update();
     }
 
 }
