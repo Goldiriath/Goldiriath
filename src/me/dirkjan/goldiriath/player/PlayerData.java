@@ -1,7 +1,9 @@
 package me.dirkjan.goldiriath.player;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
@@ -23,17 +25,21 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     private final Player player;
     private final Objective sidebar;
     private final Set<Skill> skills;
+    private final Map<String, Integer> flags;
     private QuestData questData;
     private int money;
     private int health;
     private int maxHealth;
     private int mana;
+    private int maxMana;
+    private int xp;
 
     protected PlayerData(PlayerManager manager, Player player) {
         this.manager = manager;
         this.player = player;
         this.sidebar = Bukkit.getScoreboardManager().getNewScoreboard().registerNewObjective("sidebar", "dummy");
         this.skills = new HashSet<>();
+        this.flags = new HashMap<>();
         sidebar.setDisplayName("Statistics");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(sidebar.getScoreboard());
@@ -57,6 +63,70 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     public void removeSkill(Skill skill) {
         skills.remove(skill);
+    }
+
+    public boolean hasSkill(SkillType type) {
+        for (Skill loopSkill : skills) {
+            if (loopSkill.getType() == type) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Map<String, Integer> getFlags() {
+        return flags;
+    }
+
+    public boolean hasFlag(String flag) {
+        return hasFlag(flag, 1);
+    }
+
+    public boolean hasFlag(String flag, int amount) {
+        return flags.containsKey(flag) && flags.get(flag) >= amount;
+    }
+
+    public int getFlag(String flag) {
+        return flags.containsKey(flag) ? flags.get(flag) : 0;
+    }
+
+    public void setFlag(String flag, int amount) {
+        flags.put(flag, amount);
+    }
+
+    public void addFlag(String flag) {
+        addFlag(flag, 1);
+    }
+
+    public void addFlag(String flag, int amount) {
+        if (flags.containsKey(flag)) {
+            flags.put(flag, flags.get(flag) + amount);
+        } else {
+            flags.put(flag, amount);
+        }
+    }
+
+    public void removeFlag(String flag) {
+        removeFlag(flag, 1);
+    }
+
+    public void removeFlag(String flag, int amount) {
+        if (!flags.containsKey(flag)) {
+            return;
+        }
+
+        int newAmount = flags.get(flag) - amount;
+
+        if (newAmount > 0) {
+            flags.put(flag, newAmount);
+        } else {
+            flags.remove(flag);
+        }
+    }
+
+    public void deleteFlag(String flag) {
+        flags.remove(flag);
     }
 
     public int getMoney() {
@@ -105,6 +175,18 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         this.mana = mana;
     }
 
+    public int getMaxMana() {
+        return maxMana;
+    }
+
+    public void setMaxMana(int maxMana) {
+        this.maxMana = maxMana;
+    }
+
+    public boolean hasMana(int mana) {
+        return this.mana >= mana;
+    }
+
     public QuestData getQuestData() {
         return questData;
     }
@@ -123,6 +205,7 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     public void loadFrom(ConfigurationSection config) {
 
         // Load skills
+        skills.clear();
         if (config.isConfigurationSection("skills")) {
 
             // Temp skills holder
@@ -169,11 +252,27 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
             questData.loadFrom(config.getConfigurationSection("quests"));
         }
 
-        // Load stats
+        // Flags
+        flags.clear();
+        if (config.isConfigurationSection("flags")) {
+            for (String flag : config.getConfigurationSection("flags").getKeys(false)) {
+                int amount = config.getInt("flags." + flag, 0);
+                if (amount >= 0) {
+                    flags.put(flag, amount);
+                }
+            }
+        }
+
+        // Money
         money = config.getInt("money", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
+
+        // Health
         health = config.getInt("health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
-        maxHealth = config.getInt("max_healt", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
+        maxHealth = config.getInt("max_health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
+
+        // Mana
         mana = config.getInt("mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
+        maxMana = config.getInt("max_mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
     }
 
     @Override
@@ -187,11 +286,22 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         // Save quest data, override prev data
         questData.saveTo(config.createSection("quests"));
 
-        // Save stats
+        // Flags
+        ConfigurationSection flagsSection = config.createSection("flags");
+        for (String flag : flags.keySet()) {
+            flagsSection.set(flag, flags.get(flag));
+        }
+
+        // Money
         config.set("money", money);
+
+        // Health
         config.set("heath", health);
         config.set("max_health", maxHealth);
+
+        // Mana
         config.set("mana", mana);
+        config.set("max_mana", maxMana);
 
     }
 

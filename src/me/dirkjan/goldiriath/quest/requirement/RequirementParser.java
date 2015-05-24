@@ -55,6 +55,14 @@ public class RequirementParser {
                         req = new HealthRequirement(plugin, args);
                         break;
 
+                    case "mana":
+                        req = new ManaRequirement(plugin, args);
+                        break;
+
+                    case "flag":
+                        req = new FlagRequirement(plugin, args);
+                        break;
+
                     // TODO: Implement the rest of the requirements: https://github.com/Goldiriath/Goldiriath/issues/1
                     default:
                         logger.warning("[" + id + "] Skipping requirement: '" + reqLine + "'. Could not be found! (Is it supported?)");
