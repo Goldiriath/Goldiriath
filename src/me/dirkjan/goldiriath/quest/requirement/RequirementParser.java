@@ -64,7 +64,15 @@ public class RequirementParser {
                         break;
 
                     case "skill":
-                        req = new FlagRequirement(plugin, args);
+                        req = new SkillRequirement(plugin, args);
+                        break;
+
+                    case "quest complete":
+                        req = new QuestCompleteRequirement(plugin, args);
+                        break;
+
+                    case "quest started":
+                        req = new QuestStartedRequirement(plugin, args);
                         break;
 
                     // TODO: Implement the rest of the requirements: https://github.com/Goldiriath/Goldiriath/issues/1
