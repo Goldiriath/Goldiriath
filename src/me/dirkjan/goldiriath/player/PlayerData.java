@@ -188,6 +188,23 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return this.mana >= mana;
     }
 
+    public int getXp() {
+        return xp;
+    }
+
+    public void addXP(int amt) {
+        xp += amt;
+    }
+
+    public int calculateLevel() {
+        return (int) Math.floor(0.1 * (Math.sqrt(2 * xp + 25) + 5));
+    }
+
+    public int calculatenextxp() {
+        int x = (int) Math.floor(0.1 * (Math.sqrt(2 * xp + 25) + 5) + 1);
+        return (int) (50 * (x - 1) * x);
+    }
+
     public QuestData getQuestData() {
         return questData;
     }
@@ -290,9 +307,12 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         // Mana
         mana = config.getInt("mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
         maxMana = config.getInt("max_mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
-        
+
         // SkillPoints
         skillPoints = config.getInt("skillpoints", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_SKILLPOINTS));
+
+        //xp
+        xp = config.getInt("xp", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP));
     }
 
     @Override
@@ -322,9 +342,12 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         // Mana
         config.set("mana", mana);
         config.set("max_mana", maxMana);
-        
+
         //skillpoints
         config.set("skillpoints", skillPoints);
+
+        //xp
+        config.set("xp", xp);
 
     }
 

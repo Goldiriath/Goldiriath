@@ -10,6 +10,3 @@ commands:
         usage: /<command> dev <on | off>
         description: Manages mobspawns.
         aliases: [ms,mobmanage]
-    resetquest:
-        usage: /<command> <player>
-        description: Resets all quest progress.
