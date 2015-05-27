@@ -33,6 +33,7 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     private int mana;
     private int maxMana;
     private int xp;
+    private int skillPoints;
 
     protected PlayerData(PlayerManager manager, Player player) {
         this.manager = manager;
@@ -189,6 +190,22 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     public QuestData getQuestData() {
         return questData;
+    }
+
+    public int getSkillPoints() {
+        return skillPoints;
+    }
+
+    public void addSkillPoints(int toadd) {
+        skillPoints += toadd;
+    }
+
+    public void removeSkillPoints(int toremove) {
+        skillPoints -= toremove;
+    }
+
+    public boolean hasSkillPoints(int has) {
+        return skillPoints >= has;
     }
 
     @Deprecated // Don't use this method
