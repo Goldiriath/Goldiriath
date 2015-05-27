@@ -60,12 +60,25 @@ public class ActionParser extends SafeArrayList<Action> {
                         ac = new MoneyAction(plugin, args);
                         break;
 
+                    case "item":
+                        ac = new ItemAction(plugin, args);
+                        break;
+
+                    case "flag":
+                        ac = new FlagAction(plugin, args);
+                        break;
+
+                    case "skillpoint":
+                        ac = new SkillpointAction(plugin, args);
+                        break;
+
                     case "zap":
                         if (quest == null) {
                             logger.warning("[" + id + "] Skipping action: " + acLine + ". 'zap' can only be used in quest stages!");
                             break;
                         }
                         ac = new ZapAction(quest, args);
+                        break;
 
                     // TODO: Implement the rest of the actions: https://github.com/Goldiriath/Goldiriath/issues/1
                     default:

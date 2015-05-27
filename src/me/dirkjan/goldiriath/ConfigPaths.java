@@ -7,6 +7,7 @@ public enum ConfigPaths implements PathContainer {
     DEFAULT_MONEY("default_money"),
     DEFAULT_HEALTH("default_health"),
     DEFAULT_MANA("default_mana"),
+    DEFAULT_SKILLPOINTS("default_skillpoints"),
     MOBSPAWNER_ENABLED("mobspawner.enabled"),
     MOBSPAWNER_DEV_MODE("mobspawner.dev_mode"),
     MOBSPAWNER_RADIUS("mobspawner.radius"),

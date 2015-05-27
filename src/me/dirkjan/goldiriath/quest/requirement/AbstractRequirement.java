@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public abstract class AbstractRequirement implements Requirement {
 
     protected final Goldiriath plugin;
-    private final BukkitMessage message;
+    final BukkitMessage message;
 
     public AbstractRequirement(Goldiriath plugin, BukkitMessage message) {
         this.plugin = plugin;

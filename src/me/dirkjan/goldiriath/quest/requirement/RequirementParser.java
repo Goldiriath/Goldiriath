@@ -63,6 +63,14 @@ public class RequirementParser {
                         req = new FlagRequirement(plugin, args);
                         break;
 
+                    case "skill":
+                        req = new SkillRequirement(plugin, args);
+                        break;
+
+                    case "quest":
+                        req = new QuestRequirement(plugin, args);
+                        break;
+
                     // TODO: Implement the rest of the requirements: https://github.com/Goldiriath/Goldiriath/issues/1
                     default:
                         logger.warning("[" + id + "] Skipping requirement: '" + reqLine + "'. Could not be found! (Is it supported?)");
