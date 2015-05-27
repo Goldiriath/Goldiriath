@@ -60,7 +60,7 @@ public class ActionParser extends SafeArrayList<Action> {
                         ac = new MoneyAction(plugin, args);
                         break;
 
-                    case "Item":
+                    case "item":
                         ac = new ItemAction(plugin, args);
                         break;
 
@@ -78,6 +78,7 @@ public class ActionParser extends SafeArrayList<Action> {
                             break;
                         }
                         ac = new ZapAction(quest, args);
+                        break;
 
                     // TODO: Implement the rest of the actions: https://github.com/Goldiriath/Goldiriath/issues/1
                     default:

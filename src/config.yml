@@ -11,6 +11,9 @@ default_health: 100
 #default mana
 default_mana: 100
 
+#default skillpoints
+default_skillpoints: 0
+
 # Sign based mob spawner
 mobspawner:
     enabled: true

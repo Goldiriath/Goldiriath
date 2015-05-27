@@ -26,10 +26,7 @@ public class FlagAction extends AbstractAction {
         if (add) {
             plugin.pm.getData(player).addFlag(flag, amt);
         } else {
-            if (plugin.pm.getData(player).hasFlag(flag, amt)) {
-                plugin.pm.getData(player).removeFlag(flag, amt);
-
-            }
+            plugin.pm.getData(player).removeFlag(flag, amt);
 
         }
 

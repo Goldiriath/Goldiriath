@@ -290,6 +290,9 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         // Mana
         mana = config.getInt("mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
         maxMana = config.getInt("max_mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
+        
+        // SkillPoints
+        skillPoints = config.getInt("skillpoints", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_SKILLPOINTS));
     }
 
     @Override
@@ -319,6 +322,9 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         // Mana
         config.set("mana", mana);
         config.set("max_mana", maxMana);
+        
+        //skillpoints
+        config.set("skillpoints", skillPoints);
 
     }
 
