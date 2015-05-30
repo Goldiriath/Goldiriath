@@ -1,6 +1,5 @@
 package me.dirkjan.goldiriath;
 
-import me.dirkjan.goldiriath.player.PlayerManager;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -9,6 +8,7 @@ import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
 import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
+import me.dirkjan.goldiriath.player.PlayerManager;
 import me.dirkjan.goldiriath.quest.QuestManager;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
@@ -31,7 +31,7 @@ public class Goldiriath extends JavaPlugin {
     public YamlConfig config;
     //
     public PlayerManager pm;
-    public ScoreboardHandler sch;
+    public Update up;
     // Services
     public MobSpawnManager msm;
     public ItemStorage is;
@@ -49,7 +49,7 @@ public class Goldiriath extends JavaPlugin {
         config = new YamlConfig(plugin, "config.yml");
 
         pm = new PlayerManager(plugin);
-        sch = new ScoreboardHandler(plugin);
+        up = new Update(plugin);
 
         // Services
         msm = new MobSpawnManager(plugin);
