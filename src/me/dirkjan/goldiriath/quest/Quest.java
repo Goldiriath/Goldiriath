@@ -2,7 +2,6 @@ package me.dirkjan.goldiriath.quest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import me.dirkjan.goldiriath.quest.stage.Stage;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,12 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.player.QuestData;
-import me.dirkjan.goldiriath.quest.action.ActionList;
-import me.dirkjan.goldiriath.quest.action.ActionParser;
 import me.dirkjan.goldiriath.quest.requirement.RequirementList;
 import me.dirkjan.goldiriath.quest.requirement.RequirementParser;
-import me.dirkjan.goldiriath.quest.stage.MemoryStage;
 import me.dirkjan.goldiriath.quest.stage.QuestStage;
+import me.dirkjan.goldiriath.quest.stage.Stage;
 import me.dirkjan.goldiriath.quest.trigger.PlayerEventTrigger;
 import me.dirkjan.goldiriath.quest.trigger.TriggerList;
 import me.dirkjan.goldiriath.quest.trigger.TriggerParser;
@@ -28,6 +25,10 @@ import org.bukkit.entity.Player;
 
 public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
 
+    public static final String STAGE_ENTRY_ID = "entry";
+    public static final String STAGE_COMPLETE_ID = "complete";
+    public static final String STAGE_CANCEL_ID = "cancel";
+    //
     private final QuestManager manager;
     private final Goldiriath plugin;
     private final String id;
@@ -40,8 +41,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
     // Entries
     private final RequirementList requirements;
     private final TriggerList triggers;
-    private final ActionList completeActions;
-    private final ActionList cancelActions;
     private final Map<String, Stage> stages;
 
     public Quest(QuestManager manager, String id) {
@@ -51,8 +50,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
         //
         this.requirements = new RequirementList();
         this.triggers = new TriggerList();
-        this.completeActions = new ActionList();
-        this.cancelActions = new ActionList();
         this.stages = new HashMap<>();
     }
 
@@ -77,15 +74,15 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
     }
 
     public Stage getEntryStage() {
-        return stages.get("entry");
+        return stages.get(STAGE_ENTRY_ID);
     }
 
     public Stage getCompleteStage() {
-        return stages.get("complete");
+        return stages.get(STAGE_COMPLETE_ID);
     }
 
     public Stage getCancelStage() {
-        return stages.get("cancel");
+        return stages.get(STAGE_CANCEL_ID);
     }
 
     public Stage getStage(String id) {
@@ -100,8 +97,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
         // Clear previous entries
         requirements.clear();
         triggers.clear();
-        completeActions.clear();
-        cancelActions.clear();
 
         // Get meta
         name = config.getString("meta.name", null);
@@ -118,11 +113,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
         triggers.clear();
         triggers.addAll(new TriggerParser(plugin, id).parse(config.getStringList("triggers")));
 
-        // Actions
-        completeActions.clear();
-        cancelActions.clear();
-        completeActions.addAll(new ActionParser(plugin, id).parse(config.getStringList("actions.complete")));
-        cancelActions.addAll(new ActionParser(plugin, id).parse(config.getStringList("actions.cancel")));
 
         if (!config.isConfigurationSection("stages")) {
             plugin.logger.warning("[" + id + "] Could not load quest. No stages defined!");
@@ -139,12 +129,23 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
             stages.put(stageId, new QuestStage(this, stageId));
         }
 
-        // Cancel and dummy stages
-        stages.put("complete", new MemoryStage(this, "complete", completeActions));
-        stages.put("cancel", new MemoryStage(this, "cancel", cancelActions));
 
-        if (!stages.containsKey("entry")) {
-            throw new ParseException("Quest does not contain entry stage!");
+        if (!stages.containsKey(STAGE_ENTRY_ID)
+                || !stages.containsKey(STAGE_COMPLETE_ID)
+                || !stages.containsKey(STAGE_CANCEL_ID)) {
+            throw new ParseException(String.format(
+                    "Quest does not contain all required stages: '%s', '%s', '%s'!",
+                    STAGE_ENTRY_ID,
+                    STAGE_COMPLETE_ID,
+                    STAGE_CANCEL_ID));
+        }
+
+        if (!stages.get(STAGE_COMPLETE_ID).getTriggers().isEmpty()) {
+            throw new ParseException(String.format("'%s' stage may not contain triggers!", STAGE_COMPLETE_ID));
+        }
+
+        if (!stages.get(STAGE_CANCEL_ID).getTriggers().isEmpty()) {
+            throw new ParseException(String.format("'%s' stage may not contain triggers!", STAGE_CANCEL_ID));
         }
 
         for (Stage stage : stages.values()) {
@@ -182,7 +183,9 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
                 && !description.isEmpty()
                 && !description.get(0).isEmpty()
                 && !stages.isEmpty()
-                && stages.containsKey("entry");
+                && stages.containsKey(STAGE_ENTRY_ID)
+                && stages.containsKey(STAGE_COMPLETE_ID)
+                && stages.containsKey(STAGE_CANCEL_ID);
     }
 
     @Override
