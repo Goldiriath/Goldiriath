@@ -264,7 +264,7 @@ public class MobSpawnManager implements Service, Listener {
             final ConfigurationSection section = profileConfig.getConfigurationSection(id);
             id = id.toLowerCase().trim();
 
-            final MobSpawnProfile profile = new MobSpawnProfile(id);
+            final MobSpawnProfile profile = new MobSpawnProfile(this, id);
             profile.loadFrom(section);
 
             profiles.add(profile);

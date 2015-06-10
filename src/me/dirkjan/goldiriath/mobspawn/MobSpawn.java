@@ -11,9 +11,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
 
+    public static final String METADATA_ID = "mobspawn";
+    //
     private final MobSpawnManager msm;
     private final Logger logger;
     private final String id;
@@ -137,7 +140,13 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
 
         lastSpawn = getCurrentTicks();
 
-        return profile.spawn(location);
+        // Spawn
+        final LivingEntity entity = profile.spawn(location);
+
+        // Set metadata
+        entity.setMetadata(METADATA_ID, new FixedMetadataValue(msm.getPlugin(), this));
+
+        return entity;
     }
 
     @Override

@@ -10,12 +10,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
+    public static final String METADATA_ID = "profile";
+    //
     private final String id;
+    private final MobSpawnManager msm;
     //
     private EntityType type;
+    private int level;
     private String customName;
     private long spawnThreshold;
     private ItemStack carryItem;
@@ -24,20 +29,25 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     private ItemStack leggings;
     private ItemStack boots;
 
-    public MobSpawnProfile(String id) {
+    public MobSpawnProfile(MobSpawnManager msm, String id) {
         this.id = id;
+        this.msm = msm;
+    }
+
+    public MobSpawnManager getManager() {
+        return msm;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getName() {
-        return id;
-    }
-
     public EntityType getType() {
         return type;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public boolean hasSpawnThreshold() {
@@ -84,6 +94,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
         customName = config.getString("name", null);
         spawnThreshold = config.getInt("spawn_threshold", -1);
+        level = config.getInt("level", 1);
 
         carryItem = Util.parseItem(config.getString("item", null));
 
@@ -102,16 +113,20 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
             return null;
         }
 
+        // Spawn entity
         final LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
 
-        final EntityEquipment equipment = entity.getEquipment();
+        // Set owning spawner
+        entity.setMetadata(METADATA_ID, new FixedMetadataValue(msm.getPlugin(), this));
 
-        entity.setCanPickupItems(false);
+        // Set equipment
+        final EntityEquipment equipment = entity.getEquipment();
         equipment.setItemInHandDropChance(0);
         equipment.setHelmetDropChance(0);
         equipment.setChestplateDropChance(0);
         equipment.setLeggingsDropChance(0);
         equipment.setBootsDropChance(0);
+        entity.setCanPickupItems(false);
 
         if (customName != null) {
             entity.setCustomName(customName);
