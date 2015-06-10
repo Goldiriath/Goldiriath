@@ -25,26 +25,16 @@ mobspawner:
     # Radius for mob spawners
     radius: 20
 
-    # Maximum amount of mobs in the spawner radius
+    # Default maximum amount of mobs a spawner can spawn
     max_mobs: 5
 
     # Minimum delay after a spawn in ticks
-    # 400 ticks = 20 * 20 ticks = 20 seconds
-    spawn_threshold: 400
-
+    # 600 ticks: 600 / 20 ticks = 30 seconds
+    spawn_threshold: 600
 
     # The radius in which a player must reside in order to start spawning mobs
     # Set to 0 to always spawn.
     player_radius_threshold: 50
-
-    profiles:
-        hellzombie:
-            name: &4Zombie of Hell
-            item: IRON_SWORD:5
-            helmet: LEATHER_HELMET:3
-            chestplate: DIAMOND_CHESTPLATE:2
-            leggings: GOLD_LEGGINGS
-            boots: IRON_BOOTS:15
 
 # If enabled, dispensers will never run out
 infinite_dispenser:
