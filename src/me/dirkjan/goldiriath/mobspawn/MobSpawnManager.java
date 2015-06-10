@@ -2,41 +2,36 @@ package me.dirkjan.goldiriath.mobspawn;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.util.Service;
-import me.dirkjan.goldiriath.util.Util;
 import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
 import net.pravian.bukkitlib.util.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class MobSpawnManager implements Service, Listener {
 
     private final Goldiriath plugin;
-    private final YamlConfig config;
+    private final YamlConfig profileConfig;
+    private final YamlConfig spawnConfig;
     private BukkitTask spawnTask;
     //
-    private final Set<MobSpawn> spawns;
     private final Set<MobSpawnProfile> profiles;
+    private final Set<MobSpawn> spawns;
     private boolean enabled;
     private boolean devMode;
     private int radiusSquared;
@@ -46,7 +41,8 @@ public class MobSpawnManager implements Service, Listener {
 
     public MobSpawnManager(Goldiriath plugin) {
         this.plugin = plugin;
-        this.config = new YamlConfig(plugin, "mobs.yml");
+        this.profileConfig = new YamlConfig(plugin, "profiles.yml", true);
+        this.spawnConfig = new YamlConfig(plugin, "mobspawns.yml", false);
         this.spawns = new HashSet<>();
         this.profiles = new HashSet<>();
         this.devMode = false;
@@ -59,7 +55,7 @@ public class MobSpawnManager implements Service, Listener {
 
     public void addSpawn(MobSpawn spawn) {
         if (!spawn.isValid()) {
-            plugin.logger.warning("Could not add mobspawn: " + spawn.getName() + ". Mobspawn not valid");
+            plugin.logger.warning("Could not add mobspawn: " + spawn.getId() + ". Mobspawn not valid");
             return;
         }
 
@@ -69,34 +65,14 @@ public class MobSpawnManager implements Service, Listener {
 
     public void removeSpawn(MobSpawn spawn) {
         if (!spawns.remove(spawn)) {
-            plugin.logger.warning("Could not remove mobspawn: " + spawn.getName() + ". Mobspawn not present!");
+            plugin.logger.warning("Could not remove mobspawn: " + spawn.getId() + ". Mobspawn not present!");
             return;
         }
 
-        saveConfig();
-    }
-
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
-        for (MobSpawn spawn : spawns) {
-            updateDevModeSign(spawn);
+        if (spawn.getId() != null) {
+            spawnConfig.set(spawn.getId(), null);
         }
-    }
-
-    public boolean isDevMode() {
-        return devMode;
-    }
-
-    protected int getRadiusSquared() {
-        return radiusSquared;
-    }
-
-    protected int getMaxMobs() {
-        return maxMobs;
-    }
-
-    protected int getSpawnThreshold() {
-        return spawnThreshold;
+        saveConfig();
     }
 
     @Override
@@ -126,16 +102,8 @@ public class MobSpawnManager implements Service, Listener {
                     return;
                 }
 
-                spawnLoop:
                 for (MobSpawn spawn : spawns) {
-                    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                        if (player.getLocation().distanceSquared(spawn.getLocation()) > playerRadiusThresholdSquared) {
-                            continue;
-                        }
-
-                        spawn.tick();
-                        break spawnLoop;
-                    }
+                    spawn.tick();
                 }
             }
         }.runTaskTimer(Goldiriath.plugin, 2, 2); // Run every other tick
@@ -171,52 +139,43 @@ public class MobSpawnManager implements Service, Listener {
         }
 
         // Validate name
-        final String name = event.getLine(1).toLowerCase();
-        if (name.length() < 2) {
+        final String id = event.getLine(1).toLowerCase();
+        if (id.length() < 2) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "MobSpawn name it too short!");
+            player.sendMessage(ChatColor.RED + "MobSpawn id it too short!");
             return;
         }
         for (MobSpawn spawn : spawns) {
-            if (spawn.getName().equalsIgnoreCase(name)) {
+            if (spawn.getId().equalsIgnoreCase(id)) {
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "MobSpawn name already in use!");
+                player.sendMessage(ChatColor.RED + "MobSpawn id already in use!");
                 return;
             }
         }
 
-        // Validate type
-        final EntityType type = EntityType.fromName(event.getLine(2));
-        if (type == null) {
+        // Validate profile
+        final MobSpawnProfile profile = getProfile(event.getLine(2));
+        if (profile == null) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "Entity type not found!");
+            player.sendMessage(ChatColor.RED + "Unknown MobSpawn profile: " + event.getLine(2));
             return;
         }
 
-        // Validate level
-        MobSpawnProfile profile = null;
-        if (!event.getLine(3).isEmpty()) {
-            profile = determineProfile(event.getLine(3));
+        final MobSpawn spawn = new MobSpawn(this, id);
+        spawn.setProfile(profile);
+        spawn.setLocation(event.getBlock().getLocation());
 
-            if (profile == null) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "Invalid MobSpawn profile: " + event.getLine(3));
-                return;
-            }
-        }
-
-        final MobSpawn spawn = new MobSpawn(this, name, type, event.getBlock().getLocation(), profile);
         plugin.msm.addSpawn(spawn);
 
         // Update sign next tick
         new BukkitRunnable() {
             @Override
             public void run() {
-                updateDevModeSign(spawn);
+                updateSign(spawn);
             }
         }.runTask(plugin);
 
-        player.sendMessage(ChatColor.GREEN + "Created mobspawn sign: " + name + "!");
+        player.sendMessage(ChatColor.GREEN + "Created mobspawn sign: " + id + "!");
     }
 
     @EventHandler
@@ -256,11 +215,15 @@ public class MobSpawnManager implements Service, Listener {
         }
 
         removeSpawn(spawn);
-        player.sendMessage(ChatColor.GREEN + "Deleted MobSpawn: " + spawn.getName());
+        player.sendMessage(ChatColor.GREEN + "Deleted MobSpawn: " + spawn.getId());
     }
 
     // Private methods
-    private void updateDevModeSign(MobSpawn spawn) {
+    private void updateSign(MobSpawn spawn) {
+        if (!spawn.isValid()) {
+            return;
+        }
+
         if (!devMode) {
             spawn.getLocation().getBlock().setType(Material.AIR);
             return;
@@ -270,35 +233,20 @@ public class MobSpawnManager implements Service, Listener {
         spawner.setType(Material.SIGN_POST);
 
         if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
-            plugin.logger.warning("Could not set dev mode for mob spawner! Invalid sign state!");
+            plugin.logger.warning("Could set sign for mobspawner! Invalid sign state!");
             return;
         }
 
         final Sign sign = (Sign) spawner.getState();
         sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
-        sign.setLine(1, spawn.getName());
-        sign.setLine(2, spawn.getEntityType().toString());
-        sign.setLine(3, (spawn.getProfile() == null ? "" : spawn.getProfile().getName()));
+        sign.setLine(1, spawn.getId());
+        sign.setLine(2, spawn.getProfile().getId());
+        sign.setLine(3, "");
         sign.update();
-    }
-
-    private MobSpawnProfile determineProfile(String profileName) {
-        if (profileName == null) {
-            return null;
-        }
-
-        for (MobSpawnProfile loopProfile : profiles) {
-            if (loopProfile.getName().equalsIgnoreCase(profileName)) {
-                return loopProfile;
-            }
-        }
-
-        return null;
     }
 
     private void loadConfig() {
         spawns.clear();
-        config.load();
 
         // Load vars
         enabled = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_ENABLED);
@@ -311,112 +259,85 @@ public class MobSpawnManager implements Service, Listener {
         playerRadiusThresholdSquared *= playerRadiusThresholdSquared;
 
         // Load Profiles
-        final ConfigurationSection profileSection = plugin.config.getConfigurationSection(ConfigPaths.MOBSPAWNER_PROFILES.getPath());
-        for (String profileName : profileSection.getKeys(false)) {
-            final ConfigurationSection currentProfile = profileSection.getConfigurationSection(profileName);
-            profileName = profileName.toLowerCase().trim();
+        profileConfig.load();
+        for (String id : profileConfig.getKeys(false)) {
+            final ConfigurationSection section = profileConfig.getConfigurationSection(id);
+            id = id.toLowerCase().trim();
 
-            String customName = currentProfile.getString("name", null);
-            final ItemStack carryItem = Util.parseItem(currentProfile.getString("item", null));
-            final ItemStack helmet = Util.parseItem(currentProfile.getString("helmet", null));
-            final ItemStack chestplate = Util.parseItem(currentProfile.getString("chestplate", null));
-            final ItemStack leggings = Util.parseItem(currentProfile.getString("leggings", null));
-            final ItemStack boots = Util.parseItem(currentProfile.getString("boots", null));
+            final MobSpawnProfile profile = new MobSpawnProfile(id);
+            profile.loadFrom(section);
 
-            if (customName != null) {
-                customName = ChatColor.translateAlternateColorCodes('&', customName);
-            }
-
-            profiles.add(new MobSpawnProfile(profileName, customName, carryItem, helmet, chestplate, leggings, boots));
+            profiles.add(profile);
         }
 
         // Load spawns
-        if (config.isConfigurationSection("spawns")) {
-            //spawns:
-            //  [name]:
-            //    location: [location]
-            //    type: [type]
-            //    (profile: [profilename])
-
-            ConfigurationSection spawnsConfig = config.getConfigurationSection("spawns");
-
-            for (String name : spawnsConfig.getKeys(false)) {
-
-                final String locationString = spawnsConfig.getString(name + ".location");
-                if (locationString == null) {
-                    plugin.logger.warning("Could not load mobspawn '" + name + "'. Location not defined!");
-                    continue;
-                }
-                final Location location = new SerializableBlockLocation(locationString).deserialize();
-                if (location == null) {
-                    plugin.logger.warning("Could not load mobspawn '" + name + "'. Could not deserialize location!");
-                    continue;
-                }
-
-                final String typeString = spawnsConfig.getString(name + ".type");
-                if (typeString == null) {
-                    plugin.logger.warning("Could not load mobspawn '" + name + "'. Type not defined!");
-                    continue;
-                }
-
-                // TODO fix deprecation
-                final EntityType type = EntityType.fromName(typeString);
-                if (type == null) {
-                    plugin.logger.warning("Could not load mobspawn '" + name + "'. Could not determine type!");
-                    continue;
-                }
-
-                final String profileString = spawnsConfig.getString(name + ".profile", null);
-                final MobSpawnProfile profile = determineProfile(profileString);
-                if (profileString != null && profile == null) {
-                    plugin.logger.warning("Ignoring profile '" + profileString + "' for mobspawn '" + name + "'. Profile could not be determined!");
-                }
-
-                // Setup and addSpawn mobspawn
-                final MobSpawn spawn = new MobSpawn(this, name, type, location, profile);
-                spawns.add(spawn);
-            }
-
-            // Remove invalid mobspawns
-            final Iterator<MobSpawn> it = spawns.iterator();
-            while (it.hasNext()) {
-                final MobSpawn spawn = it.next();
-
-                if (spawn.isValid()) {
-                    continue;
-                }
-
-                plugin.logger.warning("Discarding mobspawn '" + spawn.getName() + "'. Mobspawn is not valid!");
-
-                if (spawn.getLocation() != null) {
-                    spawn.getLocation().getBlock().setType(Material.AIR);
-                }
-
-                it.remove();
-            }
-            saveConfig();
+        if (spawnConfig.exists()) {
+            spawnConfig.load();
         }
-    }
-
-    private void saveConfig() {
-
-        // Save spawns
-        config.clear();
-
-        for (MobSpawn spawn : spawns) {
-            if (!spawn.isValid()) {
-                plugin.logger.info("Not saving mobspawn: " + spawn.getName() + ". Mobspawn is invalid!");
+        // [id]:
+        //   location: [location]
+        //   profile: [profilename]
+        for (String id : spawnConfig.getKeys(false)) {
+            if (!spawnConfig.isConfigurationSection(id)) {
+                plugin.logger.warning("Could not load mobspawn: '" + id + "'. Invalid format!");
                 continue;
             }
 
-            final String name = spawn.getName().toLowerCase();
-            config.set("spawns." + name + ".location", new SerializableBlockLocation(spawn.getLocation()).serialize());
-            config.set("spawns." + name + ".type", spawn.getEntityType().toString());
-            if (spawn.getProfile() != null) {
-                config.set("spawns." + name + ".profile", spawn.getProfile().getName().toLowerCase());
+            final MobSpawn spawn = new MobSpawn(this, id);
+            spawn.loadFrom(spawnConfig.getConfigurationSection(id));
+            spawns.add(spawn);
+        }
+        saveConfig();
+    }
+
+    private void saveConfig() {
+        for (MobSpawn spawn : spawns) {
+            spawn.saveTo(spawnConfig.createSection(spawn.getId()));
+        }
+
+        spawnConfig.save();
+    }
+
+
+    // Getters, Setters
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
+        for (MobSpawn spawn : spawns) {
+            updateSign(spawn);
+        }
+    }
+
+    public Goldiriath getPlugin() {
+        return plugin;
+    }
+
+    public boolean isDevMode() {
+        return devMode;
+    }
+
+    public int getRadiusSquared() {
+        return radiusSquared;
+    }
+
+    public int getMaxMobs() {
+        return maxMobs;
+    }
+
+    public int getSpawnThreshold() {
+        return spawnThreshold;
+    }
+
+    public MobSpawnProfile getProfile(String id) {
+        if (id == null) {
+            return null;
+        }
+
+        for (MobSpawnProfile profile : profiles) {
+            if (profile.getId().equals(id)) {
+                return profile;
             }
         }
 
-        config.save();
+        return null;
     }
 }

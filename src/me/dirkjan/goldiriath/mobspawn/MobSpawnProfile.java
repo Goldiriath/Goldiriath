@@ -1,31 +1,51 @@
 package me.dirkjan.goldiriath.mobspawn;
 
+import me.dirkjan.goldiriath.util.ConfigLoadable;
+import me.dirkjan.goldiriath.util.Util;
+import me.dirkjan.goldiriath.util.Validatable;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-public class MobSpawnProfile {
+public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
-    private final String name;
-    private final String customName;
-    private final ItemStack carryItem;
-    private final ItemStack helmet;
-    private final ItemStack chestplate;
-    private final ItemStack leggings;
-    private final ItemStack boots;
+    private final String id;
+    //
+    private EntityType type;
+    private String customName;
+    private long spawnThreshold;
+    private ItemStack carryItem;
+    private ItemStack helmet;
+    private ItemStack chestplate;
+    private ItemStack leggings;
+    private ItemStack boots;
 
-    public MobSpawnProfile(String name, String customName, ItemStack carryItem, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
-        this.name = name;
-        this.customName = customName;
-        this.carryItem = carryItem;
-        this.helmet = helmet;
-        this.chestplate = chestplate;
-        this.leggings = leggings;
-        this.boots = boots;
+    public MobSpawnProfile(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
-        return name;
+        return id;
+    }
+
+    public EntityType getType() {
+        return type;
+    }
+
+    public boolean hasSpawnThreshold() {
+        return spawnThreshold >= 0;
+    }
+
+    public long getSpawnThreshold() {
+        return spawnThreshold;
     }
 
     public String getCustomName() {
@@ -52,7 +72,38 @@ public class MobSpawnProfile {
         return boots;
     }
 
-    public void setup(LivingEntity entity) {
+    @Override
+    public void loadFrom(ConfigurationSection config) {
+
+        final String entityTypeName = config.getString("type", null);
+        if (entityTypeName == null) {
+            type = null;
+        } else {
+            type = EntityType.fromName(entityTypeName);
+        }
+
+        customName = config.getString("name", null);
+        spawnThreshold = config.getInt("spawn_threshold", -1);
+
+        carryItem = Util.parseItem(config.getString("item", null));
+
+        helmet = Util.parseItem(config.getString("helmet", null));
+        chestplate = Util.parseItem(config.getString("chestplate", null));
+        leggings = Util.parseItem(config.getString("leggings", null));
+        boots = Util.parseItem(config.getString("boots", null));
+
+        if (customName != null) {
+            customName = ChatColor.translateAlternateColorCodes('&', customName);
+        }
+    }
+
+    public LivingEntity spawn(Location location) {
+        if (!isValid()) {
+            return null;
+        }
+
+        final LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
+
         final EntityEquipment equipment = entity.getEquipment();
 
         entity.setCanPickupItems(false);
@@ -85,6 +136,16 @@ public class MobSpawnProfile {
         if (boots != null) {
             equipment.setBoots(boots);
         }
+
+        return entity;
+    }
+
+    @Override
+    public boolean isValid() {
+        return id != null
+                && type != null
+                && type.isAlive()
+                && type.isSpawnable();
     }
 
 }

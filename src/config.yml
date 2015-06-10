@@ -34,15 +34,6 @@ mobspawner:
     # Set to 0 to always spawn.
     player_radius_threshold: 50
 
-    profiles:
-        hellzombie:
-            name: &4Zombie of Hell
-            item: IRON_SWORD:5
-            helmet: LEATHER_HELMET:3
-            chestplate: DIAMOND_CHESTPLATE:2
-            leggings: GOLD_LEGGINGS
-            boots: IRON_BOOTS:15
-
 # If enabled, dispensers will never run out
 infinite_dispenser:
     enabled: true

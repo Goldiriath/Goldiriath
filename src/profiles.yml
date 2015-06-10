@@ -1,0 +1,10 @@
+
+hellzombie:
+    name: '&4Zombie of Hell'
+    type: ZOMBIE
+    spawn_threshold: 60
+    item: IRON_SWORD:5
+    helmet: LEATHER_HELMET:3
+    chestplate: DIAMOND_CHESTPLATE:2
+    leggings: GOLD_LEGGINGS
+    boots: IRON_BOOTS:15
