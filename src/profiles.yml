@@ -3,7 +3,7 @@ hellzombie:
     name: '&4Zombie of Hell'
     type: ZOMBIE
     level: 5
-    spawn_threshold: 6000
+    spawn_threshold: 600
     item: IRON_SWORD:5
     helmet: LEATHER_HELMET:3
     chestplate: DIAMOND_CHESTPLATE:2

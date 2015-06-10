@@ -53,6 +53,16 @@ public class MobSpawnManager implements Service, Listener {
         return Collections.unmodifiableSet(spawns);
     }
 
+    public int killAll() {
+        int killed = 0;
+
+        for (MobSpawn spawn : spawns) {
+            killed += spawn.kill();
+        }
+
+        return killed;
+    }
+
     public void addSpawn(MobSpawn spawn) {
         if (!spawn.isValid()) {
             plugin.logger.warning("Could not add mobspawn: " + spawn.getId() + ". Mobspawn not valid");
@@ -118,6 +128,9 @@ public class MobSpawnManager implements Service, Listener {
         } catch (Exception ignored) {
         }
 
+        // Kill spawned entities
+        killAll();
+
         // Unregister events
         HandlerList.unregisterAll(this);
     }
@@ -161,9 +174,22 @@ public class MobSpawnManager implements Service, Listener {
             return;
         }
 
+        // Validate max mobs
+        int spawnMaxMobs = -1;
+        if (event.getLine(3) != null && !event.getLine(3).isEmpty()) {
+            try {
+                spawnMaxMobs = Integer.parseInt(event.getLine(3));
+            } catch (NumberFormatException ex) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "Invalid number: " + event.getLine(3));
+                return;
+            }
+        }
+
         final MobSpawn spawn = new MobSpawn(this, id);
         spawn.setProfile(profile);
         spawn.setLocation(event.getBlock().getLocation());
+        spawn.setMaxMobs(spawnMaxMobs);
 
         plugin.msm.addSpawn(spawn);
 
@@ -241,7 +267,7 @@ public class MobSpawnManager implements Service, Listener {
         sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
         sign.setLine(1, spawn.getId());
         sign.setLine(2, spawn.getProfile().getId());
-        sign.setLine(3, "");
+        sign.setLine(3, spawn.hasMaxMobs() ? "" + spawn.getMaxMobs() : "");
         sign.update();
     }
 
@@ -297,7 +323,6 @@ public class MobSpawnManager implements Service, Listener {
 
         spawnConfig.save();
     }
-
 
     // Getters, Setters
     public void setDevMode(boolean devMode) {

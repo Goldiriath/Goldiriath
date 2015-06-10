@@ -1,5 +1,9 @@
 package me.dirkjan.goldiriath.mobspawn;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.ConfigSavable;
@@ -8,7 +12,6 @@ import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -20,16 +23,19 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
     private final MobSpawnManager msm;
     private final Logger logger;
     private final String id;
+    private final Set<LivingEntity> spawns;
     //
     private MobSpawnProfile profile;
     private Location location;
     private long lastSpawn;
+    private int maxMobs;
 
     public MobSpawn(MobSpawnManager msm, String id) {
         this.msm = msm;
         this.logger = msm.getPlugin().getLogger();
         this.id = id;
         this.lastSpawn = 0;
+        this.spawns = new HashSet<>();
     }
 
     public Location getLocation() {
@@ -56,8 +62,38 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         return lastSpawn;
     }
 
+    public boolean hasMaxMobs() {
+        return maxMobs >= 1;
+    }
+
+    public Set<LivingEntity> getSpawns() {
+        return Collections.unmodifiableSet(spawns);
+    }
+
+    public int kill() {
+        int killed = 0;
+
+        for (LivingEntity entity : spawns) {
+            entity.remove();
+            killed++;
+        }
+        spawns.clear();
+
+        return killed;
+    }
+
+    public int getMaxMobs() {
+        return maxMobs;
+    }
+
+    public void setMaxMobs(int maxMobs) {
+        this.maxMobs = maxMobs;
+    }
+
     @Override
     public void loadFrom(ConfigurationSection config) {
+        kill();
+
         final String locationString = config.getString("location");
         if (locationString == null) {
             logger.warning("Could not load mobspawn '" + id + "'. Location not defined!");
@@ -79,6 +115,8 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         if (profile == null) {
             logger.warning("Ignoring profile '" + profileString + "' for MobSpawn '" + id + "'. Profile could not be determined!");
         }
+
+        maxMobs = config.getInt("max_mobs", -1);
     }
 
     @Override
@@ -90,6 +128,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
 
         config.set("location", new SerializableBlockLocation(location).serialize());
         config.set("profile", profile.getId());
+        config.set("max_mobs", maxMobs);
     }
 
     protected boolean tick() { // True if the tick resulted in a mob spawn
@@ -105,10 +144,25 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
             return false;
         }
 
+        // Check spawn timeout
         if (getCurrentTicks() - lastSpawn < (profile.hasSpawnThreshold() ? profile.getSpawnThreshold() : msm.getSpawnThreshold())) {
             return false;
         }
 
+        // Remove old spawns
+        final Iterator<LivingEntity> it = spawns.iterator();
+        while (it.hasNext()) {
+            if (it.next().isDead()) {
+                it.remove();
+            }
+        }
+
+        // Check max mobs
+        if (spawns.size() > (hasMaxMobs() ? maxMobs : msm.getMaxMobs())) {
+            return false;
+        }
+
+        // Check player close
         boolean playerClose = false;
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.getLocation().distanceSquared(location) > msm.getRadiusSquared()) {
@@ -119,18 +173,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
             break;
         }
 
-        if (!playerClose) {
-            return false;
-        }
-
-        int closemobs = 0;
-        for (Entity entity : location.getWorld().getLivingEntities()) {
-            if (entity.getType() == profile.getType() && entity.getLocation().distanceSquared(location) < msm.getRadiusSquared()) {
-                closemobs++;
-            }
-        }
-
-        return closemobs <= msm.getMaxMobs();
+        return playerClose;
     }
 
     public LivingEntity spawn() {
@@ -146,6 +189,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         // Set metadata
         entity.setMetadata(METADATA_ID, new FixedMetadataValue(msm.getPlugin(), this));
 
+        spawns.add(entity);
         return entity;
     }
 
