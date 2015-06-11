@@ -1,5 +1,8 @@
 package me.dirkjan.goldiriath.mobspawn;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.Util;
 import me.dirkjan.goldiriath.util.Validatable;
@@ -10,15 +13,19 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
-    public static final String METADATA_ID = "profile";
+    public static final int INFINITE_POTION_DURATION = 1000000;
     //
     private final String id;
     private final MobSpawnManager msm;
+    private final Logger logger;
     //
+    private final Set<PotionEffect> effects;
     private EntityType type;
     private int level;
     private String customName;
@@ -32,6 +39,8 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     public MobSpawnProfile(MobSpawnManager msm, String id) {
         this.id = id;
         this.msm = msm;
+        this.logger = msm.getPlugin().getLogger();
+        this.effects = new HashSet<>();
     }
 
     public MobSpawnManager getManager() {
@@ -92,12 +101,35 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
             type = EntityType.fromName(entityTypeName);
         }
 
+        // Meta
         customName = config.getString("name", null);
         spawnThreshold = config.getInt("spawn_threshold", -1);
         level = config.getInt("level", 1);
 
-        carryItem = Util.parseItem(config.getString("item", null));
+        // Effects
+        effects.clear();
+        if (config.isConfigurationSection("potions")) {
+            for (String potionTypeName : config.getConfigurationSection("potions").getKeys(false)) {
+                final PotionEffectType effectType = PotionEffectType.getByName(potionTypeName);
+                if (effectType == null) {
+                    logger.warning("Ignoring potion effect for profile '" + id + "'. Unrecognised potion type: " + potionTypeName + "!");
+                    continue;
+                }
 
+                final int amplifier = config.getInt("potions." + potionTypeName + ".amplifier", 1);
+                final boolean ambient = config.getBoolean("potions." + potionTypeName + ".ambient", false);
+                int duration = config.getInt("potions." + potionTypeName + ".duration", 200);
+                if (duration <= 0) {
+                    duration = INFINITE_POTION_DURATION;
+                }
+
+                final PotionEffect effect = new PotionEffect(effectType, duration, amplifier, ambient);
+                effects.add(effect);
+            }
+        }
+
+        // Equipment
+        carryItem = Util.parseItem(config.getString("item", null));
         helmet = Util.parseItem(config.getString("helmet", null));
         chestplate = Util.parseItem(config.getString("chestplate", null));
         leggings = Util.parseItem(config.getString("leggings", null));
@@ -116,8 +148,33 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         // Spawn entity
         final LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
 
-        // Set owning spawner
-        entity.setMetadata(METADATA_ID, new FixedMetadataValue(msm.getPlugin(), this));
+        // Add potion effects
+        entity.addPotionEffects(effects);
+
+        // TODO: Find a better way to keep infinite potion effects lasting?
+        for (PotionEffect effect : effects) {
+            if (effect.getDuration() != INFINITE_POTION_DURATION) {
+                continue;
+            }
+
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    if (!entity.isValid() || entity.isDead()) {
+                        cancel();
+                        return;
+                    }
+
+                    // Update potion effects
+                    for (PotionEffect effect : effects) {
+                        entity.addPotionEffect(effect, true);
+                    }
+                }
+
+            }.runTaskLater(msm.getPlugin(), 20);
+            break;
+        }
 
         // Set equipment
         final EntityEquipment equipment = entity.getEquipment();

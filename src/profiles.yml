@@ -9,3 +9,8 @@ hellzombie:
     chestplate: DIAMOND_CHESTPLATE:2
     leggings: GOLD_LEGGINGS
     boots: IRON_BOOTS:15
+    potions:
+        SPEED:
+            duration: -1
+            amplifier: 1
+            ambient: true

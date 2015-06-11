@@ -113,7 +113,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
         triggers.clear();
         triggers.addAll(new TriggerParser(plugin, id).parse(config.getStringList("triggers")));
 
-
         if (!config.isConfigurationSection("stages")) {
             plugin.logger.warning("[" + id + "] Could not load quest. No stages defined!");
             return;
@@ -128,7 +127,6 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
 
             stages.put(stageId, new QuestStage(this, stageId));
         }
-
 
         if (!stages.containsKey(STAGE_ENTRY_ID)
                 || !stages.containsKey(STAGE_COMPLETE_ID)
