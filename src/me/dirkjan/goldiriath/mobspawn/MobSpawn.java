@@ -94,7 +94,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
     public void loadFrom(ConfigurationSection config) {
         kill();
 
-        final String locationString = config.getString("location");
+        final String locationString = config.getString("location", null);
         if (locationString == null) {
             logger.warning("Could not load mobspawn '" + id + "'. Location not defined!");
             return;
@@ -158,7 +158,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         }
 
         // Check max mobs
-        if (spawns.size() > (hasMaxMobs() ? maxMobs : msm.getMaxMobs())) {
+        if (spawns.size() >= (hasMaxMobs() ? maxMobs : msm.getMaxMobs())) {
             return false;
         }
 
