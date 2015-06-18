@@ -7,12 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.dialog.Dialog;
+import me.dirkjan.goldiriath.dialog.script.ScriptRunner;
 import me.dirkjan.goldiriath.skill.Skill;
 import me.dirkjan.goldiriath.skill.SkillType;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.ConfigSavable;
 import net.pravian.bukkitlib.util.LoggerUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     private int maxMana;
     private int xp;
     private int skillPoints;
+    private ScriptRunner scriptRunner;
 
     protected PlayerData(PlayerManager manager, Player player) {
         this.manager = manager;
@@ -132,15 +134,15 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         flags.remove(flag);
     }
 
-    public boolean hasPlayedDialog(String id) {
+    public boolean hasHadDialog(String id) {
         return dialogs.containsKey(id) && dialogs.get(id) > 0;
     }
 
-    public int getDialogPlayed(String id) {
+    public int getDialogCount(String id) {
         return dialogs.get(id);
     }
 
-    public void recordPlayDialog(String id) {
+    public void recordDialog(String id) {
         if (dialogs.containsKey(id)) {
             dialogs.put(id, dialogs.get(id) + 1);
         } else {
@@ -226,10 +228,31 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return skillPoints >= has;
     }
 
-    @Deprecated // Don't use this method
-    public void setQuestData(QuestData questData) {
-        Validate.notNull(questData);
-        this.questData = questData;
+    public ScriptRunner getDialogScriptRunner() {
+        return scriptRunner;
+    }
+
+    public boolean isInDialog() {
+        return getDialogScriptRunner() != null;
+    }
+
+    public void endDialog() {
+        this.scriptRunner.stop();
+        this.scriptRunner = null;
+    }
+
+    public void startDialog(Dialog dialog) {
+        if (scriptRunner != null) {
+            endDialog();
+        }
+
+        final ScriptRunner sr = new ScriptRunner(dialog.getScript(), player);
+        sr.start();
+        this.scriptRunner = sr;
+    }
+
+    public ScriptRunner getScriptRunner() {
+        return scriptRunner;
     }
 
     public PlayerManager getManager() {

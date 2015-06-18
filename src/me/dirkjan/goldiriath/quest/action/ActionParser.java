@@ -3,7 +3,7 @@ package me.dirkjan.goldiriath.quest.action;
 import java.util.List;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.dialog.DialogContainer;
+import me.dirkjan.goldiriath.dialog.NPCDialogHandler;
 import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.quest.Quest;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -17,14 +17,14 @@ public class ActionParser {
     private final String id;
     //
     private Quest quest;
-    private DialogContainer dialog;
+    private NPCDialogHandler dialog;
 
     public ActionParser(Quest quest) {
         this(quest.getManager().getPlugin(), quest.getId());
         this.quest = quest;
     }
 
-    public ActionParser(DialogContainer dialog) {
+    public ActionParser(NPCDialogHandler dialog) {
         this(dialog.getManager().getPlugin(), dialog.getId());
         this.dialog = dialog;
     }

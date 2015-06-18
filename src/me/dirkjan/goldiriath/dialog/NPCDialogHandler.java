@@ -1,6 +1,8 @@
 package me.dirkjan.goldiriath.dialog;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +12,12 @@ import me.dirkjan.goldiriath.quest.trigger.PlayerEventTrigger;
 import me.dirkjan.goldiriath.quest.trigger.Triggerable;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.Validatable;
-import net.citizensnpcs.api.event.NPCLeftClickEvent;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-public class DialogContainer extends RegistrableListener implements Triggerable<Player>, ConfigLoadable, Validatable {
+public class NPCDialogHandler extends RegistrableListener implements Triggerable<Player>, ConfigLoadable, Validatable {
 
     private final DialogManager dm;
     private final String id;
@@ -35,7 +37,7 @@ public class DialogContainer extends RegistrableListener implements Triggerable<
         return dm;
     }
 
-    public DialogContainer(DialogManager dm, String id) {
+    public NPCDialogHandler(DialogManager dm, String id) {
         super(dm.getPlugin());
         this.dm = dm;
         this.id = id;
@@ -51,29 +53,43 @@ public class DialogContainer extends RegistrableListener implements Triggerable<
             return;
         }
 
-        // Load and parse dialogs
+        // Load dialogs
+        // Loading is seperated from parsing so dialog script 'zap' commands can find other dialogs
         dialogs.clear();
         for (String dialogId : config.getConfigurationSection("dialogs").getKeys(false)) {
+
             if (!config.isConfigurationSection(dialogId)) {
                 logger.warning("[" + id + "] Skipping dialog '" + dialogId + "'. Invalid format!");
                 continue;
             }
 
-            final Dialog dialog = new Dialog(this, dialogId);
-
-            dialog.loadFrom(config.getConfigurationSection(dialogId));
-
-            if (!dialog.isValid()) {
-                logger.warning("[" + id + "] Skipping dialog '" + dialogId + "'. Dialog is invalid!");
-                continue;
-            }
-
-            dialogs.put(dialogId, dialog);
+            final Dialog dialog = new Dialog(this, dialogId.toLowerCase());
+            dialogs.put(dialogId.toLowerCase(), dialog);
         }
 
-        // Load click triggers
+        // Parse dialogs
+        for (Dialog dialog : dialogs.values()) {
+            final ConfigurationSection dialogSection = config.getConfigurationSection(dialog.getId());
+
+            if (dialogSection == null) {
+                if (!config.isConfigurationSection(dialog.getId())) {
+                    logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Invalid ID!");
+                    continue;
+                }
+            }
+
+            dialog.loadFrom(dialogSection);
+
+            if (!dialog.isValid()) {
+                logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Missing values!");
+                dialogs.remove(dialog.getId());
+            }
+        }
+
+        // Load and parse click triggers
         clickDialogs.clear();
         for (String dialogId : config.getStringList("click")) {
+            dialogId = dialogId.toLowerCase();
 
             final Dialog dialog = dialogs.get(dialogId);
 
@@ -89,15 +105,16 @@ public class DialogContainer extends RegistrableListener implements Triggerable<
         options.clear();
         if (config.isConfigurationSection("options")) {
             for (String optionId : config.getConfigurationSection("options").getKeys(false)) {
+                optionId = optionId.toLowerCase();
 
                 if (!config.isConfigurationSection("options." + optionId)) {
                     logger.warning("[" + id + "] Could not parse option '" + optionId + "'. Invalid format!");
                 }
 
-                final OptionSet optionSet = new OptionSet(this, optionId);
+                final OptionSet optionSet = new OptionSet(this, optionId.toLowerCase());
                 optionSet.loadFrom(config.getConfigurationSection("options." + optionId));
 
-                options.put(optionId, optionSet);
+                options.put(optionId.toLowerCase(), optionSet);
             }
 
         }
@@ -107,12 +124,13 @@ public class DialogContainer extends RegistrableListener implements Triggerable<
     }
 
     @EventHandler
-    public void onNPCClick(NPCLeftClickEvent event) {
+    public void onNPCClick(NPCRightClickEvent event) {
         if (event.getNPC().getId() != npcId) {
             return;
         }
 
         onTrigger(null, event.getClicker());
+        event.setCancelled(true);
     }
 
     @Override
@@ -134,6 +152,26 @@ public class DialogContainer extends RegistrableListener implements Triggerable<
 
     public String getNpcName() {
         return npcName;
+    }
+
+    public Map<String, Dialog> getDialogsMap() {
+        return Collections.unmodifiableMap(dialogs);
+    }
+
+    public Collection<Dialog> getDialogs() {
+        return getDialogsMap().values();
+    }
+
+    public List<Dialog> getClickDialogs() {
+        return Collections.unmodifiableList(clickDialogs);
+    }
+
+    public Map<String, OptionSet> getOptionsMap() {
+        return Collections.unmodifiableMap(options);
+    }
+
+    public Collection<OptionSet> getOptions() {
+        return getOptionsMap().values();
     }
 
     @Override

@@ -13,11 +13,11 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class OptionSet implements ConfigLoadable {
 
-    private final DialogContainer dialog;
+    private final NPCDialogHandler dialog;
     private final String id;
     private final List<Option> options = new ArrayList<>();
 
-    public OptionSet(DialogContainer dialog, String id) {
+    public OptionSet(NPCDialogHandler dialog, String id) {
         this.dialog = dialog;
         this.id = id;
     }
@@ -26,14 +26,14 @@ public class OptionSet implements ConfigLoadable {
     public void loadFrom(ConfigurationSection config) {
         options.clear();
         for (String optionId : config.getKeys(false)) {
+            optionId = optionId.toLowerCase();
+
+            final ActionList actions = new ActionParser(Goldiriath.plugin, id) // TODO: Fix 'zap' parsing
+                    .parse(config.getStringList("actions"));
 
             final Option opt = new Option(optionId);
-
             opt.setDisplay(ChatUtils.colorize(config.getString("display", optionId)));
-            opt
-                    .getActions()
-                    .addAll(new ActionParser(Goldiriath.plugin, id) // TODO: Fix 'zap' parsing
-                            .parse(config.getStringList("actions")));
+            opt.getActions().addAll(actions);
 
             options.add(opt);
         }
@@ -43,7 +43,7 @@ public class OptionSet implements ConfigLoadable {
         return id;
     }
 
-    public DialogContainer getDialog() {
+    public NPCDialogHandler getDialog() {
         return dialog;
     }
 

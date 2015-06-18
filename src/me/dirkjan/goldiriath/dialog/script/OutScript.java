@@ -17,7 +17,7 @@ public class OutScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        player.sendMessage(script.getDialog().getDialogContainer().getNpcName() + ChatColor.RESET + ": " + line);
+        player.sendMessage(script.getDialog().getHandler().getNpcName() + ChatColor.RESET + ": " + line);
         if (sound != null) {
             player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
         }

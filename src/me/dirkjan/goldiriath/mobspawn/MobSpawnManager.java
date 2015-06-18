@@ -265,8 +265,8 @@ public class MobSpawnManager implements Service, Listener {
 
         final Sign sign = (Sign) spawner.getState();
         sign.setLine(0, "[" + ChatColor.DARK_PURPLE + "MobSpawn" + ChatColor.RESET + "]");
-        sign.setLine(1, spawn.getId());
-        sign.setLine(2, spawn.getProfile().getId());
+        sign.setLine(1, spawn.getId().toLowerCase());
+        sign.setLine(2, spawn.getProfile().getId().toLowerCase());
         sign.setLine(3, spawn.hasMaxMobs() ? "" + spawn.getMaxMobs() : "");
         sign.update();
     }
@@ -288,7 +288,7 @@ public class MobSpawnManager implements Service, Listener {
         profileConfig.load();
         for (String id : profileConfig.getKeys(false)) {
             final ConfigurationSection section = profileConfig.getConfigurationSection(id);
-            id = id.toLowerCase().trim();
+            id = id.toLowerCase();
 
             final MobSpawnProfile profile = new MobSpawnProfile(this, id);
             profile.loadFrom(section);
@@ -308,6 +308,8 @@ public class MobSpawnManager implements Service, Listener {
                 plugin.logger.warning("Could not load mobspawn: '" + id + "'. Invalid format!");
                 continue;
             }
+
+            id = id.toLowerCase();
 
             final MobSpawn spawn = new MobSpawn(this, id);
             spawn.loadFrom(spawnConfig.getConfigurationSection(id));
@@ -356,6 +358,8 @@ public class MobSpawnManager implements Service, Listener {
         if (id == null) {
             return null;
         }
+
+        id = id.toLowerCase();
 
         for (MobSpawnProfile profile : profiles) {
             if (profile.getId().equals(id)) {

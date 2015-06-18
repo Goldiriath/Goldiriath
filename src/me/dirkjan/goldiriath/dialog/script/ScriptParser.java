@@ -3,7 +3,9 @@ package me.dirkjan.goldiriath.dialog.script;
 import java.util.List;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.dialog.Dialog;
+import me.dirkjan.goldiriath.quest.ParseException;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ScriptParser {
 
@@ -12,7 +14,7 @@ public class ScriptParser {
 
     public ScriptParser(Dialog dialog) {
         this.dialog = dialog;
-        this.logger = dialog.getDialogContainer().getManager().getPlugin().getLogger();
+        this.logger = dialog.getHandler().getManager().getPlugin().getLogger();
     }
 
     public Script parse(List<String> unparsed) {
@@ -36,16 +38,38 @@ public class ScriptParser {
             ScriptItem si = null;
             final String[] args = (String[]) ArrayUtils.subarray(parts, 1, parts.length); // Shift front
 
-            switch (parts[1]) {
-                case "out":
-                    si = new OutScript(script, args);
-                    break;
+            try {
+                switch (parts[1]) {
 
-                // TODO: rest of the script items
+                    case "out":
+                        si = new OutScript(script, args);
+                        break;
+
+                    case "note":
+                        si = new NoteScript(script, args);
+                        break;
+
+                    case "zap":
+                        final Dialog newDialog = dialog.getHandler().getDialogsMap().get(args[1].toLowerCase());
+                        if (newDialog == null) {
+                            logger.warning("[" + dialog.getId() + "] Skipping script line: '" + scriptLine + "'. Could not find command! (Is it supported?)");
+                            continue;
+                        }
+
+                        si = new ZapScript(script, newDialog);
+                        break;
+
+                    // TODO: rest of the script items
+                    default:
+                        logger.warning("[" + dialog.getId() + "] Skipping script line: '" + scriptLine + "'. Could not find command! (Is it supported?)");
+                }
+            } catch (Exception ex) {
+                final ParseException pex = (ex instanceof ParseException ? (ParseException) ex : new ParseException(ex.getMessage(), ex));
+                logger.warning("[" + dialog.getId() + "] Skipping script line: " + scriptLine + ". Could not be parsed!");
+                logger.severe(ExceptionUtils.getFullStackTrace(pex));
             }
 
             if (si == null) {
-                logger.warning("[" + dialog.getId() + "] Skipping script line: '" + scriptLine + "'. Unknown script command '" + parts[1] + "'");
                 continue;
             }
 

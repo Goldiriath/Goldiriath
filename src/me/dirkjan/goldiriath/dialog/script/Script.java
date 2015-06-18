@@ -15,7 +15,7 @@ public class Script extends SafeArrayList<ScriptItem> implements Action {
     private final Dialog dialog;
 
     public Script(Dialog dialog) {
-        this.plugin = dialog.getDialogContainer().getManager().getPlugin();
+        this.plugin = dialog.getHandler().getManager().getPlugin();
         this.dialog = dialog;
     }
 
