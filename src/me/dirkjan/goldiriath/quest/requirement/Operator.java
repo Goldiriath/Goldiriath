@@ -26,7 +26,7 @@ public enum Operator implements Operatable {
                     return a >= b;
                 }
             },
-    EQUAL("=") {
+    EQUAL("==") {
                 @Override
                 public boolean operate(int a, int b) {
                     return a == b;

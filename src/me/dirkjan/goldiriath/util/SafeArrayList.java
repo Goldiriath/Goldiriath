@@ -22,7 +22,7 @@ public class SafeArrayList<T> extends ArrayList<T> {
         // Sanity check
         for (T elem : elems) {
             if (elem == this) {
-                throw new IllegalArgumentException("Can not add self to element  list.");
+                throw new IllegalArgumentException("Can not add self to element list.");
             }
         }
         return super.addAll(elems);

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.command.Command_goldiriath;
+import me.dirkjan.goldiriath.dialog.DialogManager;
 import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
@@ -36,6 +37,7 @@ public class Goldiriath extends JavaPlugin {
     public MobSpawnManager msm;
     public ItemStorage is;
     public QuestManager qm;
+    public DialogManager dm;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -55,6 +57,7 @@ public class Goldiriath extends JavaPlugin {
         msm = new MobSpawnManager(plugin);
         is = new ItemStorage(plugin);
         qm = new QuestManager(plugin);
+        dm = new DialogManager(plugin);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
@@ -71,6 +74,7 @@ public class Goldiriath extends JavaPlugin {
         msm.start();
         is.start();
         qm.start();
+        dm.start();
 
         // Register events
         new PlayerListener(plugin).register();
@@ -90,6 +94,7 @@ public class Goldiriath extends JavaPlugin {
         msm.stop();
         is.stop();
         qm.stop();
+        dm.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);

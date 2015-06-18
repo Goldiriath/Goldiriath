@@ -1,27 +1,34 @@
 package me.dirkjan.goldiriath.quest.action;
 
+import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.quest.Quest;
-import me.dirkjan.goldiriath.quest.stage.Stage;
+import me.dirkjan.goldiriath.quest.trigger.Triggerable;
 import org.bukkit.entity.Player;
 
 public class ZapAction extends AbstractAction {
 
-    final Stage stage;
+    private final Triggerable<Player> triggered;
 
     public ZapAction(Quest quest, String[] args) {
-        super(quest);
+        super(quest.getManager().getPlugin());
 
-        this.stage = quest.getStage(args[1]);
+        this.triggered = quest.getStage(args[1]);
 
-        if (stage == null) {
-            throw new ParseException("Could not determine stage:" + stage);
+        if (triggered == null) {
+            throw new ParseException("Could not determine stage:" + triggered);
         }
+    }
+
+    public ZapAction(Goldiriath plugin, Triggerable<Player> triggered) {
+        super(plugin);
+
+        this.triggered = triggered;
     }
 
     @Override
     public void execute(Player player) {
-        stage.onTrigger(null, player); // TODO: is this right?
+        triggered.onTrigger(null, player); // TODO: is this right?
     }
 
 }

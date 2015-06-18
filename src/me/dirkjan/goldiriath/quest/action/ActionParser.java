@@ -3,12 +3,12 @@ package me.dirkjan.goldiriath.quest.action;
 import java.util.List;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.dialog.DialogContainer;
 import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.quest.Quest;
-import me.dirkjan.goldiriath.util.SafeArrayList;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-public class ActionParser extends SafeArrayList<Action> {
+public class ActionParser {
 
     private static final long serialVersionUID = 355222119421L;
 
@@ -17,10 +17,16 @@ public class ActionParser extends SafeArrayList<Action> {
     private final String id;
     //
     private Quest quest;
+    private DialogContainer dialog;
 
     public ActionParser(Quest quest) {
         this(quest.getManager().getPlugin(), quest.getId());
         this.quest = quest;
+    }
+
+    public ActionParser(DialogContainer dialog) {
+        this(dialog.getManager().getPlugin(), dialog.getId());
+        this.dialog = dialog;
     }
 
     public ActionParser(Goldiriath plugin, String id) {
@@ -73,11 +79,14 @@ public class ActionParser extends SafeArrayList<Action> {
                         break;
 
                     case "zap":
-                        if (quest == null) {
-                            logger.warning("[" + id + "] Skipping action: " + acLine + ". 'zap' can only be used in quest stages!");
+                        if (quest != null) {
+                            ac = new ZapAction(quest, args);
                             break;
+                        } else if (dialog != null) {
+                            ac = new ZapAction(plugin, dialog);
+                        } else {
+                            logger.warning("[" + id + "] Skipping action: " + acLine + ". 'zap' can only be used in triggerable scenarios.");
                         }
-                        ac = new ZapAction(quest, args);
                         break;
 
                     // TODO: Implement the rest of the actions: https://github.com/Goldiriath/Goldiriath/issues/1
