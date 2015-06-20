@@ -11,6 +11,7 @@ public abstract class ScriptItem implements Action {
         this.script = script;
     }
 
+    @SuppressWarnings("ReturnOfCollectionOrArrayField")
     public Script getScript() {
         return script;
     }

@@ -228,14 +228,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return skillPoints >= has;
     }
 
-    public ScriptRunner getDialogScriptRunner() {
-        return scriptRunner;
-    }
-
-    public boolean isInDialog() {
-        return getDialogScriptRunner() != null;
-    }
-
     public void endDialog() {
         this.scriptRunner.stop();
         this.scriptRunner = null;
@@ -251,7 +243,15 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         this.scriptRunner = sr;
     }
 
+    public boolean isInDialog() {
+        return getScriptRunner() != null;
+    }
+
     public ScriptRunner getScriptRunner() {
+        if (scriptRunner != null && !scriptRunner.isRunning()) {
+            scriptRunner = null;
+        }
+
         return scriptRunner;
     }
 

@@ -19,7 +19,7 @@ public class ZapScript extends ScriptItem {
         newDialog.onTrigger(null, player);
 
         // Possibility: Ignore dialog requirements
-        script.getDialog().getHandler().getManager().getPlugin().pm.getData(player).startDialog(newDialog);
+        //script.getDialog().getHandler().getManager().getPlugin().pm.getData(player).startDialog(newDialog);
 
     }
 
