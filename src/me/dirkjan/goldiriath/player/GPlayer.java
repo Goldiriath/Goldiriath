@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath.player;
 
+import lombok.Getter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.dialog.Dialog;
@@ -17,11 +18,17 @@ import org.bukkit.scoreboard.Score;
 public class GPlayer {
 
     private final Goldiriath plugin;
+    @Getter
     private final PlayerManager manager;
+    @Getter
     private final Player player;
+    @Getter
     private final PlayerData data;
     //
-    private Objective sidebar;
+    @Getter
+    private final Objective sidebar;
+    //
+    @Getter
     private OptionSet currentOption;
     private BukkitTask currentOptionTimeout;
     private ScriptRunner scriptRunner;
@@ -38,18 +45,6 @@ public class GPlayer {
         player.setScoreboard(sidebar.getScoreboard());
     }
 
-    public PlayerManager getManager() {
-        return manager;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public PlayerData getData() {
-        return data;
-    }
-
     public void update() {
         sidebar.getScoreboard().resetScores("money");
         int money = data.getMoney();
@@ -60,10 +55,6 @@ public class GPlayer {
     //
     //
     //
-    public OptionSet getCurrentOption() {
-        return currentOption;
-    }
-
     public boolean isShowingOption() {
         return getCurrentOption() != null;
     }

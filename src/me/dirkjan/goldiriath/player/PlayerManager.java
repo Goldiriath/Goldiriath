@@ -3,6 +3,7 @@ package me.dirkjan.goldiriath.player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.Getter;
 import me.dirkjan.goldiriath.Goldiriath;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LoggerUtils;
@@ -10,16 +11,13 @@ import org.bukkit.entity.Player;
 
 public class PlayerManager {
 
+    @Getter
     private final Goldiriath plugin;
     private final Map<UUID, GPlayer> players;
 
     public PlayerManager(Goldiriath plugin) {
         this.plugin = plugin;
         this.players = new HashMap<>();
-    }
-
-    public Goldiriath getPlugin() {
-        return plugin;
     }
 
     public PlayerData getData(Player player) {

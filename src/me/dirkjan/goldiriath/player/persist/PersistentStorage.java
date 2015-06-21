@@ -10,7 +10,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
-
 public class PersistentStorage implements ConfigLoadable, ConfigSavable {
 
     protected boolean loaded = false;
@@ -30,10 +29,9 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
             String key = persistAnn.value().isEmpty() ? field.getName() : persistAnn.value();
             key = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, key);
 
-
             final DelegatePersistence delegateAnn = field.getAnnotation(DelegatePersistence.class);
 
-            ConfigDelegate inst;
+            ConfigDelegate<?> inst;
             if (delegateAnn == null) {
                 inst = new DefaultConfigDelegate(key);
             } else {
@@ -76,7 +74,6 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
             loaded = true;
         }
 
-
         for (Persistence persist : fields) {
             try {
                 Object value = persist.getDelegate().loadValue(config);
@@ -93,6 +90,7 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void saveTo(ConfigurationSection config) {
         for (Persistence persist : fields) {
             try {

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.skill.Skill;
@@ -12,27 +14,42 @@ import me.dirkjan.goldiriath.skill.SkillType;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.ConfigSavable;
 import net.pravian.bukkitlib.util.LoggerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
 
 public class PlayerData implements ConfigLoadable, ConfigSavable {
 
+    @Getter
     private final PlayerManager manager;
+    @Getter
     private final GPlayer gPlayer;
+    @Getter
     private final Player player;
     private final Set<Skill> skills;
     private final Map<String, Integer> flags;
     private final Map<String, Integer> dialogs;
+    @Getter
     private QuestData questData;
+    @Getter
+    @Setter
     private int money;
+    @Getter
+    @Setter
     private int health;
+    @Getter
+    @Setter
     private int maxHealth;
+    @Getter
+    @Setter
     private int mana;
+    @Getter
+    @Setter
     private int maxMana;
+    @Getter
+    @Setter
     private int xp;
+    @Getter
+    @Setter
     private int skillPoints;
 
     protected PlayerData(GPlayer gPlayer) {
@@ -44,12 +61,8 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         this.dialogs = new HashMap<>();
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
     public Set<Skill> getSkills() {
-        return Collections.unmodifiableSet(skills); // Contents of returned set can not be modified!
+        return Collections.unmodifiableSet(skills);
     }
 
     public void addSkill(Skill skill) {
@@ -140,10 +153,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         }
     }
 
-    public int getMoney() {
-        return money;
-    }
-
     public int addMoney(int added) {
         money += added;
         return money;
@@ -158,52 +167,12 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return money >= has;
     }
 
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
     public boolean hasHealth(int health) {
         return this.health >= health;
     }
 
-    public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
-    }
-
-    public int getMana() {
-        return mana;
-    }
-
-    public void setMana(int mana) {
-        this.mana = mana;
-    }
-
-    public int getMaxMana() {
-        return maxMana;
-    }
-
-    public void setMaxMana(int maxMana) {
-        this.maxMana = maxMana;
-    }
-
     public boolean hasMana(int mana) {
         return this.mana >= mana;
-    }
-
-    public QuestData getQuestData() {
-        return questData;
-    }
-
-    public int getSkillPoints() {
-        return skillPoints;
     }
 
     public void addSkillPoints(int toadd) {
@@ -216,10 +185,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     public boolean hasSkillPoints(int has) {
         return skillPoints >= has;
-    }
-
-    public PlayerManager getManager() {
-        return manager;
     }
 
     @Override
