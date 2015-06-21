@@ -21,7 +21,7 @@ public class GPlayer {
     private final Player player;
     private final PlayerData data;
     //
-    private Objective sidebar;
+    private final Objective sidebar;
     private OptionSet currentOption;
     private BukkitTask currentOptionTimeout;
     private ScriptRunner scriptRunner;
@@ -71,7 +71,8 @@ public class GPlayer {
     public void showOption(final OptionSet option) {
         endOption();
         this.currentOption = option;
-        player.sendRawMessage(option.getMessage().toJSONString());
+        option.getMessage().send(player);
+
         this.currentOptionTimeout = new BukkitRunnable() {
             @Override
             public void run() {
@@ -89,6 +90,7 @@ public class GPlayer {
         this.currentOption = null;
         try {
             this.currentOptionTimeout.cancel();
+        } catch (Exception ignored) {
         } finally {
             this.currentOptionTimeout = null;
         }
@@ -103,6 +105,8 @@ public class GPlayer {
         if (scriptRunner != null) {
             endDialog();
         }
+
+        data.recordDialog(dialog.getId());
 
         final ScriptRunner sr = new ScriptRunner(dialog.getScript(), player);
         sr.start();

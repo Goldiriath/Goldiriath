@@ -1,15 +1,13 @@
 package thirdparty.mkremlins.fanciful;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.stream.JsonWriter;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Represents a textual component of a message part. This can be used to not only represent string literals in a JSON message, but also to represent localized strings and other text values.
@@ -56,7 +54,9 @@ public abstract class TextualComponent implements Cloneable {
         if (map.containsKey("key") && map.size() == 2 && map.containsKey("value")) {
             // Arbitrary text component
             return ArbitraryTextTypeComponent.deserialize(map);
-        } else if (map.size() >= 2 && map.containsKey("key") && !map.containsKey("value") /* It contains keys that START WITH value */) {
+        } else if (map.size() >= 2 && map.containsKey("key") && !map.containsKey("value") /*
+                 * It contains keys that START WITH value
+                 */) {
             // Complex JSON object
             return ComplexTextTypeComponent.deserialize(map);
         }
@@ -202,7 +202,9 @@ public abstract class TextualComponent implements Cloneable {
                 if (valEntry.getKey().equals("key")) {
                     key = (String) valEntry.getValue();
                 } else if (valEntry.getKey().startsWith("value.")) {
-                    value.put(((String) valEntry.getKey()).substring(6) /* Strips out the value prefix */, valEntry.getValue().toString());
+                    value.put(((String) valEntry.getKey()).substring(6) /*
+                             * Strips out the value prefix
+                             */, valEntry.getValue().toString());
                 }
             }
             return new ComplexTextTypeComponent(key, value);

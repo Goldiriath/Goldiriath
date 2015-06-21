@@ -1,5 +1,10 @@
 package thirdparty.mkremlins.fanciful;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -14,15 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import static thirdparty.mkremlins.fanciful.TextualComponent.rawText;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
-import thirdparty.net.amoebaman.util.ArrayWrapper;
-import thirdparty.net.amoebaman.util.Reflection;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,6 +31,9 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import static thirdparty.mkremlins.fanciful.TextualComponent.rawText;
+import thirdparty.net.amoebaman.util.ArrayWrapper;
+import thirdparty.net.amoebaman.util.Reflection;
 
 /**
  * Represents a formattable message. Such messages can use elements such as colors, formatting codes, hover and click data, and other features provided by the vanilla Minecraft
@@ -521,20 +520,21 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
         return this;
     }
     /*
-
-     /**
+     *
+     * /**
      * If the text is a translatable key, and it has replaceable values, this function can be used to set the replacements that will be used in the message.
      * @param replacements The replacements, in order, that will be used in the language-specific message.
      * @return This builder instance.
-     */   /* ------------
-     public FancyMessage translationReplacements(final Iterable<? extends CharSequence> replacements){
-     for(CharSequence str : replacements){
-     latest().translationReplacements.add(new JsonString(str));
-     }
-
-     return this;
-     }
-
+     */   /*
+     * ------------
+     * public FancyMessage translationReplacements(final Iterable<? extends CharSequence> replacements){
+     * for(CharSequence str : replacements){
+     * latest().translationReplacements.add(new JsonString(str));
+     * }
+     *
+     * return this;
+     * }
+     *
      */
 
 
@@ -867,7 +867,9 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
                         // Assume composite type
                         // The only composite type we currently store is another FancyMessage
                         // Therefore, recursion time!
-                        component.hoverActionData = deserialize(object.get("value").toString() /* This should properly serialize the JSON object as a JSON string */);
+                        component.hoverActionData = deserialize(object.get("value").toString() /*
+                         * This should properly serialize the JSON object as a JSON string
+                         */);
                     }
                 } else if (entry.getKey().equals("insertion")) {
                     component.insertionData = entry.getValue().getAsString();

@@ -14,6 +14,7 @@ import me.dirkjan.goldiriath.quest.trigger.Triggerable;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.Validatable;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.pravian.bukkitlib.util.ChatUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -50,41 +51,83 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
     public void loadFrom(ConfigurationSection config) {
         unregister();
 
-        if (!config.isConfigurationSection("dialogs")) {
-            logger.warning("[" + id + "] Skipping NPC dialogs '" + id + "'. No dialogs present!");
-            return;
-        }
+        // Meta
+        npcId = config.getInt("id");
+        npcName = ChatUtils.colorize(config.getString("name", ""));
 
         // Load dialogs
         // Loading is seperated from parsing so dialog script 'zap' commands can find other dialogs
         dialogs.clear();
-        for (String dialogId : config.getConfigurationSection("dialogs").getKeys(false)) {
+        final ConfigurationSection dialogsSection = config.getConfigurationSection("dialogs");
+        if (dialogsSection != null) {
+            for (String dialogId : dialogsSection.getKeys(false)) {
 
-            if (!config.isConfigurationSection(dialogId)) {
-                logger.warning("[" + id + "] Skipping dialog '" + dialogId + "'. Invalid format!");
-                continue;
+                if (!dialogsSection.isConfigurationSection(dialogId)) {
+                    logger.warning("[" + id + "] Skipping dialog '" + dialogId + "'. Invalid format!");
+                    continue;
+                }
+
+                dialogs.put(dialogId.toLowerCase(), new Dialog(this, dialogId.toLowerCase()));
+            }
+        }
+
+        // Load options
+        // Loading is seperated from parsing so that dialog "option" commands can find options
+        options.clear();
+        final ConfigurationSection optionsSection = config.getConfigurationSection("options");
+        if (optionsSection != null) {
+            for (String optionId : optionsSection.getKeys(false)) {
+
+                if (!optionsSection.isConfigurationSection(optionId)) {
+                    logger.warning("[" + id + "] Skipping option '" + optionId + "'. Invalid format!");
+                    continue;
+                }
+
+                options.put(optionId.toLowerCase(), new OptionSet(this, optionId.toLowerCase()));
             }
 
-            final Dialog dialog = new Dialog(this, dialogId.toLowerCase());
-            dialogs.put(dialogId.toLowerCase(), dialog);
         }
 
         // Parse dialogs
         for (Dialog dialog : dialogs.values()) {
-            final ConfigurationSection dialogSection = config.getConfigurationSection(dialog.getId());
+            final ConfigurationSection loopDialogSection = config.getConfigurationSection("dialogs." + dialog.getId());
 
-            if (dialogSection == null) {
-                if (!config.isConfigurationSection(dialog.getId())) {
-                    logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Invalid ID!");
-                    continue;
-                }
+            if (loopDialogSection == null) { // prob capatalisation
+                logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Invalid dialog ID!");
+                dialogs.remove(dialog.getId());
+                continue;
             }
 
-            dialog.loadFrom(dialogSection);
+            try {
+                dialog.loadFrom(loopDialogSection);
+            } catch (ParseException ex) {
+                logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Could not parse Dialog.");
+                logger.warning(ExceptionUtils.getFullStackTrace(ex));
+                continue;
+            }
 
             if (!dialog.isValid()) {
                 logger.warning("[" + id + "] Skipping dialog '" + dialog.getId() + "'. Missing values!");
                 dialogs.remove(dialog.getId());
+            }
+        }
+
+        // Parse options
+        for (OptionSet option : options.values()) {
+            final ConfigurationSection loopOptionSection = config.getConfigurationSection("options." + option.getId());
+
+            if (loopOptionSection == null) { // prob capatalisation
+                logger.warning("[" + id + "] Skipping option '" + option.getId() + "'. Invalid option ID!");
+                options.remove(option.getId());
+                continue;
+            }
+
+            try {
+                option.loadFrom(loopOptionSection);
+            } catch (ParseException ex) {
+                logger.warning("[" + id + "] Skipping option '" + option.getId() + "'. Could not parse OptionSet.");
+                logger.warning(ExceptionUtils.getFullStackTrace(ex));
+                options.remove(option.getId());
             }
         }
 
@@ -103,31 +146,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
             clickDialogs.add(dialog);
         }
 
-        // Load options
-        options.clear();
-        if (config.isConfigurationSection("options")) {
-            for (String optionId : config.getConfigurationSection("options").getKeys(false)) {
-                optionId = optionId.toLowerCase();
-
-                if (!config.isConfigurationSection("options." + optionId)) {
-                    logger.warning("[" + id + "] Could not parse option '" + optionId + "'. Invalid format!");
-                }
-
-                final OptionSet optionSet = new OptionSet(this, optionId.toLowerCase());
-
-                try {
-                    optionSet.loadFrom(config.getConfigurationSection("options." + optionId));
-                } catch (ParseException ex) {
-                    logger.warning("[" + id + "] Could not parse option '" + optionId + "'. Could not parse OptionSet.");
-                    logger.warning(ExceptionUtils.getFullStackTrace(ex));
-                    continue;
-                }
-
-                options.put(optionId.toLowerCase(), optionSet);
-            }
-
-        }
-
+        // Register events
         register();
 
     }
@@ -149,7 +168,6 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
                 continue;
             }
 
-            logger.info("Debug: Triggering dialog " + dialog.getId());
             dialog.onTrigger(trigger, player);
             return;
         }
@@ -187,7 +205,9 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
     public boolean isValid() {
         return dm != null
                 && id != null
-                && npcId != 0;
+                && npcId != 0
+                && npcName != null
+                && !npcName.isEmpty();
     }
 
 }
