@@ -29,7 +29,7 @@ public class ScriptRunner extends BukkitRunnable implements Service {
         task = super.runTaskTimer(plugin, 0, 1);
     }
 
-    public boolean isStarted() {
+    public boolean isRunning() {
         return task != null;
     }
 
@@ -58,18 +58,14 @@ public class ScriptRunner extends BukkitRunnable implements Service {
         tick++;
 
         if (index >= script.size()) {
-
-            // Dialog over
-            plugin.pm.getData(player).endDialog();
-            stop();
+            stop(); // Dialog ended
             return;
-
         }
 
         final ScriptItem item = script.get(index);
 
         if (item.getDelay() <= tick) {
-            return; // Wait until we've waited the proper amount of time
+            return; // Wait until we can run the next script item
         }
 
         // Execute script item

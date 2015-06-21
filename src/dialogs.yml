@@ -21,12 +21,10 @@ farmer_joe:
         helpme:
             yes:
                 display: '&2Yes, of course!'
-                actions:
-                - quest start farmer_1
+                dialog: start_quest
             no:
                 display: '&2No, I''m busy'
-                actions:
-                - zap busy
+                dialog: busy_quest
 
     # Dialogs
     dialogs:
@@ -39,16 +37,17 @@ farmer_joe:
             - '5 out joe_hello Hello, I''m the farmer!'
             - '10 out joe_helpme Do you want to help me bake a cake?'
             - '10 option helpme'
-        busy_quest:
-            once: false
-            script:
-            - '5 out joe_no That''s quite alright'
         start_quest: # This dialog is only triggered once, once the quest is started
             once: true # true/false really doesn't matter here, this dialog can't be click-triggered and we only start this dialog once, above.
             script:
             - '5 out joe_great Great! Thanks so much for helping'
-            - '5 note You just started a quest!'
+            - '5 action quest start farmer_1'
+            - '0 note You just started a quest!'
             - '5 zap list_items_quest'
+        busy_quest:
+            once: false
+            script:
+            - '5 out joe_no That''s quite alright'
         list_items_quest: # This dialog is constantly triggered while joe_quest is in progress.
             once: false
             requirements:

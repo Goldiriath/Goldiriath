@@ -32,12 +32,12 @@ public class Goldiriath extends JavaPlugin {
     public YamlConfig config;
     //
     public PlayerManager pm;
-    public ScoreboardHandler sch;
     // Services
     public MobSpawnManager msm;
     public ItemStorage is;
     public QuestManager qm;
     public DialogManager dm;
+    public HeartBeat hb;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -51,13 +51,13 @@ public class Goldiriath extends JavaPlugin {
         config = new YamlConfig(plugin, "config.yml");
 
         pm = new PlayerManager(plugin);
-        sch = new ScoreboardHandler(plugin);
 
         // Services
         msm = new MobSpawnManager(plugin);
         is = new ItemStorage(plugin);
         qm = new QuestManager(plugin);
         dm = new DialogManager(plugin);
+        hb = new HeartBeat(plugin);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
@@ -75,6 +75,7 @@ public class Goldiriath extends JavaPlugin {
         is.start();
         qm.start();
         dm.start();
+        hb.start();
 
         // Register events
         new PlayerListener(plugin).register();
@@ -95,6 +96,7 @@ public class Goldiriath extends JavaPlugin {
         is.stop();
         qm.stop();
         dm.stop();
+        hb.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);

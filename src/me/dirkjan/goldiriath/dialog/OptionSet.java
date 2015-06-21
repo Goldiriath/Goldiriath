@@ -3,22 +3,22 @@ package me.dirkjan.goldiriath.dialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.quest.action.ActionList;
-import me.dirkjan.goldiriath.quest.action.ActionParser;
+import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.Validatable;
+import thirdparty.mkremlins.fanciful.FancyMessage;
 import net.pravian.bukkitlib.util.ChatUtils;
+import static org.bukkit.ChatColor.*;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class OptionSet implements ConfigLoadable {
 
-    private final NPCDialogHandler dialog;
+    private final NPCDialogHandler handler;
     private final String id;
     private final List<Option> options = new ArrayList<>();
 
-    public OptionSet(NPCDialogHandler dialog, String id) {
-        this.dialog = dialog;
+    public OptionSet(NPCDialogHandler handler, String id) {
+        this.handler = handler;
         this.id = id;
     }
 
@@ -28,13 +28,15 @@ public class OptionSet implements ConfigLoadable {
         for (String optionId : config.getKeys(false)) {
             optionId = optionId.toLowerCase();
 
-            final ActionList actions = new ActionParser(Goldiriath.plugin, id) // TODO: Fix 'zap' parsing
-                    .parse(config.getStringList("actions"));
+            final String dialogString = config.getString("dialog", "");
+            final Dialog dialog = handler.getDialogsMap().get(dialogString);
 
-            final Option opt = new Option(optionId);
+            if (dialog == null) {
+                throw new ParseException("Could not find dialog: '" + dialogString + "'");
+            }
+
+            final Option opt = new Option(optionId, dialog);
             opt.setDisplay(ChatUtils.colorize(config.getString("display", optionId)));
-            opt.getActions().addAll(actions);
-
             options.add(opt);
         }
     }
@@ -44,27 +46,51 @@ public class OptionSet implements ConfigLoadable {
     }
 
     public NPCDialogHandler getDialog() {
-        return dialog;
+        return handler;
     }
 
     public List<Option> getOptions() {
         return Collections.unmodifiableList(options);
     }
 
+    public FancyMessage getMessage() {
+        final FancyMessage message = new FancyMessage()
+                .style(YELLOW)
+                .text("Choice")
+                .then(":");
+
+        for (Option option : options) {
+            message
+                    .then(option.getDisplay())
+                    .style(ITALIC)
+                    .command("/option " + option.getDialog().getHandler().getId() + " " + this.getId() + " " + option.getId() + " ")
+                    .then(", ");
+        }
+
+        // Reset last ", "
+        message.text("");
+        return message;
+    }
+
     public class Option implements Validatable {
 
         private final String id;
+        private final Dialog dialog;
         //
         private String display;
-        private final ActionList actions = new ActionList();
 
-        public Option(String id) {
+        public Option(String id, Dialog dialog) {
             this.id = id;
             this.display = id;
+            this.dialog = dialog;
         }
 
         public String getId() {
             return id;
+        }
+
+        public Dialog getDialog() {
+            return dialog;
         }
 
         public String getDisplay() {
@@ -75,17 +101,12 @@ public class OptionSet implements ConfigLoadable {
             this.display = display;
         }
 
-        @SuppressWarnings("ReturnOfCollectionOrArrayField")
-        public ActionList getActions() {
-            return actions;
-        }
-
         @Override
         public boolean isValid() {
             return id != null
                     && display != null
                     && !display.isEmpty()
-                    && actions != null;
+                    && dialog != null;
         }
 
     }
