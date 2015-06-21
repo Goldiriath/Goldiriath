@@ -225,6 +225,10 @@ public class MobSpawnManager implements Service, Listener {
 
         MobSpawn spawn = null;
         for (MobSpawn loopSpawn : spawns) {
+            if (!loopSpawn.isValid()) {
+                continue;
+            }
+
             if (!loopSpawn.getLocation().equals(event.getBlock().getLocation())) {
                 plugin.logger.info(LocationUtils.format(loopSpawn.getLocation()) + " != " + LocationUtils.format(event.getBlock().getLocation()));
                 continue;

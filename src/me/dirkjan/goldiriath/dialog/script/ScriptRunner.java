@@ -37,6 +37,7 @@ public class ScriptRunner extends BukkitRunnable implements Service {
     public void stop() {
         try {
             task.cancel();
+        } catch (Exception ignored) {
         } finally {
             task = null;
         }

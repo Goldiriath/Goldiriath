@@ -49,6 +49,10 @@ public class ScriptParser {
                         si = new NoteScript(script, args);
                         break;
 
+                    case "option":
+                        si = new OptionScript(script, args);
+                        break;
+
                     case "zap":
                         final Dialog newDialog = dialog.getHandler().getDialogsMap().get(args[1].toLowerCase());
                         if (newDialog == null) {
