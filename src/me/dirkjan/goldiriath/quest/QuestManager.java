@@ -35,9 +35,6 @@ public class QuestManager implements Service {
 
     @Override
     public void start() {
-        quests.clear();
-        globalRequirements.clear();
-        globalActions.clear();
 
         // Ensure folder is present
         if (questContainer.isFile()) {
@@ -52,13 +49,12 @@ public class QuestManager implements Service {
 
         // Load globals
         final File globalFile = new File(questContainer, "global.yml");
-        if (!globalFile.exists()) {
-            logger.warning("Not loading quest globals. global.yml does not exist!");
-        } else {
+        if (globalFile.exists()) {
             final YamlConfig globals = new YamlConfig(plugin, globalFile, false);
             globals.load();
 
             // Requirements
+            globalRequirements.clear();
             if (!globals.isConfigurationSection("requirements")) {
                 logger.warning("Not loading global requirements: global.yml does not contain section: 'requirements'");
             } else {
@@ -69,6 +65,7 @@ public class QuestManager implements Service {
             }
 
             // Actions
+            globalActions.clear();
             if (!globals.isConfigurationSection("actions")) {
                 logger.warning("Not loading global actions: global.yml does not contain section: 'actions'");
             } else {
@@ -80,6 +77,7 @@ public class QuestManager implements Service {
         }
 
         // Load quests
+        quests.clear();
         for (File file : questContainer.listFiles(new QuestFileFilter(plugin))) {
 
             final String id = file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
@@ -97,7 +95,6 @@ public class QuestManager implements Service {
             try {
                 quest.loadFrom(config);
             } catch (Exception ex) {
-                // TODO: Cast to ParseException
                 logger.warning("Skipping quest: " + id + ". Exception loading quest!");
                 logger.severe(ExceptionUtils.getFullStackTrace(ex));
             }

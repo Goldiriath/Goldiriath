@@ -1,20 +1,27 @@
 package me.dirkjan.goldiriath.dialog;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.util.Service;
 import net.pravian.bukkitlib.config.YamlConfig;
+import net.pravian.bukkitlib.util.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class DialogManager implements Service {
 
     private final Goldiriath plugin;
-    private final YamlConfig config;
+    private final Logger logger;
+    private final File dialogContainer;
     private final Map<String, NPCDialogHandler> handlers;
 
     public DialogManager(Goldiriath plugin) {
         this.plugin = plugin;
-        this.config = new YamlConfig(plugin, "dialogs.yml", true);
+        this.logger = plugin.getLogger();
+        this.dialogContainer = FileUtils.getPluginFile(plugin, "dialogs");
         this.handlers = new HashMap<>();
     }
 
@@ -24,31 +31,47 @@ public class DialogManager implements Service {
 
     @Override
     public void start() {
-        if (!config.exists()) {
-            return;
+
+        // Ensure folder is present
+        if (dialogContainer.isFile()) {
+            if (!dialogContainer.delete()) {
+                logger.severe("Not loading dialogs! Could not delete file: " + dialogContainer.getAbsolutePath());
+                return;
+            }
+        }
+        if (!dialogContainer.exists()) {
+            dialogContainer.mkdirs();
         }
 
-        config.load();
-
+        // Load handlers
         handlers.clear();
-        for (String handlerId : config.getKeys(false)) {
+        for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
+            final String id = file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
 
-            if (!config.isConfigurationSection(handlerId)) {
-                plugin.getLogger().warning("Ignoring dialog handler: '" + handlerId + "'. Invalid format!");
+            if (id.isEmpty() || handlers.containsKey(id)) {
+                logger.warning("Skipping dialog handler file: " + file.getName() + ". Invalid dialog ID!");
                 continue;
             }
 
-            final NPCDialogHandler handler = new NPCDialogHandler(this, handlerId.toLowerCase());
-            handler.loadFrom(config.getConfigurationSection(handlerId.toLowerCase()));
+            final YamlConfig config = new YamlConfig(plugin, file, false);
+            config.load();
 
-            if (!handler.isValid()) {
-                plugin.getLogger().warning("Ignoring dialog handler: '" + handlerId + "'. Missing values!");
+            final NPCDialogHandler dialog = new NPCDialogHandler(this, id);
+
+            try {
+                dialog.loadFrom(config);
+            } catch (Exception ex) {
+                logger.warning("Skipping dialog handler: " + id + ". Exception loading dialog!");
+                logger.severe(ExceptionUtils.getFullStackTrace(ex));
+            }
+
+            if (!dialog.isValid()) {
+                logger.warning("Skipping dialog handler: " + id + ". Invalid dialog handler! (Are there missing entries?)");
                 continue;
             }
 
-            handlers.put(handlerId.toLowerCase(), handler);
+            handlers.put(id, dialog);
         }
-
     }
 
     @Override
@@ -59,7 +82,7 @@ public class DialogManager implements Service {
     }
 
     public Map<String, NPCDialogHandler> getHandlers() {
-        return handlers;
+        return Collections.unmodifiableMap(handlers);
     }
 
 }

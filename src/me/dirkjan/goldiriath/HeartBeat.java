@@ -35,6 +35,7 @@ public class HeartBeat implements Service, Runnable {
     public void stop() {
         try {
             task.cancel();
+        } catch (Exception ignored) {
         } finally {
             task = null;
         }
