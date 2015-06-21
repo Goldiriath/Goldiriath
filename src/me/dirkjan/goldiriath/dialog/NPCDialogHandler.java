@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import me.dirkjan.goldiriath.listener.RegistrableListener;
+import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.quest.trigger.PlayerEventTrigger;
 import me.dirkjan.goldiriath.quest.trigger.Triggerable;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.Validatable;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -112,7 +114,14 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
                 }
 
                 final OptionSet optionSet = new OptionSet(this, optionId.toLowerCase());
-                optionSet.loadFrom(config.getConfigurationSection("options." + optionId));
+
+                try {
+                    optionSet.loadFrom(config.getConfigurationSection("options." + optionId));
+                } catch (ParseException ex) {
+                    logger.warning("[" + id + "] Could not parse option '" + optionId + "'. Could not parse OptionSet.");
+                    logger.warning(ExceptionUtils.getFullStackTrace(ex));
+                    continue;
+                }
 
                 options.put(optionId.toLowerCase(), optionSet);
             }

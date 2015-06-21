@@ -2,11 +2,15 @@ package me.dirkjan.goldiriath.util;
 
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.quest.ServerProfile;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class Util {
+
+    private Util() {
+    }
 
     public static void msg(Player player, ServerProfile profile, String message) {
         player.sendMessage(profile.getName() + ": " + message);
@@ -44,6 +48,10 @@ public class Util {
         }
 
         return new ItemStack(type, 1, (short) 0, data);
+    }
+
+    public static long getServerTick() {
+        return Bukkit.getWorlds().get(0).getFullTime();
     }
 
 }

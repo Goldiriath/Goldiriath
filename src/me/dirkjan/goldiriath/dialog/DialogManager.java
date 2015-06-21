@@ -58,4 +58,8 @@ public class DialogManager implements Service {
         }
     }
 
+    public Map<String, NPCDialogHandler> getHandlers() {
+        return handlers;
+    }
+
 }
