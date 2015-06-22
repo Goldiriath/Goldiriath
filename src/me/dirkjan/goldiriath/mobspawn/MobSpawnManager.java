@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.util.Service;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LocationUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -295,7 +297,19 @@ public class MobSpawnManager implements Service, Listener {
             id = id.toLowerCase();
 
             final MobSpawnProfile profile = new MobSpawnProfile(this, id);
-            profile.loadFrom(section);
+
+            try {
+                profile.loadFrom(section);
+            } catch (ParseException ex) {
+                plugin.logger.warning("Could not load mobspawn: '" + id + "'. Exception whilst loading!");
+                plugin.logger.severe(ExceptionUtils.getFullStackTrace(ex));
+                return;
+            }
+
+            if (!profile.isValid()) {
+                plugin.logger.warning("Could not load mobspawn: '" + id + "'. Invalid MobSpawn! (Are there missing values?)");
+                return;
+            }
 
             profiles.add(profile);
         }

@@ -9,8 +9,10 @@ import me.dirkjan.goldiriath.util.Validatable;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -147,6 +149,13 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
         // Spawn entity
         final LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
+
+        // Set baby
+        if (entity instanceof Zombie) {
+            ((Zombie) entity).setBaby(false);
+        } else if (entity instanceof Ageable) {
+            ((Ageable) entity).setAdult();
+        }
 
         // Add potion effects
         entity.addPotionEffects(effects);

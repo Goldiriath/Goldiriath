@@ -109,6 +109,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         final String profileString = config.getString("profile", null);
         if (profileString == null) {
             logger.warning("Could not load mobspawn '" + id + "'. Profile not defined!");
+            return;
         }
 
         profile = msm.getProfile(profileString);
