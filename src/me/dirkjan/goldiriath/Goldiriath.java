@@ -71,6 +71,7 @@ public class Goldiriath extends JavaPlugin {
         msm.start();
         is.start();
         qm.start();
+        up.start();
 
         // Register events
         new PlayerListener(plugin).register();
@@ -90,6 +91,7 @@ public class Goldiriath extends JavaPlugin {
         msm.stop();
         is.stop();
         qm.stop();
+        up.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);

@@ -109,7 +109,6 @@ public class PlayerListener extends RegistrableListener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         plugin.pm.getData(event.getPlayer());
-        plugin.up.updateScoreboard(event.getPlayer());
     }
 
 }
