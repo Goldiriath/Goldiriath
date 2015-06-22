@@ -1,13 +1,17 @@
 package me.dirkjan.goldiriath.player;
 
+import java.util.List;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.dialog.Dialog;
 import me.dirkjan.goldiriath.dialog.OptionSet;
 import me.dirkjan.goldiriath.dialog.script.ScriptRunner;
+import me.dirkjan.goldiriath.mobspawn.MobSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -83,6 +87,28 @@ public class GPlayer {
     //
     //
     //
+    public void recordKill(LivingEntity killed) {
+        int xp = 0;
+        List<MetadataValue> metadataList = killed.getMetadata(MobSpawn.METADATA_ID);
+        if (metadataList.isEmpty()) {
+            return;
+        }
+        MobSpawn mobSpawn = (MobSpawn) metadataList.get(0).value();
+        int moblevel = mobSpawn.getProfile().getLevel();
+        int playerlevel = data.calculateLevel();
+        double diff = Math.abs(playerlevel - moblevel);
+        if (Math.abs(diff) <= 1) {
+            xp = 5;
+        }
+        if (diff >= 2 && diff <= 3 && moblevel >= playerlevel) {
+            xp = 7;
+        }
+        if (diff >= 2 && diff <= 3 && playerlevel >= moblevel) {
+            xp = 2;
+        }
+        data.addXP(xp);
+    }
+
     public OptionSet getCurrentOption() {
         return currentOption;
     }

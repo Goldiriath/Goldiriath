@@ -7,6 +7,7 @@ import me.dirkjan.goldiriath.command.Command_goldiriath;
 import me.dirkjan.goldiriath.dialog.DialogManager;
 import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
+import me.dirkjan.goldiriath.listener.EntityListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
 import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
 import me.dirkjan.goldiriath.player.PlayerManager;
@@ -81,6 +82,7 @@ public class Goldiriath extends JavaPlugin {
         // Register events
         new PlayerListener(plugin).register();
         new BlockListener(plugin).register();
+        new EntityListener(plugin).register();
 
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
