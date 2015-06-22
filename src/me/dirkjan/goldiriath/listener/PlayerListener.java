@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends RegistrableListener {
@@ -103,6 +104,11 @@ public class PlayerListener extends RegistrableListener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         plugin.pm.logout(event.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
+        plugin.pm.getPlayer(event.getPlayer(), true);
     }
 
 }

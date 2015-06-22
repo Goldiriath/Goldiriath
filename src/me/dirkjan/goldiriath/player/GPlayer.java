@@ -1,5 +1,6 @@
 package me.dirkjan.goldiriath.player;
 
+import java.util.ArrayList;
 import java.util.List;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
@@ -29,6 +30,8 @@ public class GPlayer {
     private OptionSet currentOption;
     private BukkitTask currentOptionTimeout;
     private ScriptRunner scriptRunner;
+    //
+    List<String> scoreList = new ArrayList<>();
 
     public GPlayer(PlayerManager manager, Player player) {
         this.plugin = manager.getPlugin();
@@ -55,33 +58,40 @@ public class GPlayer {
     }
 
     public void update() {
-        sidebar.getScoreboard().resetScores("money");
+        
+        for(String score : scoreList){            
+            sidebar.getScoreboard().resetScores(score);
+        }
+        
+        scoreList.clear();
+            
         int money = data.getMoney();
         Score moneyscore = sidebar.getScore("money " + ChatColor.GOLD + money);
         moneyscore.setScore(1);
+        scoreList.add("money " + ChatColor.GOLD + money);
 
-        sidebar.getScoreboard().resetScores("xp");
         int xp = data.getXp();
         int nextxp = data.calculatenextxp();
         Score xpscore = sidebar.getScore("xp " + ChatColor.LIGHT_PURPLE + xp + "/" + nextxp);
         xpscore.setScore(2);
+        scoreList.add("xp " + ChatColor.LIGHT_PURPLE + xp + "/" + nextxp);
 
-        sidebar.getScoreboard().resetScores("level");
         int level = data.calculateLevel();
         Score levelScore = sidebar.getScore("level " + ChatColor.DARK_GREEN + level);
         levelScore.setScore(3);
+        scoreList.add("level " + ChatColor.DARK_GREEN + level);
 
-        sidebar.getScoreboard().resetScores("health");
         int health = data.getHealth();
         int maxhealth = data.getMaxHealth();
         Score healthScore = sidebar.getScore("health " + ChatColor.RED + health + "/" + maxhealth);
         healthScore.setScore(4);
+        scoreList.add("health " + ChatColor.RED + health + "/" + maxhealth);
 
-        sidebar.getScoreboard().resetScores("mana");
         int mana = data.getMana();
         int maxmana = data.getMaxMana();
         Score manaScore = sidebar.getScore("mana " + ChatColor.BLUE + mana + "/" + maxmana);
         manaScore.setScore(5);
+        scoreList.add("mana " + ChatColor.BLUE + mana + "/" + maxmana);
     }
 
     //
