@@ -9,6 +9,10 @@ public enum ConfigPaths implements PathContainer {
     DEFAULT_MANA("default_mana"),
     DEFAULT_SKILLPOINTS("default_skillpoints"),
     DEFAULT_XP("default_xp"),
+    //
+    DIALOG_TIMEOUT("dialog.timeout"),
+    DIALOG_CLICK_THRESHOLD("dialog.click_threshold"),
+    //
     MOBSPAWNER_ENABLED("mobspawner.enabled"),
     MOBSPAWNER_DEV_MODE("mobspawner.dev_mode"),
     MOBSPAWNER_RADIUS("mobspawner.radius"),
@@ -16,6 +20,7 @@ public enum ConfigPaths implements PathContainer {
     MOBSPAWNER_SPAWN_THRESHOLD("mobspawner.spawn_threshold"),
     MOBSPAWNER_PLAYER_RADIUS_THRESHOLD("mobspawner.player_radius_threshold"),
     MOBSPAWNER_PROFILES("mobspawner.profiles"),
+    //
     INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled");
 
     private final String path;

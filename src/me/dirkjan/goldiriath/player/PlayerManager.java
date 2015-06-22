@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 public class PlayerManager {
 
     private final Goldiriath plugin;
-    private final Map<UUID, PlayerData> datamap;
+    private final Map<UUID, GPlayer> players;
 
     public PlayerManager(Goldiriath plugin) {
         this.plugin = plugin;
-        this.datamap = new HashMap<>();
+        this.players = new HashMap<>();
     }
 
     public Goldiriath getPlugin() {
@@ -23,15 +23,25 @@ public class PlayerManager {
     }
 
     public PlayerData getData(Player player) {
-        return getData(player, true);
+        final GPlayer gPlayer = getPlayer(player);
+        return gPlayer == null ? null : gPlayer.getData();
     }
 
     public PlayerData getData(Player player, boolean shouldLoad) {
+        final GPlayer gPlayer = getPlayer(player, shouldLoad);
+        return gPlayer == null ? null : gPlayer.getData();
+    }
+
+    public GPlayer getPlayer(Player player) {
+        return getPlayer(player, true);
+    }
+
+    public GPlayer getPlayer(Player player, boolean shouldLoad) {
 
         // If the playerdata map has the player stored already, use that
-        PlayerData data = datamap.get(player.getUniqueId());
-        if (data != null || !shouldLoad) {
-            return data;
+        GPlayer gPlayer = players.get(player.getUniqueId());
+        if (gPlayer != null || !shouldLoad) {
+            return gPlayer;
         }
 
         // Load data from config
@@ -41,15 +51,15 @@ public class PlayerManager {
         }
 
         // Parse data from config
-        data = new PlayerData(this, player);
-        data.loadFrom(config);
-        datamap.put(player.getUniqueId(), data);
-        return data;
+        gPlayer = new GPlayer(this, player);
+        gPlayer.getData().loadFrom(config); // TODO: improve playerdata loading
+        players.put(player.getUniqueId(), gPlayer);
+        return gPlayer;
     }
 
     public void logout(Player player) { // Should be called when the player logs out
 
-        final PlayerData data = getData(player, false); // false: Don't load the config if it isn't present
+        final PlayerData data = PlayerManager.this.getData(player, false); // false: Don't load the config if it isn't present
 
         if (data == null) {
             LoggerUtils.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");
@@ -61,17 +71,22 @@ public class PlayerManager {
         data.saveTo(config);
         config.save(); // Note: saveTo() does not actually save the config
 
-        if (datamap.remove(player.getUniqueId()) == null) {
+        if (players.remove(player.getUniqueId()) == null) {
             LoggerUtils.warning("Could not remove playerdata for player " + player.getName() + ". Playerdata not present!");
         }
     }
 
     public void saveAll() {
-
-        for (PlayerData data : datamap.values()) {
-            final YamlConfig config = createPlayerConfig(data.getPlayer());
-            data.saveTo(config);
+        for (GPlayer gPlayer : players.values()) {
+            final YamlConfig config = createPlayerConfig(gPlayer.getPlayer());
+            gPlayer.getData().saveTo(config);
             config.save(); // Note: saveTo() does not actually save the config
+        }
+    }
+
+    public void updateAll() {
+        for (GPlayer gPlayer : players.values()) {
+            gPlayer.update();
         }
     }
 

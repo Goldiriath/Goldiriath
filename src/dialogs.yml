@@ -1,0 +1,70 @@
+# Citizens ID
+id: 25
+
+# NPC name
+name: '&9Farmer Joe'
+
+# When the citizen is clicked, the following dialogs will be checked from top
+# to bottom until a dialog can be triggered. If none can, nothing happens.
+# Dialogs are triggerable if the following is true:
+# a) They're set to 'once: false' or haven't been started yet
+# b) Their requirements are met
+click:
+- ask_quest
+- list_items_quest
+- post_quest_passive
+- default_passive
+
+# Options
+options:
+    helpme:
+        yes:
+            display: '&2Yes, of course!'
+            dialog: start_quest
+        no:
+            display: '&4No, I''m busy'
+            dialog: busy_quest
+
+# Dialogs
+dialogs:
+    ask_quest:
+        once: false
+        requirements:
+        - playtime 2d
+        - -quest started joe_quest
+        script:
+        - '5 out joe_hello Hello, I''m the farmer!'
+        - '10 out joe_helpme Do you want to help me bake a cake?'
+        - '10 option helpme'
+    start_quest: # This dialog is only triggered once, once the quest is started
+        once: true # true/false really doesn't matter here, this dialog can't be click-triggered and we only start this dialog once, above.
+        script:
+        - '5 out joe_great Great! Thanks so much for helping'
+        - '5 action quest start farmer_1'
+        - '0 note You just started a quest!'
+        - '5 zap list_items_quest'
+    busy_quest:
+        once: false
+        script:
+        - '5 out joe_no That''s quite alright'
+    list_items_quest: # This dialog is constantly triggered while joe_quest is in progress.
+        once: false
+        requirements:
+        - quest progress joe_quest
+        script:
+        - '5 out joe_get Get me two buckets of milk, an egg and some wheat'
+        - '5 out joe_get2 If you could do that, I''d be really greatful!'
+    get_items_quest: # This dialog could be triggered by a quest, once all items are obtained
+        once: false
+        script:
+        - '5 out joe_thank Thank you so much, now I can finally bake my cake!'
+    post_quest_passive:
+        once: false
+        requirements:
+        - quest finished joe_quest
+        script:
+        - '5 out joe_thank2 Thank you for helping me out!'
+    default_passive:
+        once: false
+        script:
+        - '5 out joe_hello Hello, I''m the farmer!'

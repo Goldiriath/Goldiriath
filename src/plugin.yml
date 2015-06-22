@@ -1,6 +1,7 @@
 name: Goldiriath
 version: 0.0.1
 main: me.dirkjan.goldiriath.Goldiriath
+depend: [Citizens]
 commands:
     goldiriath:
         usage: /<command> [reload]
@@ -10,3 +11,9 @@ commands:
         usage: /<command> dev <on | off>
         description: Manages mobspawns.
         aliases: [ms,mobmanage]
+    resetquest:
+        usage: /<command> <player>
+        description: Resets all quest progress.
+    option:
+        usage: /<command> <dialoghandler> <optionset> <choice>
+        description: Selects the option for use.

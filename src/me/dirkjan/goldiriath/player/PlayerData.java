@@ -12,7 +12,6 @@ import me.dirkjan.goldiriath.skill.SkillType;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.ConfigSavable;
 import net.pravian.bukkitlib.util.LoggerUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,10 +21,11 @@ import org.bukkit.scoreboard.Objective;
 public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     private final PlayerManager manager;
+    private final GPlayer gPlayer;
     private final Player player;
-    private final Objective sidebar;
     private final Set<Skill> skills;
     private final Map<String, Integer> flags;
+    private final Map<String, Integer> dialogs;
     private QuestData questData;
     private int money;
     private int health;
@@ -35,23 +35,17 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     private int xp;
     private int skillPoints;
 
-    protected PlayerData(PlayerManager manager, Player player) {
-        this.manager = manager;
-        this.player = player;
-        this.sidebar = Bukkit.getScoreboardManager().getNewScoreboard().registerNewObjective("sidebar", "dummy");
+    protected PlayerData(GPlayer gPlayer) {
+        this.manager = gPlayer.getManager();
+        this.gPlayer = gPlayer;
+        this.player = gPlayer.getPlayer();
         this.skills = new HashSet<>();
         this.flags = new HashMap<>();
-        sidebar.setDisplayName("Statistics");
-        sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-        player.setScoreboard(sidebar.getScoreboard());
+        this.dialogs = new HashMap<>();
     }
 
     public Player getPlayer() {
         return player;
-    }
-
-    public Objective getSidebar() {
-        return sidebar;
     }
 
     public Set<Skill> getSkills() {
@@ -77,7 +71,7 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     }
 
     public Map<String, Integer> getFlags() {
-        return flags;
+        return Collections.unmodifiableMap(flags);
     }
 
     public boolean hasFlag(String flag) {
@@ -128,6 +122,22 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     public void deleteFlag(String flag) {
         flags.remove(flag);
+    }
+
+    public boolean hasHadDialog(String id) {
+        return dialogs.containsKey(id) && dialogs.get(id) > 0;
+    }
+
+    public int getDialogCount(String id) {
+        return dialogs.get(id);
+    }
+
+    public void recordDialog(String id) {
+        if (dialogs.containsKey(id)) {
+            dialogs.put(id, dialogs.get(id) + 1);
+        } else {
+            dialogs.put(id, 1);
+        }
     }
 
     public int getMoney() {
@@ -225,12 +235,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return skillPoints >= has;
     }
 
-    @Deprecated // Don't use this method
-    public void setQuestData(QuestData questData) {
-        Validate.notNull(questData);
-        this.questData = questData;
-    }
-
     public PlayerManager getManager() {
         return manager;
     }
@@ -290,9 +294,20 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         flags.clear();
         if (config.isConfigurationSection("flags")) {
             for (String flag : config.getConfigurationSection("flags").getKeys(false)) {
-                int amount = config.getInt("flags." + flag, 0);
-                if (amount >= 0) {
+                final int amount = config.getInt("flags." + flag, 0);
+                if (amount > 0) {
                     flags.put(flag, amount);
+                }
+            }
+        }
+
+        // Dialogs
+        dialogs.clear();
+        if (config.isConfigurationSection("dialogs")) {
+            for (String dialog : config.getConfigurationSection("dialogs").getKeys(false)) {
+                final int amount = config.getInt("dialogs." + dialog, 0);
+                if (amount > 0) {
+                    dialogs.put(dialog, amount);
                 }
             }
         }
@@ -327,9 +342,15 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         questData.saveTo(config.createSection("quests"));
 
         // Flags
-        ConfigurationSection flagsSection = config.createSection("flags");
+        final ConfigurationSection flagsSection = config.createSection("flags");
         for (String flag : flags.keySet()) {
             flagsSection.set(flag, flags.get(flag));
+        }
+
+        // Dialog
+        final ConfigurationSection dialogsSection = config.createSection("dialogs");
+        for (String dialog : dialogs.keySet()) {
+            dialogsSection.set(dialog, flags.get(dialog));
         }
 
         // Money

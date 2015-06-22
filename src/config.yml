@@ -17,6 +17,15 @@ default_skillpoints: 0
 #default xp
 default_xp: 0
 
+# Dialogs
+dialog:
+
+    # Timeout before a dialog is rendered ended
+    timeout: 600
+
+    # Timeout before another dialog can be started
+    click_threshold: 100
+
 # Sign based mob spawner
 mobspawner:
     enabled: true

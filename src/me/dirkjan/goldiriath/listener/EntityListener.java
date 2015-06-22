@@ -17,25 +17,24 @@ public class EntityListener extends RegistrableListener {
         if (event.getEntity() instanceof Monster && event.getDamager() instanceof Player) {
             Entity damaged = event.getEntity();
             Player damager = (Player) event.getDamager();
-            if (damaged.isDead()){
+            if (damaged.isDead()) {
                 int xp = 0;
                 MobSpawn mobspawn = (MobSpawn) damaged.getMetadata("mobspawn");
                 int moblevel = mobspawn.getProfile().getLevel();
                 int playerlevel = plugin.pm.getData(damager).calculateLevel();
                 double diff = Math.abs(playerlevel - moblevel);
-                if (Math.abs(diff) <= 1){
+                if (Math.abs(diff) <= 1) {
                     xp = 5;
                 }
-                if (diff >= 2 && diff <=3 && moblevel >= playerlevel){
+                if (diff >= 2 && diff <= 3 && moblevel >= playerlevel) {
                     xp = 7;
                 }
-                if (diff >= 2 && diff <=3 && playerlevel >= moblevel){
+                if (diff >= 2 && diff <= 3 && playerlevel >= moblevel) {
                     xp = 2;
                 }
                 plugin.pm.getData(damager).addXP(xp);
             }
-                
-            
+
         }
 
     }
