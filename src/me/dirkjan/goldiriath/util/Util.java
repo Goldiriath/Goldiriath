@@ -27,11 +27,7 @@ public class Util {
 
         final String[] parts = parseString.split(":");
 
-        Material type = Material.matchMaterial(parts[0]);
-        if (type == null) {
-            type = Material.getMaterial(parts[0]);
-        }
-
+        final Material type = parseMaterial(parts[0]);
         if (type == null) {
             return null;
         }
@@ -48,6 +44,14 @@ public class Util {
         }
 
         return new ItemStack(type, 1, (short) 0, data);
+    }
+
+    public static Material parseMaterial(String material) {
+        Material type = Material.matchMaterial(material);
+        if (type == null) {
+            type = Material.getMaterial(material);
+        }
+        return type;
     }
 
     public static long getServerTick() {

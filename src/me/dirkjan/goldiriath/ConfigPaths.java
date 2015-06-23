@@ -21,6 +21,10 @@ public enum ConfigPaths implements PathContainer {
     MOBSPAWNER_PLAYER_RADIUS_THRESHOLD("mobspawner.player_radius_threshold"),
     MOBSPAWNER_PROFILES("mobspawner.profiles"),
     //
+    METACYCLER_ENABLED("metacycler.enabled"),
+    METACYCLER_META_TOOL("metacycler.meta_tool"),
+    METACYCLER_BIOME_TOOL("metacycler.biome_tool"),
+    //
     INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled");
 
     private final String path;
