@@ -11,6 +11,7 @@ import me.dirkjan.goldiriath.player.persist.delegate.ConfigDelegate;
 import me.dirkjan.goldiriath.player.persist.delegate.DefaultConfigDelegate;
 import me.dirkjan.goldiriath.player.persist.delegate.IntConfigDelegate;
 import me.dirkjan.goldiriath.player.persist.delegate.ListConfigDelegate;
+import me.dirkjan.goldiriath.player.persist.delegate.StringConfigDelegate;
 import me.dirkjan.goldiriath.util.ConfigLoadable;
 import me.dirkjan.goldiriath.util.ConfigSavable;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -25,6 +26,7 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
     static {
         register(int.class, IntConfigDelegate.class);
         register(Integer.class, IntConfigDelegate.class);
+        register(String.class, StringConfigDelegate.class);
         register(List.class, ListConfigDelegate.class);
     }
 
