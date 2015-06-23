@@ -52,9 +52,8 @@ public class Goldiriath extends JavaPlugin {
 
         config = new YamlConfig(plugin, "config.yml");
 
-        pm = new PlayerManager(plugin);
-
         // Services
+        pm = new PlayerManager(plugin);
         msm = new MobSpawnManager(plugin);
         is = new ItemStorage(plugin);
         qm = new QuestManager(plugin);
@@ -73,6 +72,7 @@ public class Goldiriath extends JavaPlugin {
         config.load();
 
         // Start services
+        pm.start();
         msm.start();
         is.start();
         qm.start();
@@ -91,10 +91,8 @@ public class Goldiriath extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        // Save playerdata
-        pm.saveAll();
-
         // Stop services
+        pm.stop();
         msm.stop();
         is.stop();
         qm.stop();

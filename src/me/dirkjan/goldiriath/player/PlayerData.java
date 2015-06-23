@@ -5,34 +5,67 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.player.persist.Persist;
+import me.dirkjan.goldiriath.player.persist.PersistentStorage;
 import me.dirkjan.goldiriath.skill.Skill;
 import me.dirkjan.goldiriath.skill.SkillType;
-import me.dirkjan.goldiriath.util.ConfigLoadable;
-import me.dirkjan.goldiriath.util.ConfigSavable;
 import net.pravian.bukkitlib.util.LoggerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
 
-public class PlayerData implements ConfigLoadable, ConfigSavable {
+public class PlayerData extends PersistentStorage {
 
+    @Getter
     private final PlayerManager manager;
+    @Getter
     private final GPlayer gPlayer;
+    @Getter
     private final Player player;
+    //
     private final Set<Skill> skills;
     private final Map<String, Integer> flags;
     private final Map<String, Integer> dialogs;
+
+    @Getter
     private QuestData questData;
-    private int money;
-    private int health;
-    private int maxHealth;
-    private int mana;
-    private int maxMana;
-    private int xp;
+
+    @Persist
+    @Getter
+    @Setter
+    private int money = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY);
+
+    @Persist
+    @Getter
+    @Setter
+    private int health = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+
+    @Persist
+    @Getter
+    @Setter
+    private int maxHealth = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+
+    @Persist
+    @Getter
+    @Setter
+    private int mana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+
+    @Persist
+    @Getter
+    @Setter
+    private int maxMana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+
+    @Persist
+    @Getter
+    @Setter
+    private int xp = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP);
+
+    @Persist
+    @Getter
+    @Setter
     private int skillPoints;
 
     protected PlayerData(GPlayer gPlayer) {
@@ -44,12 +77,8 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         this.dialogs = new HashMap<>();
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
     public Set<Skill> getSkills() {
-        return Collections.unmodifiableSet(skills); // Contents of returned set can not be modified!
+        return Collections.unmodifiableSet(skills);
     }
 
     public void addSkill(Skill skill) {
@@ -140,10 +169,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         }
     }
 
-    public int getMoney() {
-        return money;
-    }
-
     public int addMoney(int added) {
         money += added;
         return money;
@@ -158,51 +183,15 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return money >= has;
     }
 
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
     public boolean hasHealth(int health) {
         return this.health >= health;
-    }
-
-    public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
-    }
-
-    public int getMana() {
-        return mana;
-    }
-
-    public void setMana(int mana) {
-        this.mana = mana;
-    }
-
-    public int getMaxMana() {
-        return maxMana;
-    }
-
-    public void setMaxMana(int maxMana) {
-        this.maxMana = maxMana;
     }
 
     public boolean hasMana(int mana) {
         return this.mana >= mana;
     }
 
-    public int getXp() {
-        return xp;
-    }
-
-    public void addXP(int amt) {
+    public void addXp(int amt) {
         xp += amt;
     }
 
@@ -213,14 +202,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
     public int calculatenextxp() {
         int x = (int) Math.floor(0.1 * (Math.sqrt(2 * xp + 25) + 5) + 1);
         return (int) (50 * (x - 1) * x);
-    }
-
-    public QuestData getQuestData() {
-        return questData;
-    }
-
-    public int getSkillPoints() {
-        return skillPoints;
     }
 
     public void addSkillPoints(int toadd) {
@@ -235,12 +216,9 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         return skillPoints >= has;
     }
 
-    public PlayerManager getManager() {
-        return manager;
-    }
-
     @Override
     public void loadFrom(ConfigurationSection config) {
+        super.loadFrom(config);
 
         // Load skills
         skills.clear();
@@ -312,26 +290,12 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
             }
         }
 
-        // Money
-        money = config.getInt("money", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
-
-        // Health
-        health = config.getInt("health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
-        maxHealth = config.getInt("max_health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
-
-        // Mana
-        mana = config.getInt("mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
-        maxMana = config.getInt("max_mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
-
-        // SkillPoints
-        skillPoints = config.getInt("skillpoints", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_SKILLPOINTS));
-
-        //xp
-        xp = config.getInt("xp", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP));
     }
 
     @Override
     public void saveTo(ConfigurationSection config) {
+        super.saveTo(config);
+
         // Save skills
         for (Skill skill : skills) {
             String basePath = "skills." + skill.getType().getName().toLowerCase();
@@ -339,7 +303,10 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         }
 
         // Save quest data, override prev data
-        questData.saveTo(config.createSection("quests"));
+        config.set("quests", null);
+        if (questData != null) {
+            questData.saveTo(config.createSection("quests"));
+        }
 
         // Flags
         final ConfigurationSection flagsSection = config.createSection("flags");
@@ -352,24 +319,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         for (String dialog : dialogs.keySet()) {
             dialogsSection.set(dialog, flags.get(dialog));
         }
-
-        // Money
-        config.set("money", money);
-
-        // Health
-        config.set("heath", health);
-        config.set("max_health", maxHealth);
-
-        // Mana
-        config.set("mana", mana);
-        config.set("max_mana", maxMana);
-
-        //skillpoints
-        config.set("skillpoints", skillPoints);
-
-        //xp
-        config.set("xp", xp);
-
     }
 
 }

@@ -2,6 +2,7 @@ package me.dirkjan.goldiriath.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.dialog.Dialog;
@@ -22,11 +23,17 @@ import org.bukkit.scoreboard.Score;
 public class GPlayer {
 
     private final Goldiriath plugin;
+    @Getter
     private final PlayerManager manager;
+    @Getter
     private final Player player;
+    @Getter
     private final PlayerData data;
     //
+    @Getter
     private final Objective sidebar;
+    //
+    @Getter
     private OptionSet currentOption;
     private BukkitTask currentOptionTimeout;
     private ScriptRunner scriptRunner;
@@ -43,18 +50,6 @@ public class GPlayer {
         this.sidebar.setDisplayName("Statistics");
         this.sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(sidebar.getScoreboard());
-    }
-
-    public PlayerManager getManager() {
-        return manager;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public PlayerData getData() {
-        return data;
     }
 
     public void update() {
@@ -116,7 +111,7 @@ public class GPlayer {
         if (diff >= 2 && diff <= 3 && playerlevel >= moblevel) {
             xp = 2;
         }
-        data.addXP(xp);
+        data.addXp(xp);
     }
 
     public OptionSet getCurrentOption() {

@@ -1,13 +1,15 @@
 package me.dirkjan.goldiriath.listener;
 
-import me.dirkjan.goldiriath.util.Registrable;
+import lombok.Getter;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.util.Registrable;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 public abstract class RegistrableListener implements Registrable, Listener {
 
+    @Getter
     protected final Goldiriath plugin;
 
     public RegistrableListener(Goldiriath plugin) {

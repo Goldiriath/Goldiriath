@@ -3,6 +3,7 @@ package me.dirkjan.goldiriath.player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import lombok.Getter;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.quest.Quest;
 import me.dirkjan.goldiriath.quest.stage.Stage;
@@ -13,8 +14,10 @@ import org.bukkit.entity.Player;
 
 public class QuestData implements ConfigLoadable, ConfigSavable {
 
+    @Getter
     private final PlayerData data;
     private final Goldiriath plugin;
+    @Getter
     private final Player player;
     private final Map<String, String> unparsed;
     private final Map<Quest, Stage> parsed;
@@ -25,10 +28,6 @@ public class QuestData implements ConfigLoadable, ConfigSavable {
         this.player = player;
         this.unparsed = new HashMap<>();
         this.parsed = new HashMap<>();
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public void clear() {
