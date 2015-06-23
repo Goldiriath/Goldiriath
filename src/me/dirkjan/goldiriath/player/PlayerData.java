@@ -192,7 +192,12 @@ public class PlayerData extends PersistentStorage {
     }
 
     public void addXp(int amt) {
+        int currentlevel = calculateLevel();
         xp += amt;
+        int newlevel = calculateLevel();
+        if(currentlevel != newlevel){
+            gPlayer.gainLevel();
+        }
     }
 
     public int calculateLevel() {

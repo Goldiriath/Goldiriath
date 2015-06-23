@@ -11,8 +11,13 @@ import me.dirkjan.goldiriath.dialog.script.ScriptRunner;
 import me.dirkjan.goldiriath.mobspawn.MobSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -94,6 +99,7 @@ public class GPlayer {
     //
     public void recordKill(LivingEntity killed) {
         int xp = 0;
+        int currentlevel = data.calculateLevel();
         List<MetadataValue> metadataList = killed.getMetadata(MobSpawn.METADATA_ID);
         if (metadataList.isEmpty()) {
             return;
@@ -112,6 +118,21 @@ public class GPlayer {
             xp = 2;
         }
         data.addXp(xp);
+    }
+    
+    public void gainLevel(){
+        Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+        FireworkMeta meta = fw.getFireworkMeta();
+        FireworkEffect effect = FireworkEffect.builder().flicker(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withTrail().withFade(Color.WHITE).build();
+        meta.addEffect(effect);
+        meta.setPower(0);
+        fw.setFireworkMeta(meta);
+        data.addSkillPoints(1);
+        int maxhealth = data.getMaxHealth();
+        int maxmana = data.getMaxMana();
+        data.setMaxHealth(maxhealth + (100*data.calculateLevel()));
+        data.setMaxMana(maxmana + (100*data.calculateLevel()));
+        player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + data.calculateLevel());
     }
 
     public OptionSet getCurrentOption() {
