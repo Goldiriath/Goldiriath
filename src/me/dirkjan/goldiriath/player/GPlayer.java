@@ -119,8 +119,8 @@ public class GPlayer {
         }
         data.addXp(xp);
     }
-    
-    public void gainLevel(){
+
+    public void gainLevel() {
         Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
         FireworkMeta meta = fw.getFireworkMeta();
         FireworkEffect effect = FireworkEffect.builder().flicker(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withTrail().withFade(Color.WHITE).build();
@@ -130,8 +130,8 @@ public class GPlayer {
         data.addSkillPoints(1);
         int maxhealth = data.getMaxHealth();
         int maxmana = data.getMaxMana();
-        data.setMaxHealth(maxhealth + (100*data.calculateLevel()));
-        data.setMaxMana(maxmana + (100*data.calculateLevel()));
+        data.setMaxHealth(maxhealth + (100 * data.calculateLevel()));
+        data.setMaxMana(maxmana + (100 * data.calculateLevel()));
         player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + data.calculateLevel());
     }
 

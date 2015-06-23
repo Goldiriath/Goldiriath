@@ -6,7 +6,8 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class ConfigDelegate<T> {
 
-    @Getter protected final String key;
+    @Getter
+    protected final String key;
 
     public ConfigDelegate(String key) {
         this.key = key;
