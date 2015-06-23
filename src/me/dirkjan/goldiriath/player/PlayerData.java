@@ -9,48 +9,46 @@ import lombok.Getter;
 import lombok.Setter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.player.persist.Persist;
+import me.dirkjan.goldiriath.player.persist.PersistentStorage;
 import me.dirkjan.goldiriath.skill.Skill;
 import me.dirkjan.goldiriath.skill.SkillType;
-import me.dirkjan.goldiriath.util.ConfigLoadable;
-import me.dirkjan.goldiriath.util.ConfigSavable;
 import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class PlayerData implements ConfigLoadable, ConfigSavable {
+public class PlayerData extends PersistentStorage {
 
-    @Getter
-    private final PlayerManager manager;
-    @Getter
-    private final GPlayer gPlayer;
-    @Getter
-    private final Player player;
+    @Getter private final PlayerManager manager;
+    @Getter private final GPlayer gPlayer;
+    @Getter private final Player player;
+    //
     private final Set<Skill> skills;
     private final Map<String, Integer> flags;
     private final Map<String, Integer> dialogs;
-    @Getter
-    private QuestData questData;
-    @Getter
-    @Setter
-    private int money;
-    @Getter
-    @Setter
-    private int health;
-    @Getter
-    @Setter
-    private int maxHealth;
-    @Getter
-    @Setter
-    private int mana;
-    @Getter
-    @Setter
-    private int maxMana;
-    @Getter
-    @Setter
-    private int xp;
-    @Getter
-    @Setter
-    private int skillPoints;
+
+    @Getter private QuestData questData;
+
+    @Persist
+    @Getter @Setter private int money = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY);
+
+    @Persist
+    @Getter @Setter private int health = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+
+    @Persist
+    @Getter @Setter private int maxHealth = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+
+    @Persist
+    @Getter @Setter private int mana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+
+    @Persist
+    @Getter @Setter private int maxMana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+
+    @Persist
+    @Getter @Setter private int xp = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP);
+
+    @Persist
+    @Getter @Setter private int skillPoints;
 
     protected PlayerData(GPlayer gPlayer) {
         this.manager = gPlayer.getManager();
@@ -189,6 +187,7 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
 
     @Override
     public void loadFrom(ConfigurationSection config) {
+        super.loadFrom(config);
 
         // Load skills
         skills.clear();
@@ -259,24 +258,12 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
                 }
             }
         }
-
-        // Money
-        money = config.getInt("money", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY));
-
-        // Health
-        health = config.getInt("health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
-        maxHealth = config.getInt("max_health", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH));
-
-        // Mana
-        mana = config.getInt("mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
-        maxMana = config.getInt("max_mana", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA));
-
-        // SkillPoints
-        skillPoints = config.getInt("skillpoints", Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_SKILLPOINTS));
     }
 
     @Override
     public void saveTo(ConfigurationSection config) {
+        super.saveTo(config);
+
         // Save skills
         for (Skill skill : skills) {
             String basePath = "skills." + skill.getType().getName().toLowerCase();
@@ -284,7 +271,10 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         }
 
         // Save quest data, override prev data
-        questData.saveTo(config.createSection("quests"));
+        config.set("quests", null);
+        if (questData != null) {
+            questData.saveTo(config.createSection("quests"));
+        }
 
         // Flags
         final ConfigurationSection flagsSection = config.createSection("flags");
@@ -297,21 +287,6 @@ public class PlayerData implements ConfigLoadable, ConfigSavable {
         for (String dialog : dialogs.keySet()) {
             dialogsSection.set(dialog, flags.get(dialog));
         }
-
-        // Money
-        config.set("money", money);
-
-        // Health
-        config.set("heath", health);
-        config.set("max_health", maxHealth);
-
-        // Mana
-        config.set("mana", mana);
-        config.set("max_mana", maxMana);
-
-        //skillpoints
-        config.set("skillpoints", skillPoints);
-
     }
 
 }

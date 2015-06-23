@@ -1,39 +1,20 @@
 package me.dirkjan.goldiriath.player.persist;
 
 import java.lang.reflect.Field;
+import lombok.Getter;
+import lombok.Setter;
+import me.dirkjan.goldiriath.player.persist.delegate.ConfigDelegate;
 
-public class Persistence {
+public class Persistence<T> {
 
-    private final Field field;
-    private final ConfigDelegate delegate;
-    private final boolean required;
+    @Getter private final Field field;
+    @Getter private final ConfigDelegate<T> delegate;
     //
-    private Object def;
+    @Getter @Setter private Object defaultValue;
 
-    public Persistence(Field field, ConfigDelegate delegate, Object def, boolean required) {
+    public Persistence(Field field, ConfigDelegate<T> delegate, Object def) {
         this.field = field;
         this.delegate = delegate;
-        this.required = required;
-    }
-
-    public Field getField() {
-        return field;
-    }
-
-    public ConfigDelegate getDelegate() {
-        return delegate;
-    }
-
-    public Object getDefault() {
-        return def;
-    }
-
-    public void setDefault(Object def) {
-        this.def = def;
-    }
-
-    public boolean isRequired() {
-        return required;
     }
 
 }

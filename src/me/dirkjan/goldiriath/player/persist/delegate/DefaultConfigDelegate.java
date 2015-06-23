@@ -1,5 +1,6 @@
-package me.dirkjan.goldiriath.player.persist;
+package me.dirkjan.goldiriath.player.persist.delegate;
 
+import java.lang.reflect.Field;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class DefaultConfigDelegate extends ConfigDelegate<Object> {
@@ -9,13 +10,8 @@ public class DefaultConfigDelegate extends ConfigDelegate<Object> {
     }
 
     @Override
-    public Object loadValue(ConfigurationSection config) {
+    public Object loadValue(ConfigurationSection config, Field field) {
         return config.get(key);
-    }
-
-    @Override
-    public void saveValue(ConfigurationSection config, Object object) {
-        config.set(key, object);
     }
 
 }

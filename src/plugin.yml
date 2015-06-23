@@ -17,3 +17,7 @@ commands:
     option:
         usage: /<command> <dialoghandler> <optionset> <choice>
         description: Selects the option for use.
+    godev:
+        usage: /<command> <values...>
+        description: Goldiriath development command
+        aliases: [gd]

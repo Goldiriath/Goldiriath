@@ -9,7 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Persist {
 
-    public boolean required() default false;
-
     public String value() default "";
 }

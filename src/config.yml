@@ -2,17 +2,13 @@
 # Goldiriath v0.0.1 pre-alpha configuration
 #
 
-# Default money
-default_money: 10
-
-#Default health
-default_health: 100
-
-#default mana
-default_mana: 100
-
-#default skillpoints
-default_skillpoints: 0
+# Defaults
+default:
+    money: 10
+    health: 100
+    mana: 100
+    skillpoints: 0
+    xp: 0
 
 # Dialogs
 dialog:

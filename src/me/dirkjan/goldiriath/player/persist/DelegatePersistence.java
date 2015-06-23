@@ -1,5 +1,7 @@
 package me.dirkjan.goldiriath.player.persist;
 
+import me.dirkjan.goldiriath.player.persist.delegate.DefaultConfigDelegate;
+import me.dirkjan.goldiriath.player.persist.delegate.ConfigDelegate;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

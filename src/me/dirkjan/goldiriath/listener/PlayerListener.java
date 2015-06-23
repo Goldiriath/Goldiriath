@@ -5,10 +5,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener extends RegistrableListener {
 
@@ -98,11 +96,6 @@ public class PlayerListener extends RegistrableListener {
             //event.getDrops().add(Items.BAD_SWORD_WOOD1.getItem());
         }
 
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        plugin.pm.logout(event.getPlayer());
     }
 
 }
