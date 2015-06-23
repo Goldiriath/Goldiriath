@@ -8,20 +8,20 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class EntityListener extends RegistrableListener {
 
-    
     public EntityListener(Goldiriath plugin) {
         super(plugin);
     }
+
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
-        if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)){
+        if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
             return;
         }
         EntityDamageByEntityEvent newEvent = (EntityDamageByEntityEvent) event.getEntity().getLastDamageCause();
-        if(!(newEvent.getDamager() instanceof Player)){
+        if (!(newEvent.getDamager() instanceof Player)) {
             return;
         }
-        plugin.pm.getPlayer((Player)newEvent.getDamager()).recordKill(event.getEntity());
+        plugin.pm.getPlayer((Player) newEvent.getDamager()).recordKill(event.getEntity());
 
     }
 }

@@ -58,13 +58,13 @@ public class GPlayer {
     }
 
     public void update() {
-        
-        for(String score : scoreList){            
+
+        for (String score : scoreList) {
             sidebar.getScoreboard().resetScores(score);
         }
-        
+
         scoreList.clear();
-            
+
         int money = data.getMoney();
         Score moneyscore = sidebar.getScore("money " + ChatColor.GOLD + money);
         moneyscore.setScore(1);

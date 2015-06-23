@@ -105,7 +105,7 @@ public class PlayerListener extends RegistrableListener {
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         plugin.pm.logout(event.getPlayer());
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         plugin.pm.getPlayer(event.getPlayer(), true);
