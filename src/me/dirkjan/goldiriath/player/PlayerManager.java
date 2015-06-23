@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerManager extends RegistrableListener implements Service {
@@ -89,19 +88,10 @@ public class PlayerManager extends RegistrableListener implements Service {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLeaveEvent(PlayerQuitEvent event) {
-        logout(event.getPlayer());
-    }
+        savePlayer(event.getPlayer());
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerKickEvent(PlayerKickEvent event) {
-        logout(event.getPlayer());
-    }
-
-    private void logout(Player player) {
-        savePlayer(player);
-
-        if (players.remove(player.getUniqueId()) == null) {
-            LoggerUtils.warning("Could not remove playerdata for player " + player.getName() + ". No playerdata present!");
+        if (players.remove(event.getPlayer().getUniqueId()) == null) {
+            LoggerUtils.warning("Could not remove playerdata for player " + event.getPlayer().getName() + ". No playerdata present!");
         }
     }
 

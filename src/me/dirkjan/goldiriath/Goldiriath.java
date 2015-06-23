@@ -8,6 +8,7 @@ import me.dirkjan.goldiriath.dialog.DialogManager;
 import me.dirkjan.goldiriath.item.ItemStorage;
 import me.dirkjan.goldiriath.listener.BlockListener;
 import me.dirkjan.goldiriath.listener.PlayerListener;
+import me.dirkjan.goldiriath.metacycler.MetaCycler;
 import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
 import me.dirkjan.goldiriath.player.PlayerManager;
 import me.dirkjan.goldiriath.quest.QuestManager;
@@ -38,6 +39,7 @@ public class Goldiriath extends JavaPlugin {
     public QuestManager qm;
     public DialogManager dm;
     public HeartBeat hb;
+    public MetaCycler ms;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -57,6 +59,7 @@ public class Goldiriath extends JavaPlugin {
         qm = new QuestManager(plugin);
         dm = new DialogManager(plugin);
         hb = new HeartBeat(plugin);
+        ms = new MetaCycler(plugin);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
@@ -76,6 +79,7 @@ public class Goldiriath extends JavaPlugin {
         qm.start();
         dm.start();
         hb.start();
+        ms.start();
 
         // Register events
         new PlayerListener(plugin).register();
@@ -95,6 +99,7 @@ public class Goldiriath extends JavaPlugin {
         qm.stop();
         dm.stop();
         hb.stop();
+        ms.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);
