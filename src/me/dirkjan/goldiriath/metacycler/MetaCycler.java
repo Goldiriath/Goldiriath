@@ -11,6 +11,7 @@ import me.dirkjan.goldiriath.util.Util;
 import org.bukkit.Art;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Painting;
@@ -74,6 +75,10 @@ public class MetaCycler extends RegistrableListener implements Service {
         item.setItemMeta(meta);
     }
 
+    private void playTick(Player player) {
+        player.playSound(player.getLocation(), Sound.NOTE_SNARE_DRUM, 1f, 1f);
+    }
+
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleRight(PlayerInteractEvent event) {
@@ -97,6 +102,8 @@ public class MetaCycler extends RegistrableListener implements Service {
             return;
         }
 
+        event.setCancelled(true);
+
         if (event.getClickedBlock().getType() == Material.DOUBLE_PLANT) {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
             return;
@@ -105,7 +112,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final Block block = event.getClickedBlock();
         block.setData((byte) ((block.getData() + 1) % 16));
         setDisplay(event.getItem(), block);
-        event.setCancelled(true);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -142,6 +149,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final byte newData = (byte) (block.getData() - 1);
         block.setData(newData < 0 ? 15 : newData);
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -177,6 +185,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final Block block = event.getClickedBlock();
         dataMap.put(event.getPlayer().getUniqueId(), block.getData());
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -217,6 +226,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final Block block = event.getClickedBlock();
         block.setData(data);
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -255,6 +265,7 @@ public class MetaCycler extends RegistrableListener implements Service {
 
         block.setBiome(biomes[(curIndex + 1) % biomes.length]);
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -293,6 +304,7 @@ public class MetaCycler extends RegistrableListener implements Service {
 
         block.setBiome(biomes[curIndex == 0 ? biomes.length - 1 : curIndex - 1]);
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -322,6 +334,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final Block block = event.getClickedBlock();
         biomeMap.put(event.getPlayer().getUniqueId(), block.getBiome());
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -356,6 +369,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         final Block block = event.getClickedBlock();
         block.setBiome(biome);
         setDisplay(event.getItem(), block);
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -387,6 +401,7 @@ public class MetaCycler extends RegistrableListener implements Service {
 
         painting.setArt(arts[(curIndex + 1) % arts.length]);
         setDisplay(event.getPlayer().getItemInHand(), painting.getArt().name());
+        playTick(event.getPlayer());
     }
 
     @EventHandler
@@ -424,6 +439,7 @@ public class MetaCycler extends RegistrableListener implements Service {
 
         painting.setArt(arts[curIndex == 0 ? arts.length - 1 : curIndex - 1]);
         setDisplay(player.getItemInHand(), painting.getArt().name());
+        playTick(player);
     }
 
     @EventHandler
