@@ -73,6 +73,7 @@ public class Goldiriath extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        plugin = this;
         BukkitLib.init(plugin);
 
         // Load config
@@ -117,6 +118,9 @@ public class Goldiriath extends JavaPlugin {
 
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
+
+        // Free plugin
+        plugin = null;
     }
 
     @Override
