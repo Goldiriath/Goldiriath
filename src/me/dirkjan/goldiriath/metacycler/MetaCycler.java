@@ -1,6 +1,7 @@
 package me.dirkjan.goldiriath.metacycler;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import me.dirkjan.goldiriath.ConfigPaths;
@@ -458,8 +459,7 @@ public class MetaCycler extends RegistrableListener implements Service {
         }
 
         try {
-            @SuppressWarnings("deprecation")
-            Block targetBlock = event.getPlayer().getTargetBlock(null, 50);
+            Block targetBlock = event.getPlayer().getTargetBlock((HashSet<Material>) null, 50);
 
             if (targetBlock == null) {
                 setDisplay(player.getItemInHand(), "");

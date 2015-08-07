@@ -135,10 +135,6 @@ public class GPlayer {
         player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + data.calculateLevel());
     }
 
-    public OptionSet getCurrentOption() {
-        return currentOption;
-    }
-
     public boolean isShowingOption() {
         return getCurrentOption() != null;
     }

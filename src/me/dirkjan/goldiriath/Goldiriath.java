@@ -3,6 +3,7 @@ package me.dirkjan.goldiriath;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
+import me.dirkjan.goldiriath.autoclose.AutoClose;
 import me.dirkjan.goldiriath.command.Command_goldiriath;
 import me.dirkjan.goldiriath.dialog.DialogManager;
 import me.dirkjan.goldiriath.item.ItemStorage;
@@ -16,6 +17,7 @@ import me.dirkjan.goldiriath.quest.QuestManager;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,6 +44,7 @@ public class Goldiriath extends JavaPlugin {
     public DialogManager dm;
     public HeartBeat hb;
     public MetaCycler ms;
+    public AutoClose ac;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -62,6 +65,7 @@ public class Goldiriath extends JavaPlugin {
         dm = new DialogManager(plugin);
         hb = new HeartBeat(plugin);
         ms = new MetaCycler(plugin);
+        ac = new AutoClose(plugin);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
@@ -82,6 +86,7 @@ public class Goldiriath extends JavaPlugin {
         dm.start();
         hb.start();
         ms.start();
+        ac.start();
 
         // Register events
         new PlayerListener(plugin).register();
@@ -90,6 +95,8 @@ public class Goldiriath extends JavaPlugin {
 
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
+
+        logger.info(getName() + " v" + getDescription().getVersion() + " by derfacedirk and Prozza is enabled.");
     }
 
     @Override
@@ -103,6 +110,7 @@ public class Goldiriath extends JavaPlugin {
         dm.stop();
         hb.stop();
         ms.stop();
+        ac.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);
