@@ -71,6 +71,7 @@ public class PlayerListener extends RegistrableListener {
      *
      * }
      */
+
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         Entity hit = event.getEntity();
@@ -83,6 +84,10 @@ public class PlayerListener extends RegistrableListener {
             Player player = (Player) hit;
             double health = plugin.pm.getData(player).getHealth();
             health -= damage;
+            if (health<=0){
+                player.setHealth(0);
+                health=0;
+            }
             plugin.pm.getData(player).setHealth((int) health);
         }
 
