@@ -71,6 +71,11 @@ public class PlayerListener extends RegistrableListener {
      *
      * }
      */
+	 
+	 private void killPlayer(Player player){
+		 player.damage(1000000);
+	 }
+	 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         Entity hit = event.getEntity();
@@ -82,7 +87,14 @@ public class PlayerListener extends RegistrableListener {
         if (hit instanceof Player) {
             Player player = (Player) hit;
             double health = plugin.pm.getData(player).getHealth();
-            health -= damage;
+			
+			health -= damage;
+			
+			if (health<=0){
+				killPlayer(player);
+				health=0;
+			}
+			
             plugin.pm.getData(player).setHealth((int) health);
         }
 
