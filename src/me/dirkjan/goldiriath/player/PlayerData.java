@@ -1,96 +1,237 @@
 package me.dirkjan.goldiriath.player;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
-import lombok.Setter;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.player.persist.Persist;
-import me.dirkjan.goldiriath.player.persist.PersistentStorage;
+import me.dirkjan.goldiriath.dialog.Dialog;
+import me.dirkjan.goldiriath.dialog.OptionSet;
+import me.dirkjan.goldiriath.dialog.script.ScriptRunner;
+import me.dirkjan.goldiriath.mobspawn.MobSpawn;
 import me.dirkjan.goldiriath.skill.Skill;
 import me.dirkjan.goldiriath.skill.SkillType;
-import net.pravian.bukkitlib.util.LoggerUtils;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 
-public class PlayerData extends PersistentStorage {
+public class PlayerData {
 
+    @Getter
+    private final Goldiriath plugin;
     @Getter
     private final PlayerManager manager;
     @Getter
-    private final GPlayer gPlayer;
-    @Getter
     private final Player player;
+    @Getter
+    private final PersistentData persistent;
     //
-    private final Set<Skill> skills;
-    private final Map<String, Integer> flags;
-    private final Map<String, Integer> dialogs;
-
     @Getter
-    private QuestData questData;
-
-    @Persist
+    private final Objective sidebar;
     @Getter
-    @Setter
-    private int money = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY);
+    private OptionSet currentOption;
+    private BukkitTask currentOptionTimeout;
+    private ScriptRunner scriptRunner;
+    //
+    private final List<String> scoreList = new ArrayList<>();
 
-    @Persist
-    @Getter
-    @Setter
-    private int health = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    public PlayerData(PlayerManager manager, Player player) {
+        this.plugin = manager.getPlugin();
+        this.manager = manager;
+        this.player = player;
+        this.persistent = new PersistentData(this);
+        //
+        this.sidebar = Bukkit.getScoreboardManager().getNewScoreboard().registerNewObjective("sidebar", "dummy");
+        this.sidebar.setDisplayName("Statistics");
+        this.sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+        player.setScoreboard(sidebar.getScoreboard());
+    }
 
-    @Persist
-    @Getter
-    @Setter
-    private int maxHealth = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    public void update() {
 
-    @Persist
-    @Getter
-    @Setter
-    private int mana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+        for (String score : scoreList) {
+            sidebar.getScoreboard().resetScores(score);
+        }
 
-    @Persist
-    @Getter
-    @Setter
-    private int maxMana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+        scoreList.clear();
 
-    @Persist
-    @Getter
-    @Setter
-    private int xp = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP);
+        Score moneyscore = sidebar.getScore("money " + ChatColor.GOLD + persistent.money);
+        moneyscore.setScore(1);
+        scoreList.add("money " + ChatColor.GOLD + persistent.money);
 
-    @Persist
-    @Getter
-    @Setter
-    private int skillPoints;
+        int nextxp = calculatenextxp();
+        Score xpscore = sidebar.getScore("xp " + ChatColor.LIGHT_PURPLE + persistent.xp + "/" + nextxp);
+        xpscore.setScore(2);
+        scoreList.add("xp " + ChatColor.LIGHT_PURPLE + persistent.xp + "/" + nextxp);
 
-    protected PlayerData(GPlayer gPlayer) {
-        this.manager = gPlayer.getManager();
-        this.gPlayer = gPlayer;
-        this.player = gPlayer.getPlayer();
-        this.skills = new HashSet<>();
-        this.flags = new HashMap<>();
-        this.dialogs = new HashMap<>();
+        int level = calculateLevel();
+        Score levelScore = sidebar.getScore("level " + ChatColor.DARK_GREEN + level);
+        levelScore.setScore(3);
+        scoreList.add("level " + ChatColor.DARK_GREEN + level);
+
+        Score healthScore = sidebar.getScore("health " + ChatColor.RED + persistent.health + "/" + persistent.maxHealth);
+        healthScore.setScore(4);
+        scoreList.add("health " + ChatColor.RED + persistent.health + "/" + persistent.maxHealth);
+
+        Score manaScore = sidebar.getScore("mana " + ChatColor.BLUE + persistent.mana + "/" + persistent.maxMana);
+        manaScore.setScore(5);
+        scoreList.add("mana " + ChatColor.BLUE + persistent.mana + "/" + persistent.maxMana);
+    }
+
+    //
+    //
+    //
+    public void recordKill(LivingEntity killed) {
+        final List<MetadataValue> metadataList = killed.getMetadata(MobSpawn.METADATA_ID);
+        if (metadataList.isEmpty()) {
+            return;
+        }
+
+        final MobSpawn mobSpawn = (MobSpawn) metadataList.get(0).value();
+        final int mobLevel = mobSpawn.getProfile().getLevel();
+
+        int level = calculateLevel();
+        double diff = Math.abs(level - mobLevel);
+
+        int xp = 1;
+        if (diff <= 1) {
+            xp = 5;
+        }
+        if (diff >= 2 && diff <= 3 && mobLevel >= level) {
+            xp = 7;
+        }
+        if (diff >= 2 && diff <= 3 && level >= mobLevel) {
+            xp = 2;
+        }
+        addXp(xp);
+    }
+
+    public int calculateLevel() {
+        return (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5));
+    }
+
+    public int calculatenextxp() {
+        int x = (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5) + 1);
+        return 50 * (x - 1) * x;
+    }
+
+    public void addXp(int amt) {
+        int currentlevel = calculateLevel();
+        persistent.xp += amt;
+        int newlevel = calculateLevel();
+        if (currentlevel != newlevel) {
+            gainLevel();
+        }
+    }
+
+    public void gainLevel() {
+        Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+        FireworkMeta meta = fw.getFireworkMeta();
+        FireworkEffect effect = FireworkEffect.builder().flicker(true).with(FireworkEffect.Type.STAR).withColor(Color.RED).withTrail().withFade(Color.WHITE).build();
+        meta.addEffect(effect);
+        meta.setPower(0);
+        fw.setFireworkMeta(meta);
+
+        addSkillPoints(1);
+        persistent.maxHealth += (100 * calculateLevel());
+        persistent.maxMana += (100 * calculateLevel());
+        player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + calculateLevel());
+    }
+
+    public boolean isShowingOption() {
+        return getCurrentOption() != null;
+    }
+
+    public void showOption(final OptionSet option) {
+        endOption();
+        this.currentOption = option;
+        option.getMessage().send(player);
+
+        this.currentOptionTimeout = new BukkitRunnable() {
+            @Override
+            public void run() {
+                // TODO improve?
+                if (getCurrentOption().equals(option)) {
+                    endOption();
+                }
+                player.sendMessage(ChatColor.YELLOW + "Note" + ChatColor.WHITE + ": You've stopped speaking to this character.");
+                endOption();
+            }
+        }.runTaskLater(manager.getPlugin(), manager.getPlugin().config.getInt(ConfigPaths.DIALOG_TIMEOUT));
+    }
+
+    public void endOption() {
+        this.currentOption = null;
+        try {
+            this.currentOptionTimeout.cancel();
+        } catch (Exception ignored) {
+        } finally {
+            this.currentOptionTimeout = null;
+        }
+    }
+
+    public void endDialog() {
+        this.scriptRunner.stop();
+        this.scriptRunner = null;
+    }
+
+    public void startDialog(Dialog dialog) {
+        if (scriptRunner != null) {
+            endDialog();
+        }
+
+        recordDialog(dialog.getId());
+
+        final ScriptRunner sr = new ScriptRunner(dialog.getScript(), player);
+        sr.start();
+        this.scriptRunner = sr;
+    }
+
+    public boolean isInDialog() {
+        return getScriptRunner() != null;
+    }
+
+    public boolean hasHadDialog(String id) {
+        return persistent.dialogs.containsKey(id) && persistent.dialogs.get(id) > 0;
+    }
+
+    public ScriptRunner getScriptRunner() {
+        if (scriptRunner != null && !scriptRunner.isStarted()) {
+            scriptRunner = null;
+        }
+
+        return scriptRunner;
     }
 
     public Set<Skill> getSkills() {
-        return Collections.unmodifiableSet(skills);
+        return Collections.unmodifiableSet(persistent.skills);
     }
 
     public void addSkill(Skill skill) {
-        skills.add(skill);
+        persistent.skills.add(skill);
     }
 
     public void removeSkill(Skill skill) {
-        skills.remove(skill);
+        persistent.skills.remove(skill);
     }
 
     public boolean hasSkill(SkillType type) {
-        for (Skill loopSkill : skills) {
+        for (Skill loopSkill : persistent.skills) {
             if (loopSkill.getType() == type) {
                 return true;
             }
@@ -100,7 +241,7 @@ public class PlayerData extends PersistentStorage {
     }
 
     public Map<String, Integer> getFlags() {
-        return Collections.unmodifiableMap(flags);
+        return Collections.unmodifiableMap(persistent.flags);
     }
 
     public boolean hasFlag(String flag) {
@@ -108,15 +249,15 @@ public class PlayerData extends PersistentStorage {
     }
 
     public boolean hasFlag(String flag, int amount) {
-        return flags.containsKey(flag) && flags.get(flag) >= amount;
+        return persistent.flags.containsKey(flag) && persistent.flags.get(flag) >= amount;
     }
 
     public int getFlag(String flag) {
-        return flags.containsKey(flag) ? flags.get(flag) : 0;
+        return persistent.flags.containsKey(flag) ? persistent.flags.get(flag) : 0;
     }
 
     public void setFlag(String flag, int amount) {
-        flags.put(flag, amount);
+        persistent.flags.put(flag, amount);
     }
 
     public void addFlag(String flag) {
@@ -124,10 +265,10 @@ public class PlayerData extends PersistentStorage {
     }
 
     public void addFlag(String flag, int amount) {
-        if (flags.containsKey(flag)) {
-            flags.put(flag, flags.get(flag) + amount);
+        if (persistent.flags.containsKey(flag)) {
+            persistent.flags.put(flag, persistent.flags.get(flag) + amount);
         } else {
-            flags.put(flag, amount);
+            persistent.flags.put(flag, amount);
         }
     }
 
@@ -136,194 +277,103 @@ public class PlayerData extends PersistentStorage {
     }
 
     public void removeFlag(String flag, int amount) {
-        if (!flags.containsKey(flag)) {
+        if (!persistent.flags.containsKey(flag)) {
             return;
         }
 
-        int newAmount = flags.get(flag) - amount;
+        int newAmount = persistent.flags.get(flag) - amount;
 
         if (newAmount > 0) {
-            flags.put(flag, newAmount);
+            persistent.flags.put(flag, newAmount);
         } else {
-            flags.remove(flag);
+            persistent.flags.remove(flag);
         }
     }
 
     public void deleteFlag(String flag) {
-        flags.remove(flag);
-    }
-
-    public boolean hasHadDialog(String id) {
-        return dialogs.containsKey(id) && dialogs.get(id) > 0;
+        persistent.flags.remove(flag);
     }
 
     public int getDialogCount(String id) {
-        return dialogs.get(id);
+        return persistent.dialogs.get(id);
     }
 
     public void recordDialog(String id) {
-        if (dialogs.containsKey(id)) {
-            dialogs.put(id, dialogs.get(id) + 1);
+        if (persistent.dialogs.containsKey(id)) {
+            persistent.dialogs.put(id, persistent.dialogs.get(id) + 1);
         } else {
-            dialogs.put(id, 1);
+            persistent.dialogs.put(id, 1);
         }
     }
 
     public int addMoney(int added) {
-        money += added;
-        return money;
+        persistent.money += added;
+        return persistent.money;
     }
 
     public int removeMoney(int remove) {
-        money -= remove;
-        return money;
+        persistent.money -= remove;
+        return persistent.money;
     }
 
     public boolean hasMoney(int has) {
-        return money >= has;
+        return persistent.money >= has;
     }
 
     public boolean hasHealth(int health) {
-        return this.health >= health;
+        return persistent.health >= health;
+    }
+
+    public int getMana() {
+        return persistent.mana;
+    }
+
+    public void setMana(int mana) {
+        persistent.mana = mana;
     }
 
     public boolean hasMana(int mana) {
-        return this.mana >= mana;
-    }
-
-    public void addXp(int amt) {
-        int currentlevel = calculateLevel();
-        xp += amt;
-        int newlevel = calculateLevel();
-        if (currentlevel != newlevel) {
-            gPlayer.gainLevel();
-        }
-    }
-
-    public int calculateLevel() {
-        return (int) Math.floor(0.1 * (Math.sqrt(2 * xp + 25) + 5));
-    }
-
-    public int calculatenextxp() {
-        int x = (int) Math.floor(0.1 * (Math.sqrt(2 * xp + 25) + 5) + 1);
-        return (int) (50 * (x - 1) * x);
+        return persistent.mana >= mana;
     }
 
     public void addSkillPoints(int toadd) {
-        skillPoints += toadd;
+        persistent.skillPoints += toadd;
     }
 
     public void removeSkillPoints(int toremove) {
-        skillPoints -= toremove;
+        persistent.skillPoints -= toremove;
     }
 
     public boolean hasSkillPoints(int has) {
-        return skillPoints >= has;
+        return persistent.skillPoints >= has;
     }
 
-    @Override
-    public void loadFrom(ConfigurationSection config) {
-        super.loadFrom(config);
-
-        // Load skills
-        skills.clear();
-        if (config.isConfigurationSection("skills")) {
-
-            // Temp skills holder
-            final Set<Skill> tempSkills = new HashSet<>();
-
-            // Loop through loaded skills
-            for (String skillName : config.getConfigurationSection("skills").getKeys(false)) {
-
-                // Find the appropriate skill type
-                SkillType type = null;
-                for (SkillType loopType : SkillType.values()) {
-                    if (!loopType.getName().equalsIgnoreCase(skillName)) {
-                        continue;
-                    }
-
-                    type = loopType;
-                    break;
-                }
-
-                if (type == null) {
-                    LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + player.getName() + ". Skill type not found!");
-                    continue; // Next skill
-                }
-
-                int lvl = config.getInt("skills." + skillName + ".lvl", -1);
-
-                if (lvl == -1) {
-                    LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + player.getName() + ". Skill level could not be parsed!");
-                    continue; // Next skill
-                }
-
-                // Create and the skill
-                final Skill skill = type.create(player, lvl);
-                tempSkills.add(skill);
-            }
-
-            // Add the loaded skills
-            skills.addAll(tempSkills);
-        }
-
-        // Load quest data
-        questData = new QuestData(this, player);
-        if (config.isConfigurationSection("quests")) {
-            questData.loadFrom(config.getConfigurationSection("quests"));
-        }
-
-        // Flags
-        flags.clear();
-        if (config.isConfigurationSection("flags")) {
-            for (String flag : config.getConfigurationSection("flags").getKeys(false)) {
-                final int amount = config.getInt("flags." + flag, 0);
-                if (amount > 0) {
-                    flags.put(flag, amount);
-                }
-            }
-        }
-
-        // Dialogs
-        dialogs.clear();
-        if (config.isConfigurationSection("dialogs")) {
-            for (String dialog : config.getConfigurationSection("dialogs").getKeys(false)) {
-                final int amount = config.getInt("dialogs." + dialog, 0);
-                if (amount > 0) {
-                    dialogs.put(dialog, amount);
-                }
-            }
-        }
-
+    public int getMoney() {
+        return persistent.money;
     }
 
-    @Override
-    public void saveTo(ConfigurationSection config) {
-        super.saveTo(config);
+    public void setMoney(int money) {
+        persistent.money = money;
+    }
 
-        // Save skills
-        for (Skill skill : skills) {
-            String basePath = "skills." + skill.getType().getName().toLowerCase();
-            config.set(basePath + "lvl", skill.getLvl());
-        }
+    public int getHealth() {
+        return persistent.health;
+    }
 
-        // Save quest data, override prev data
-        config.set("quests", null);
-        if (questData != null) {
-            questData.saveTo(config.createSection("quests"));
-        }
+    public void setHealth(int health) {
+        persistent.health = health;
+    }
 
-        // Flags
-        final ConfigurationSection flagsSection = config.createSection("flags");
-        for (String flag : flags.keySet()) {
-            flagsSection.set(flag, flags.get(flag));
-        }
+    public int getMaxHealth() {
+        return persistent.maxHealth;
+    }
 
-        // Dialog
-        final ConfigurationSection dialogsSection = config.createSection("dialogs");
-        for (String dialog : dialogs.keySet()) {
-            dialogsSection.set(dialog, flags.get(dialog));
-        }
+    public void setMaxHealth(int maxHealth) {
+        persistent.maxHealth = maxHealth;
+    }
+
+    public QuestData getQuestData() {
+        return persistent.questData;
     }
 
 }

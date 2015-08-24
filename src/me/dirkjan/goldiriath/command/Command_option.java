@@ -4,7 +4,7 @@ import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.dialog.NPCDialogHandler;
 import me.dirkjan.goldiriath.dialog.OptionSet;
 import me.dirkjan.goldiriath.dialog.OptionSet.Option;
-import me.dirkjan.goldiriath.player.GPlayer;
+import me.dirkjan.goldiriath.player.PlayerData;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -42,7 +42,7 @@ public class Command_option extends BukkitCommand<Goldiriath> {
             }
         }
 
-        final GPlayer gp = plugin.pm.getPlayer(playerSender);
+        final PlayerData gp = plugin.pm.getData(playerSender);
         if (!optionSet.equals(gp.getCurrentOption())) {
             msg("Choice is no longer available.", ChatColor.RED);
             return true;

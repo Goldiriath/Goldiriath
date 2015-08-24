@@ -24,7 +24,7 @@ public class OptionScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        pm.getPlayer(player).showOption(option);
+        pm.getData(player).showOption(option);
     }
 
 }

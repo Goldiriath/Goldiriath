@@ -25,7 +25,7 @@ public class ManaRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        PlayerData data = plugin.pm.getData(player);
+        final PlayerData data = plugin.pm.getData(player);
 
         if (!perc) {
             return data.hasMana(mana);

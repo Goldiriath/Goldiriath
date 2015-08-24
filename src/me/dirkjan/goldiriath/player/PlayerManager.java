@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerManager extends AbstractService {
 
-    private final Map<UUID, GPlayer> players;
+    private final Map<UUID, PlayerData> players;
 
     public PlayerManager(Goldiriath plugin) {
         super(plugin);
@@ -25,7 +25,7 @@ public class PlayerManager extends AbstractService {
     @Override
     public void onStart() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            getPlayer(player, true); // Preload player
+            getData(player, true); // Preload player
         }
     }
 
@@ -36,50 +36,40 @@ public class PlayerManager extends AbstractService {
     }
 
     public PlayerData getData(Player player) {
-        final GPlayer gPlayer = getPlayer(player);
-        return gPlayer == null ? null : gPlayer.getData();
+        return getData(player, true);
     }
 
     public PlayerData getData(Player player, boolean shouldLoad) {
-        final GPlayer gPlayer = getPlayer(player, shouldLoad);
-        return gPlayer == null ? null : gPlayer.getData();
-    }
-
-    public GPlayer getPlayer(Player player) {
-        return getPlayer(player, true);
-    }
-
-    public GPlayer getPlayer(Player player, boolean shouldLoad) {
 
         // If the playerdata map has the player stored already, use that
-        GPlayer gPlayer = players.get(player.getUniqueId());
-        if (gPlayer != null || !shouldLoad) {
-            return gPlayer;
+        PlayerData data = players.get(player.getUniqueId());
+        if (data != null || !shouldLoad) {
+            return data;
         }
 
         // Create player and config
-        gPlayer = new GPlayer(this, player);
+        data = new PlayerData(this, player);
         final YamlConfig config = createPlayerConfig(player);
 
         if (config.exists()) {
             // Existing player
             config.load();
-            gPlayer.getData().loadFrom(config);
+            data.getPersistent().loadFrom(config);
         } else {
             // New player
-            gPlayer.getData().saveTo(config);
+            data.getPersistent().saveTo(config);
             config.save();
         }
 
         // Store player
-        players.put(player.getUniqueId(), gPlayer);
+        players.put(player.getUniqueId(), data);
 
-        return gPlayer;
+        return data;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        getPlayer(event.getPlayer(), true); // Preload
+        getData(event.getPlayer(), true); // Preload
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -92,19 +82,19 @@ public class PlayerManager extends AbstractService {
     }
 
     public void saveAll() {
-        for (GPlayer gPlayer : players.values()) {
-            savePlayer(gPlayer.getPlayer());
+        for (PlayerData data : players.values()) {
+            savePlayer(data.getPlayer());
         }
     }
 
     public void updateAll() {
-        for (GPlayer gPlayer : players.values()) {
-            gPlayer.update();
+        for (PlayerData data : players.values()) {
+            data.update();
         }
     }
 
     private void savePlayer(Player player) {
-        final PlayerData data = getData(player, false);
+        final PersistentData data = getData(player, false).getPersistent();
 
         if (data == null) {
             LoggerUtils.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");

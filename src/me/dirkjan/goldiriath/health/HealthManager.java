@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.health;
 
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.player.GPlayer;
+import me.dirkjan.goldiriath.player.PlayerData;
 import me.dirkjan.goldiriath.util.service.AbstractService;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class HealthManager extends AbstractService {
             return;
         }
 
-        plugin.pm.getPlayer((Player) entityEvent.getDamager()).recordKill(event.getEntity());
+        plugin.pm.getData((Player) entityEvent.getDamager()).recordKill(event.getEntity());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -49,17 +49,17 @@ public class HealthManager extends AbstractService {
         }
 
         Player player = (Player) hit;
-        GPlayer gPlayer = plugin.pm.getPlayer(player);
-        double health = gPlayer.getData().getHealth();
+        PlayerData data = plugin.pm.getData(player);
+        double health = data.getHealth();
 
         health -= event.getDamage(); // TODO: Armor, weapon boosts, etc
 
         if (health <= 0) {
-            health = gPlayer.getData().getMaxHealth(); // Reset health
+            health = data.getMaxHealth(); // Reset health
         }
 
         // TODO: use player.setHealthScale(), player.setMaxHealth()
-        player.setHealth((health / gPlayer.getData().getMaxHealth()) * 10);
+        player.setHealth((health / data.getMaxHealth()) * 10);
 
         plugin.pm.getData(player).setHealth((int) health);
     }

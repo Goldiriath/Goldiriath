@@ -15,19 +15,18 @@ import org.bukkit.entity.Player;
 public class QuestData implements ConfigLoadable, ConfigSavable {
 
     @Getter
-    private final PlayerData data;
+    private final PersistentData data;
     private final Goldiriath plugin;
     @Getter
     private final Player player;
-    private final Map<String, String> unparsed;
-    private final Map<Quest, Stage> parsed;
+    //
+    private final Map<String, String> unparsed = new HashMap<>();
+    private final Map<Quest, Stage> parsed = new HashMap<>();
 
-    public QuestData(PlayerData data, Player player) {
+    public QuestData(PersistentData data, Player player) {
         this.data = data;
-        this.plugin = data.getManager().getPlugin();
+        this.plugin = data.getData().getPlugin();
         this.player = player;
-        this.unparsed = new HashMap<>();
-        this.parsed = new HashMap<>();
     }
 
     public void clear() {

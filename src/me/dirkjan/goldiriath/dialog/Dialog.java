@@ -58,7 +58,7 @@ public class Dialog implements Triggerable<Player>, ConfigLoadable, Validatable 
         }
 
         // Player data handles dialog logic
-        pm.getPlayer(player).startDialog(this);
+        pm.getData(player).startDialog(this);
     }
 
     public String getId() {
