@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import me.dirkjan.goldiriath.listener.RegistrableListener;
+import me.dirkjan.goldiriath.util.RegistrableListener;
 import me.dirkjan.goldiriath.quest.ParseException;
 import me.dirkjan.goldiriath.quest.trigger.PlayerEventTrigger;
 import me.dirkjan.goldiriath.quest.trigger.Triggerable;

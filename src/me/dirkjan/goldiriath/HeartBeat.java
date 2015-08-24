@@ -1,6 +1,6 @@
 package me.dirkjan.goldiriath;
 
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.Service;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -24,7 +24,7 @@ public class HeartBeat implements Service, Runnable {
 
     @Override
     public void start() {
-        if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+        if (isStarted()) {
             return;
         }
 
@@ -39,6 +39,11 @@ public class HeartBeat implements Service, Runnable {
         } finally {
             task = null;
         }
+    }
+
+    @Override
+    public boolean isStarted() {
+        return task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId());
     }
 
 }

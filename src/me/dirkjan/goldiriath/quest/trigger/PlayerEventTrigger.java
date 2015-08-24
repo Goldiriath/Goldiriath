@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.quest.trigger;
 
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.listener.RegistrableListener;
+import me.dirkjan.goldiriath.util.RegistrableListener;
 import me.dirkjan.goldiriath.quest.ParseException;
 import org.bukkit.entity.Player;
 

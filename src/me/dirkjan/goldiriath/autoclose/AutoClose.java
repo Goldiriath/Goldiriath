@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.listener.RegistrableListener;
-import me.dirkjan.goldiriath.util.Service;
-import net.pravian.bukkitlib.util.LocationUtils;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -25,7 +23,7 @@ import org.bukkit.material.Openable;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AutoClose extends RegistrableListener implements Service {
+public class AutoClose extends AbstractService {
 
     public static final long AUTO_CLOSE_TICKS = 100L;
     //
@@ -36,15 +34,12 @@ public class AutoClose extends RegistrableListener implements Service {
     }
 
     @Override
-    public void start() {
+    protected void onStart() {
         entries.clear();
-        register();
     }
 
     @Override
-    public void stop() {
-        unregister();
-
+    protected void onStop() {
         for (AutoCloseEntry entry : entries.values()) {
             entry.cancel();
             entry.doAction();
@@ -98,6 +93,7 @@ public class AutoClose extends RegistrableListener implements Service {
     }
 
     // TODO: Document what witchcraft is going on here...
+    @SuppressWarnings("deprecation")
     private BlockState getOpenableBlockState(Block block, boolean failQuick) {
         if (block == null) {
             return null;

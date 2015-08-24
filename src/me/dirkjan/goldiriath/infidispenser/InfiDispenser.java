@@ -1,16 +1,25 @@
-package me.dirkjan.goldiriath.listener;
+package me.dirkjan.goldiriath.infidispenser;
 
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import org.bukkit.block.Dispenser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class BlockListener extends RegistrableListener {
+public class InfiDispenser extends AbstractService {
 
-    public BlockListener(Goldiriath plugin) {
+    public InfiDispenser(Goldiriath plugin) {
         super(plugin);
+    }
+
+    @Override
+    protected void onStart() {
+    }
+
+    @Override
+    protected void onStop() {
     }
 
     @EventHandler

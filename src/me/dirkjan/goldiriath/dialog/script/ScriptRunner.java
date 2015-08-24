@@ -1,7 +1,7 @@
 package me.dirkjan.goldiriath.dialog.script;
 
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.Service;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,7 +29,8 @@ public class ScriptRunner extends BukkitRunnable implements Service {
         task = super.runTaskTimer(plugin, 0, 1);
     }
 
-    public boolean isRunning() {
+    @Override
+    public boolean isStarted() {
         return task != null;
     }
 
@@ -44,7 +45,6 @@ public class ScriptRunner extends BukkitRunnable implements Service {
     }
 
     @Override
-    @Deprecated
     public void run() {
         if (task == null) {
             throw new IllegalStateException("run() shouldn't be called manually");

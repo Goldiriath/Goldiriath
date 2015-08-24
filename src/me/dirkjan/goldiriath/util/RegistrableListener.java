@@ -1,4 +1,4 @@
-package me.dirkjan.goldiriath.listener;
+package me.dirkjan.goldiriath.util;
 
 import lombok.Getter;
 import me.dirkjan.goldiriath.Goldiriath;

@@ -4,29 +4,25 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.quest.action.ActionList;
 import me.dirkjan.goldiriath.quest.action.ActionParser;
 import me.dirkjan.goldiriath.quest.requirement.RequirementList;
 import me.dirkjan.goldiriath.quest.requirement.RequirementParser;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-public class QuestManager implements Service {
+public class QuestManager extends AbstractService {
 
-    private final Goldiriath plugin;
-    private final Logger logger;
     private final File questContainer;
     private final Map<String, Quest> quests;
     private final Map<String, RequirementList> globalRequirements;
     private final Map<String, ActionList> globalActions;
 
     public QuestManager(Goldiriath plugin) {
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+        super(plugin);
         this.questContainer = new File(FileUtils.getPluginDataFolder(plugin), "quests");
         this.quests = new HashMap<>();
         this.globalRequirements = new HashMap<>();
@@ -34,7 +30,7 @@ public class QuestManager implements Service {
     }
 
     @Override
-    public void start() {
+    public void onStart() {
 
         // Ensure folder is present
         if (questContainer.isFile()) {
@@ -109,11 +105,7 @@ public class QuestManager implements Service {
     }
 
     @Override
-    public void stop() {
-    }
-
-    public Goldiriath getPlugin() {
-        return plugin;
+    public void onStop() {
     }
 
     public Map<String, ActionList> getGlobalActions() {

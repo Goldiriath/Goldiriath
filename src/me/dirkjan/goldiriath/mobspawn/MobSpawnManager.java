@@ -6,11 +6,10 @@ import java.util.Set;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
 import me.dirkjan.goldiriath.quest.ParseException;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LocationUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,16 +17,13 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class MobSpawnManager implements Service, Listener {
+public class MobSpawnManager extends AbstractService {
 
-    private final Goldiriath plugin;
     private final YamlConfig profileConfig;
     private final YamlConfig spawnConfig;
     private BukkitTask spawnTask;
@@ -42,7 +38,7 @@ public class MobSpawnManager implements Service, Listener {
     private int playerRadiusThresholdSquared;
 
     public MobSpawnManager(Goldiriath plugin) {
-        this.plugin = plugin;
+        super(plugin);
         this.profileConfig = new YamlConfig(plugin, "profiles.yml", true);
         this.spawnConfig = new YamlConfig(plugin, "mobspawns.yml", false);
         this.spawns = new HashSet<>();
@@ -88,9 +84,9 @@ public class MobSpawnManager implements Service, Listener {
     }
 
     @Override
-    public void start() {
+    public void onStart() {
         if (spawnTask != null) {
-            stop();
+            onStop();
         }
 
         loadConfig();
@@ -101,9 +97,6 @@ public class MobSpawnManager implements Service, Listener {
         if (!enabled) {
             return;
         }
-
-        // Register events
-        Bukkit.getPluginManager().registerEvents(this, plugin);
 
         // Start ticking
         spawnTask = new BukkitRunnable() {
@@ -122,7 +115,7 @@ public class MobSpawnManager implements Service, Listener {
     }
 
     @Override
-    public void stop() {
+    public void onStop() {
         saveConfig();
 
         try {
@@ -132,9 +125,6 @@ public class MobSpawnManager implements Service, Listener {
 
         // Kill spawned entities
         killAll();
-
-        // Unregister events
-        HandlerList.unregisterAll(this);
     }
 
     // Listeners

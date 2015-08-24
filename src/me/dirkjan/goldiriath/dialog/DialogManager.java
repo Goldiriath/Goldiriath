@@ -4,34 +4,25 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-public class DialogManager implements Service {
+public class DialogManager extends AbstractService {
 
-    private final Goldiriath plugin;
-    private final Logger logger;
     private final File dialogContainer;
     private final Map<String, NPCDialogHandler> handlers;
 
     public DialogManager(Goldiriath plugin) {
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+        super(plugin);
         this.dialogContainer = FileUtils.getPluginFile(plugin, "dialogs");
         this.handlers = new HashMap<>();
     }
 
-    public Goldiriath getPlugin() {
-        return plugin;
-    }
-
     @Override
-    public void start() {
-
+    protected void onStart() {
         // Ensure folder is present
         if (dialogContainer.isFile()) {
             if (!dialogContainer.delete()) {
@@ -75,7 +66,7 @@ public class DialogManager implements Service {
     }
 
     @Override
-    public void stop() {
+    protected void onStop() {
         for (NPCDialogHandler handler : handlers.values()) {
             handler.unregister();
         }

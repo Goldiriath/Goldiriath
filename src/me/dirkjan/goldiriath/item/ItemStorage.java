@@ -4,32 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStorage implements Service {
+public class ItemStorage extends AbstractService {
 
-    private final Goldiriath plugin;
-    private final Logger logger;
     private final YamlConfig config;
     private final Map<String, ItemStack> items;
 
     public ItemStorage(Goldiriath plugin) {
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+        super(plugin);
         this.config = new YamlConfig(plugin, "items.yml");
         this.items = new HashMap<>();
-
     }
 
     @Override
-    public void start() {
+    protected void onStart() {
         items.clear();
         config.load();
 
@@ -107,7 +102,7 @@ public class ItemStorage implements Service {
     }
 
     @Override
-    public void stop() {
+    protected void onStop() {
     }
 
     public ItemStack getItem(String id) {

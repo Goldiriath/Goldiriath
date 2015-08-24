@@ -2,14 +2,11 @@ package me.dirkjan.goldiriath;
 
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Logger;
 import me.dirkjan.goldiriath.autoclose.AutoClose;
 import me.dirkjan.goldiriath.command.Command_goldiriath;
 import me.dirkjan.goldiriath.dialog.DialogManager;
+import me.dirkjan.goldiriath.infidispenser.InfiDispenser;
 import me.dirkjan.goldiriath.item.ItemStorage;
-import me.dirkjan.goldiriath.listener.BlockListener;
-import me.dirkjan.goldiriath.listener.EntityListener;
-import me.dirkjan.goldiriath.listener.PlayerListener;
 import me.dirkjan.goldiriath.metacycler.MetaCycler;
 import me.dirkjan.goldiriath.mobspawn.MobSpawnManager;
 import me.dirkjan.goldiriath.player.PlayerManager;
@@ -17,14 +14,14 @@ import me.dirkjan.goldiriath.quest.QuestManager;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
-import org.apache.commons.lang.StringUtils;
+import net.pravian.bukkitlib.implementation.BukkitLogger;
+import net.pravian.bukkitlib.implementation.BukkitPlugin;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class Goldiriath extends JavaPlugin {
+public class Goldiriath extends BukkitPlugin {
 
     public static Goldiriath plugin;
     public static String name = "";
@@ -32,12 +29,13 @@ public class Goldiriath extends JavaPlugin {
     public static String buildNumber = "0";
     public static String buildDate = "";
     //
-    public Logger logger;
+    public BukkitLogger logger;
     public YamlConfig config;
     //
     public PlayerManager pm;
 
     // Services
+    public InfiDispenser id;
     public MobSpawnManager msm;
     public ItemStorage is;
     public QuestManager qm;
@@ -51,13 +49,14 @@ public class Goldiriath extends JavaPlugin {
     @Override
     public void onLoad() {
         plugin = this;
-        logger = plugin.getLogger();
+        logger = new BukkitLogger(plugin);
 
         loadBuildProperties();
 
         config = new YamlConfig(plugin, "config.yml");
 
         // Services
+        id = new InfiDispenser(plugin);
         pm = new PlayerManager(plugin);
         msm = new MobSpawnManager(plugin);
         is = new ItemStorage(plugin);
@@ -80,6 +79,7 @@ public class Goldiriath extends JavaPlugin {
         config.load();
 
         // Start services
+        id.start();
         pm.start();
         msm.start();
         is.start();
@@ -88,11 +88,6 @@ public class Goldiriath extends JavaPlugin {
         hb.start();
         ms.start();
         ac.start();
-
-        // Register events
-        new PlayerListener(plugin).register();
-        new BlockListener(plugin).register();
-        new EntityListener(plugin).register();
 
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
@@ -104,6 +99,7 @@ public class Goldiriath extends JavaPlugin {
     public void onDisable() {
 
         // Stop services
+        id.stop();
         pm.stop();
         msm.stop();
         is.stop();

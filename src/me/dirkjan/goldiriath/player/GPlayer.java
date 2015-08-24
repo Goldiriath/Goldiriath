@@ -189,7 +189,7 @@ public class GPlayer {
     }
 
     public ScriptRunner getScriptRunner() {
-        if (scriptRunner != null && !scriptRunner.isRunning()) {
+        if (scriptRunner != null && !scriptRunner.isStarted()) {
             scriptRunner = null;
         }
 

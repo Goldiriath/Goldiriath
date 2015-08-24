@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.listener.RegistrableListener;
-import me.dirkjan.goldiriath.util.Service;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.entity.Player;
@@ -14,7 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerManager extends RegistrableListener implements Service {
+public class PlayerManager extends AbstractService {
 
     private final Map<UUID, GPlayer> players;
 
@@ -24,19 +23,16 @@ public class PlayerManager extends RegistrableListener implements Service {
     }
 
     @Override
-    public void start() {
+    public void onStart() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             getPlayer(player, true); // Preload player
         }
-
-        register();
     }
 
     @Override
-    public void stop() {
+    public void onStop() {
         saveAll();
         players.clear();
-        unregister();
     }
 
     public PlayerData getData(Player player) {

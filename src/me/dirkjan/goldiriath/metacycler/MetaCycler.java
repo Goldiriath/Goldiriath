@@ -6,9 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 import me.dirkjan.goldiriath.ConfigPaths;
 import me.dirkjan.goldiriath.Goldiriath;
-import me.dirkjan.goldiriath.listener.RegistrableListener;
-import me.dirkjan.goldiriath.util.Service;
 import me.dirkjan.goldiriath.util.Util;
+import me.dirkjan.goldiriath.util.service.AbstractService;
 import org.bukkit.Art;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,7 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class MetaCycler extends RegistrableListener implements Service {
+public class MetaCycler extends AbstractService {
 
     private Material metaTool;
     private Material biomeTool;
@@ -40,7 +39,7 @@ public class MetaCycler extends RegistrableListener implements Service {
     }
 
     @Override
-    public void start() {
+    public void onStart() {
         if (!plugin.config.getBoolean(ConfigPaths.METACYCLER_ENABLED)) {
             return;
         }
@@ -54,15 +53,12 @@ public class MetaCycler extends RegistrableListener implements Service {
         if (biomeTool == null) {
             plugin.logger.warning("Could not parse MetaCycler biome tool: " + plugin.config.getString(ConfigPaths.METACYCLER_BIOME_TOOL));
         }
-
-        register();
     }
 
     @Override
-    public void stop() {
+    public void onStop() {
         dataMap.clear();
         biomeMap.clear();
-        unregister();
     }
 
     @SuppressWarnings("deprecation")
