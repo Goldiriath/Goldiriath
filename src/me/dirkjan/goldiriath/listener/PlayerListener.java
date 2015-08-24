@@ -72,9 +72,7 @@ public class PlayerListener extends RegistrableListener {
      * }
      */
 	 
-	 private void killPlayer(Player player){
-		 player.damage(1000000);
-	 }
+
 	 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
@@ -91,7 +89,7 @@ public class PlayerListener extends RegistrableListener {
 			health -= damage;
 			
 			if (health<=0){
-				killPlayer(player);
+				player.setHealth(0);
 				health=0;
 			}
 			
