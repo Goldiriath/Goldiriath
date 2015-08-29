@@ -8,7 +8,7 @@ public enum ItemTier {
     NORMAL("Normal"),
     CRAFTED("Crafted"),
     RARE("Rare"),
-    AMAZING("Legendary");
+    LEGENDARY("Legendary");
     //
     private final String adjective;
 
