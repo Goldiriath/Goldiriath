@@ -25,10 +25,10 @@ public class Command_goldiriath extends BukkitCommand<Goldiriath> {
             plugin.onDisable();
             plugin.onEnable();
 
-            final String message = String.format("%s v%s.%s reloaded.",
+            final String message = String.format("%s v%s-%s reloaded.",
                     plugin.getName(),
-                    plugin.getDescription().getVersion(),
-                    Goldiriath.buildNumber);
+                    plugin.getVersion(),
+                    Goldiriath.buildVersion);
 
             msg(message);
             plugin.logger.info(message);
@@ -37,10 +37,10 @@ public class Command_goldiriath extends BukkitCommand<Goldiriath> {
 
         msg(Goldiriath.name + " pre-alpha", ChatColor.GOLD);
         msg(String.format("Version "
-                + ChatColor.BLUE + "%s.%s" + ChatColor.GOLD + ", built "
+                + ChatColor.BLUE + "%s-%s" + ChatColor.GOLD + ", built "
                 + ChatColor.BLUE + "%s" + ChatColor.GOLD + ".",
+                plugin.getVersion(),
                 Goldiriath.buildVersion,
-                Goldiriath.buildNumber,
                 Goldiriath.buildDate), ChatColor.GOLD);
         msg("Running on Minecraft " + Bukkit.getBukkitVersion() + ".", ChatColor.GOLD);
         msg("Created by derpfacedirk and Prozza with " + ChatColor.LIGHT_PURPLE + "<3" + ChatColor.GOLD + ".", ChatColor.GOLD);

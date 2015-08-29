@@ -25,8 +25,7 @@ public class Goldiriath extends BukkitPlugin {
 
     public static Goldiriath plugin;
     public static String name = "";
-    public static String buildVersion = "0.0";
-    public static String buildNumber = "0";
+    public static String buildVersion = "";
     public static String buildDate = "";
     //
     public BukkitLogger logger;
@@ -92,7 +91,7 @@ public class Goldiriath extends BukkitPlugin {
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
 
-        logger.info(getName() + " v" + getDescription().getVersion() + " by derfacedirk and Prozza is enabled.");
+        logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by derfacedirk and Prozza is enabled.");
     }
 
     @Override
@@ -127,14 +126,13 @@ public class Goldiriath extends BukkitPlugin {
     private void loadBuildProperties() {
         try {
             name = plugin.getName();
-            buildVersion = plugin.getDescription().getVersion();
 
             final Properties props = new Properties();
             try (InputStream in = plugin.getResource("appinfo.properties")) {
                 props.load(in);
             }
 
-            buildNumber = props.getProperty("program.buildnumber");
+            buildVersion = props.getProperty("program.buildversion");
             buildDate = props.getProperty("program.builddate");
         } catch (Exception ex) {
             logger.warning("Could not load build  properties!");
