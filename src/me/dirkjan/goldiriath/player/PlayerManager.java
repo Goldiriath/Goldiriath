@@ -10,6 +10,7 @@ import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -33,6 +34,10 @@ public class PlayerManager extends AbstractService {
     public void onStop() {
         saveAll();
         players.clear();
+    }
+
+    public PlayerData getData(PlayerEvent event) {
+        return getData(event.getPlayer());
     }
 
     public PlayerData getData(Player player) {
