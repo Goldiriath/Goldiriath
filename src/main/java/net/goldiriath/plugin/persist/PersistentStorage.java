@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.persist.delegate.ConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.DefaultConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.IntConfigDelegate;
@@ -80,7 +79,6 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
                 Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
                 continue;
             }
-
 
             fields.add(new Persistence(field, inst));
         }
