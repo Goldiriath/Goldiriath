@@ -1,0 +1,17 @@
+# Travis CI configuration
+language: java
+
+jdk:
+- openjdk7
+
+# Don't test certain branches
+branches:
+  except:
+  - master
+  - release
+
+# get us on the new container based builds, we're not using any fancyness
+sudo: false
+
+notifications:
+  email: false
