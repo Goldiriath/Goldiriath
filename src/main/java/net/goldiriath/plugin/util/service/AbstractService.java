@@ -1,30 +1,32 @@
 package net.goldiriath.plugin.util.service;
 
+import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.RegistrableListener;
 import net.pravian.bukkitlib.implementation.BukkitLogger;
 
 public abstract class AbstractService extends RegistrableListener implements Service {
 
-    protected final String id;
-    protected final BukkitLogger logger;
+    @Getter
+    private final String serviceId;
     //
+    protected final BukkitLogger logger;
     protected boolean started = false;
 
     public AbstractService(Goldiriath plugin) {
         this(plugin, null);
     }
 
-    public AbstractService(Goldiriath plugin, String id) {
+    public AbstractService(Goldiriath plugin, String serviceId) {
         super(plugin);
-        this.id = id == null ? getClass().getSimpleName() : id;
+        this.serviceId = serviceId == null ? getClass().getSimpleName() : serviceId;
         this.logger = plugin.logger;
     }
 
     @Override
     public final void start() {
         if (started) {
-            logger.warning("Tried to start service '" + id + "' whilst already started!");
+            logger.warning("Tried to start service '" + serviceId + "' whilst already started!");
             return;
         }
         started = true;
@@ -32,7 +34,7 @@ public abstract class AbstractService extends RegistrableListener implements Ser
         try {
             onStart();
         } catch (Exception ex) {
-            logger.severe("Unhandled exception whilst starting service '" + id + "'!");
+            logger.severe("Unhandled exception whilst starting service '" + serviceId + "'!");
             logger.severe(ex);
         }
         register();
@@ -41,7 +43,7 @@ public abstract class AbstractService extends RegistrableListener implements Ser
     @Override
     public final void stop() {
         if (!started) {
-            logger.warning("Tried to stop service '" + id + "' whilst already stopped!");
+            logger.warning("Tried to stop service '" + serviceId + "' whilst already stopped!");
             return;
         }
         started = false;
@@ -49,7 +51,7 @@ public abstract class AbstractService extends RegistrableListener implements Ser
         try {
             onStop();
         } catch (Exception ex) {
-            logger.severe("Unhandled exception whilst stopping service '" + id + "'!");
+            logger.severe("Unhandled exception whilst stopping service '" + serviceId + "'!");
             logger.severe(ex);
         }
     }
