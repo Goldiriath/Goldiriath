@@ -3,6 +3,7 @@ package net.goldiriath.plugin.persist;
 import com.google.common.base.CaseFormat;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,7 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void loadFrom(ConfigurationSection config) {
         initFields();
 
@@ -114,7 +116,15 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
                     value = persist.getDefaultValue();
                 }
 
-                persist.getField().set(this, value);
+                Field field = persist.getField();
+                if (!(value instanceof Collection)) {
+                    field.set(this, value);
+                }
+
+                // Collection handling
+                Collection<?> col = Collection.class.cast(field.get(this));
+                col.clear();
+                col.addAll((Collection) value);
             } catch (IllegalArgumentException | IllegalAccessException ex) {
                 Bukkit.getLogger().severe("Could not load persistent storage value: " + persist.getField().getName());
             }

@@ -22,7 +22,7 @@ public class Util {
         }
 
         if (parseString.startsWith("_")) {
-            return Goldiriath.plugin.is.getItem(parseString.substring(1));
+            return Goldiriath.plugin.im.getItem(parseString.substring(1));
         }
 
         final String[] parts = parseString.split(":");

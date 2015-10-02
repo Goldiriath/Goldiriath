@@ -6,7 +6,7 @@ import net.goldiriath.plugin.autoclose.AutoClose;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.dialog.DialogManager;
 import net.goldiriath.plugin.infidispenser.InfiDispenser;
-import net.goldiriath.plugin.item.ItemStorage;
+import net.goldiriath.plugin.item.ItemManager;
 import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
@@ -31,18 +31,18 @@ public class Goldiriath extends BukkitPlugin {
     public BukkitLogger logger;
     public YamlConfig config;
     //
-    public PlayerManager pm;
 
     // Services
     protected ServiceManager services;
-    public InfiDispenser id;
-    public MobSpawnManager msm;
-    public ItemStorage is;
+    public PlayerManager pm;
     public QuestManager qm;
     public DialogManager dm;
+    public MobSpawnManager msm;
+    public ItemManager im;
     public HeartBeat hb;
     public MetaCycler ms;
     public AutoClose ac;
+    public InfiDispenser id;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -57,15 +57,15 @@ public class Goldiriath extends BukkitPlugin {
 
         // Services
         services = new ServiceManager(plugin);
-        id = services.registerService(InfiDispenser.class);
         pm = services.registerService(PlayerManager.class);
-        msm = services.registerService(MobSpawnManager.class);
-        is = services.registerService(ItemStorage.class);
         qm = services.registerService(QuestManager.class);
         dm = services.registerService(DialogManager.class);
+        msm = services.registerService(MobSpawnManager.class);
+        im = services.registerService(ItemManager.class);
         hb = services.registerService(HeartBeat.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
+        id = services.registerService(InfiDispenser.class);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
