@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Map;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.ItemMeta;
+import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.FileUtils;
@@ -27,7 +27,7 @@ public class ItemManager extends AbstractService {
     @Getter
     private final ItemStorage storage;
     @Getter
-    private final Map<ItemStack, ItemMeta> metaCache = Maps.newHashMap();
+    private final Map<ItemStack, GItemMeta> metaCache = Maps.newHashMap();
 
     public ItemManager(Goldiriath plugin) {
         super(plugin);
@@ -56,19 +56,19 @@ public class ItemManager extends AbstractService {
         return storage.getItemMap().get(id);
     }
 
-    public ItemMeta getMeta(ItemStack stack) {
+    public GItemMeta getMeta(ItemStack stack) {
         return getMeta(stack, true);
     }
 
-    public ItemMeta getMeta(ItemStack stack, boolean create) {
-        ItemMeta meta = metaCache.get(stack);
+    public GItemMeta getMeta(ItemStack stack, boolean create) {
+        GItemMeta meta = metaCache.get(stack);
 
         if (meta != null || !create) {
             return meta;
         }
 
         // Create metadata and attach it to the stack
-        meta = ItemMeta.createItemMeta(stack);
+        meta = GItemMeta.createItemMeta(stack);
 
         // Load the meta or write the default meta
         File metaFile = getConfigFile(meta);
@@ -117,7 +117,7 @@ public class ItemManager extends AbstractService {
         }
     }
 
-    private File getConfigFile(ItemMeta meta) {
+    private File getConfigFile(GItemMeta meta) {
         return new File(metaLocation, meta.getUniqueId().toString() + ".yml");
     }
 
@@ -128,7 +128,7 @@ public class ItemManager extends AbstractService {
     private void uncacheMeta(ItemStack... stacks) {
         for (ItemStack stack : stacks) {
 
-            ItemMeta meta = metaCache.remove(stack);
+            GItemMeta meta = metaCache.remove(stack);
 
             if (meta == null) {
                 continue;

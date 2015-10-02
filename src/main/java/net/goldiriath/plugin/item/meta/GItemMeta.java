@@ -11,7 +11,7 @@ import net.goldiriath.plugin.persist.Persist;
 import net.goldiriath.plugin.player.persist.PersistentStorage;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemMeta extends PersistentStorage {
+public class GItemMeta extends PersistentStorage {
 
     @Getter
     private final ItemStack stack;
@@ -40,12 +40,12 @@ public class ItemMeta extends PersistentStorage {
     @Persist
     private List<String> lore = new ArrayList<>();
 
-    private ItemMeta(ItemStack stack, UUID uniqueId) {
+    private GItemMeta(ItemStack stack, UUID uniqueId) {
         this.stack = stack;
         this.uniqueId = uniqueId;
     }
 
-    public static ItemMeta createItemMeta(ItemStack stack) {
+    public static GItemMeta createItemMeta(ItemStack stack) {
         UUID uuid = getMetaUuid(stack);
         if (uuid == null) {
             uuid = UUID.randomUUID();
@@ -54,10 +54,10 @@ public class ItemMeta extends PersistentStorage {
         return createItemMeta(stack, uuid);
     }
 
-    public static ItemMeta createItemMeta(ItemStack stack, UUID uuid) {
+    public static GItemMeta createItemMeta(ItemStack stack, UUID uuid) {
 
         // Create new itemmeta
-        ItemMeta meta = new ItemMeta(stack, uuid);
+        GItemMeta meta = new GItemMeta(stack, uuid);
 
         org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
         meta.setLore(bMeta.getLore()); // Delegate lore

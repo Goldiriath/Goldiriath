@@ -1,12 +1,14 @@
 package net.goldiriath.plugin.item;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.google.common.collect.Maps;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.ItemMeta;
+import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.ChatUtils;
@@ -29,6 +31,10 @@ public class ItemStorage extends AbstractService {
 
     @Override
     protected void onStart() {
+
+        // Attach ProtocolLib adapter
+        ProtocolManager man = ProtocolLibrary.getProtocolManager();
+        man.addPacketListener(new ProtocolLibAdapter(plugin, man));
 
         // Load config
         config.load();
@@ -72,14 +78,14 @@ public class ItemStorage extends AbstractService {
             final ItemStack stack = new ItemStack(type, 1);
 
             // Create and load metadata, if present
-            final ItemMeta meta = ItemMeta.createItemMeta(stack, UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8)));
+            final GItemMeta meta = GItemMeta.createItemMeta(stack, UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8)));
             manager.getMetaCache().put(stack, meta);
             ConfigurationSection metaSection = section.getConfigurationSection("meta");
             if (metaSection != null) {
                 meta.loadFrom(section);
             }
 
-            // Set bukkit ItemMeta properties below this point
+            // Set bukkit GItemMeta properties below this point
             final org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
 
             // Display name

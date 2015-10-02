@@ -1,7 +1,7 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.ItemMeta;
+import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -30,7 +30,7 @@ public class Command_gitemmeta extends BukkitCommand<Goldiriath> {
         }
 
         boolean cached = true;
-        ItemMeta meta = plugin.im.getMeta(item, false);
+        GItemMeta meta = plugin.im.getMeta(item, false);
 
         if (meta == null) {
             meta = plugin.im.getMeta(item);

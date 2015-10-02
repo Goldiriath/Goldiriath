@@ -1,7 +1,7 @@
 name: Goldiriath
 version: 0.0.1
 main: net.goldiriath.plugin.Goldiriath
-depend: [Citizens]
+depend: [Citizens, ProtocolLib]
 commands:
     goldiriath:
         usage: /<command> [reload]
