@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.util.service;
 
+import java.util.Objects;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.RegistrableListener;
@@ -64,4 +65,24 @@ public abstract class AbstractService extends RegistrableListener implements Ser
     protected abstract void onStart();
 
     protected abstract void onStop();
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 83 * hash + Objects.hashCode(this.serviceId);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractService other = (AbstractService) obj;
+        return Objects.equals(this.serviceId, other.serviceId);
+    }
+
 }

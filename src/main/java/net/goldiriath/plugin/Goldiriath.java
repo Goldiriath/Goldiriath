@@ -34,6 +34,7 @@ public class Goldiriath extends BukkitPlugin {
     public PlayerManager pm;
 
     // Services
+    protected ServiceManager services;
     public InfiDispenser id;
     public MobSpawnManager msm;
     public ItemStorage is;
@@ -55,15 +56,16 @@ public class Goldiriath extends BukkitPlugin {
         config = new YamlConfig(plugin, "config.yml");
 
         // Services
-        id = new InfiDispenser(plugin);
-        pm = new PlayerManager(plugin);
-        msm = new MobSpawnManager(plugin);
-        is = new ItemStorage(plugin);
-        qm = new QuestManager(plugin);
-        dm = new DialogManager(plugin);
-        hb = new HeartBeat(plugin);
-        ms = new MetaCycler(plugin);
-        ac = new AutoClose(plugin);
+        services = new ServiceManager(plugin);
+        id = services.registerService(InfiDispenser.class);
+        pm = services.registerService(PlayerManager.class);
+        msm = services.registerService(MobSpawnManager.class);
+        is = services.registerService(ItemStorage.class);
+        qm = services.registerService(QuestManager.class);
+        dm = services.registerService(DialogManager.class);
+        hb = services.registerService(HeartBeat.class);
+        ms = services.registerService(MetaCycler.class);
+        ac = services.registerService(AutoClose.class);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);
@@ -78,15 +80,7 @@ public class Goldiriath extends BukkitPlugin {
         config.load();
 
         // Start services
-        id.start();
-        pm.start();
-        msm.start();
-        is.start();
-        qm.start();
-        dm.start();
-        hb.start();
-        ms.start();
-        ac.start();
+        services.start();
 
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
@@ -98,15 +92,7 @@ public class Goldiriath extends BukkitPlugin {
     public void onDisable() {
 
         // Stop services
-        id.stop();
-        pm.stop();
-        msm.stop();
-        is.stop();
-        qm.stop();
-        dm.stop();
-        hb.stop();
-        ms.stop();
-        ac.stop();
+        services.stop();
 
         // Unregister events
         HandlerList.unregisterAll(plugin);
