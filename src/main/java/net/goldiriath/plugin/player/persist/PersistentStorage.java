@@ -37,78 +37,87 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
     protected boolean init = false;
     protected final List<Persistence<?>> fields = new ArrayList<>();
 
-    @SuppressWarnings("unchecked")
     public PersistentStorage() {
         for (Field field : getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-
-            final Persist persistAnn = field.getAnnotation(Persist.class);
-            if (persistAnn == null) {
-                continue;
-            }
-
-            // Get key
-            String key = persistAnn.value().isEmpty() ? field.getName() : persistAnn.value();
-            key = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, key);
-
-            // Find delegate class
-            final DelegatePersistence delegateAnn = field.getAnnotation(DelegatePersistence.class);
-            Class<? extends ConfigDelegate<?>> delegateClass = (delegateAnn == null ? DELEGATES.get(field.getType()) : delegateAnn.value());
-
-            if (delegateClass == null) {
-                // Custom delegate, supertype
-                final Class<?> fieldClass = field.getType();
-                for (Class<?> loopDelegateClass : DELEGATES.keySet()) {
-                    if (loopDelegateClass.isAssignableFrom(fieldClass)) {
-                        delegateClass = DELEGATES.get(loopDelegateClass);
-                        break;
-                    }
-                }
-            }
-
-            // Fallback to default
-            if (delegateClass == null) {
-                delegateClass = DEFAULT_DELEGATE_CLASS;
-            }
-
-            // Instantiate delegate
-            ConfigDelegate<?> inst;
-            try {
-                inst = delegateClass.getConstructor(String.class).newInstance(key);
-            } catch (Exception ex) {
-                Bukkit.getLogger().severe("Could not setup persistent storage. Could not instance String-arg delegate constructor!");
-                Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
-                continue;
-            }
-
-            Object def;
-            try {
-                def = field.get(this);
-            } catch (IllegalArgumentException | IllegalAccessException ex) {
-                Bukkit.getLogger().severe("Could not setup persistent storage. Could not obtain default");
-                Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
-                continue;
-            }
-
-            fields.add(new Persistence(field, inst, def));
+            addField(field);
         }
     }
 
-    private void initFields() {
-        if (!init) {
-            for (Persistence<?> persist : fields) {
-                Object def;
-                try {
-                    def = persist.getField().get(this);
-                    persist.setDefaultValue(def);
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Bukkit.getLogger().severe("Could not setup persistent storage. Could not obtain default");
-                    Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
-                    continue;
+    @SuppressWarnings("unchecked")
+    private void addField(Field field) {
+        field.setAccessible(true);
+
+        final Persist persistAnn = field.getAnnotation(Persist.class);
+        if (persistAnn == null) {
+            return;
+        }
+
+        // Get key
+        String key = persistAnn.value().isEmpty() ? field.getName() : persistAnn.value();
+        key = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, key);
+
+        // Find delegate class
+        final DelegatePersistence delegateAnn = field.getAnnotation(DelegatePersistence.class);
+        Class<? extends ConfigDelegate<?>> delegateClass = (delegateAnn == null ? DELEGATES.get(field.getType()) : delegateAnn.value());
+
+        if (delegateClass == null) {
+            // Custom delegate, supertype
+            final Class<?> fieldClass = field.getType();
+            for (Class<?> loopDelegateClass : DELEGATES.keySet()) {
+                if (loopDelegateClass.isAssignableFrom(fieldClass)) {
+                    delegateClass = DELEGATES.get(loopDelegateClass);
+                    break;
                 }
             }
-            init = true;
         }
+
+        // Fallback to default
+        if (delegateClass == null) {
+            delegateClass = DEFAULT_DELEGATE_CLASS;
+        }
+
+        // Instantiate delegate
+        ConfigDelegate<?> inst;
+        try {
+            inst = delegateClass.getConstructor(String.class).newInstance(key);
+        } catch (Exception ex) {
+            Bukkit.getLogger().severe("Could not setup persistent storage. Could not instance String-arg delegate constructor!");
+            Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
+            return;
+        }
+
+        Object def;
+        try {
+            def = field.get(this);
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            Bukkit.getLogger().severe("Could not setup persistent storage. Could not obtain default");
+            Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
+            return;
+        }
+
+        fields.add(new Persistence(field, inst, def));
+
+        Goldiriath.plugin.logger.info("Added field: " + field.getName());
+    }
+
+    private void initFields() {
+        if (init) {
+            return;
+        }
+
+        for (Persistence<?> persist : fields) {
+            Object def;
+            try {
+                def = persist.getField().get(this);
+                persist.setDefaultValue(def);
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                Bukkit.getLogger().severe("Could not setup persistent storage. Could not obtain default");
+                Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
+            }
+
+            Goldiriath.plugin.logger.info("Init field: " + persist.getField().getName());
+        }
+        init = true;
     }
 
     @Override

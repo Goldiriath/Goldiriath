@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.item;
+package net.goldiriath.plugin.item.meta;
 
 import org.bukkit.Material;
 

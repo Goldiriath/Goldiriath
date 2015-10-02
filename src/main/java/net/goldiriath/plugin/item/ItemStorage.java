@@ -36,13 +36,17 @@ public class ItemStorage extends AbstractService {
         // Load custom items
         itemMap.clear();
         for (String id : config.getKeys(false)) {
-
             // ID
             if (!config.isConfigurationSection(id)) {
                 logger.warning("Skipping item: " + id + ". Incorrect format!");
                 continue;
             }
             ConfigurationSection section = config.getConfigurationSection(id);
+
+            if (!id.toLowerCase().equals(id)) {
+                logger.warning("Converting nonstandard item id to lower case: " + id);
+            }
+            id = id.toLowerCase();
 
             // Type
             String typeString = section.getString("type", null);

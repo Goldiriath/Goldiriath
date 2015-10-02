@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.item;
 
+import net.goldiriath.plugin.item.meta.ItemTier;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Arrays;

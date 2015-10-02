@@ -1,7 +1,6 @@
 package net.goldiriath.plugin.item.meta;
 
 import java.lang.reflect.Field;
-import net.goldiriath.plugin.item.ItemTier;
 import net.goldiriath.plugin.persist.delegate.ConfigDelegate;
 import org.bukkit.configuration.ConfigurationSection;
 

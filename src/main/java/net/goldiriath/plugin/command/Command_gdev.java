@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(permission = "goldiriath.godev", source = SourceType.PLAYER)
-public class Command_godev extends BukkitCommand<Goldiriath> {
+public class Command_gdev extends BukkitCommand<Goldiriath> {
 
     @Override
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {

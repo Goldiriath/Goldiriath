@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -70,8 +71,9 @@ public class ItemManager extends AbstractService {
         meta = ItemMeta.createItemMeta(stack);
 
         // Load the meta or write the default meta
-        YamlConfig metaConfig = getConfig(meta);
-        if (metaConfig.exists()) {
+        File metaFile = getConfigFile(meta);
+        YamlConfig metaConfig = getConfig(metaFile);
+        if (metaFile.exists()) {
             meta.loadFrom(metaConfig); // Load
         } else {
             meta.saveTo(metaConfig); // Write default
@@ -97,7 +99,7 @@ public class ItemManager extends AbstractService {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onItemDestroy(PlayerItemBreakEvent event) {
+    public void onItemBreak(PlayerItemBreakEvent event) {
         uncacheMeta(event.getBrokenItem());
     }
 
@@ -108,8 +110,19 @@ public class ItemManager extends AbstractService {
         }
     }
 
-    private YamlConfig getConfig(ItemMeta meta) {
-        return new YamlConfig(plugin, new File(metaLocation, meta.getUniqueId().toString()), false);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getInventory() instanceof PlayerInventory)) {
+            uncacheMeta(event.getInventory().getContents());
+        }
+    }
+
+    private File getConfigFile(ItemMeta meta) {
+        return new File(metaLocation, meta.getUniqueId().toString() + ".yml");
+    }
+
+    private YamlConfig getConfig(File file) {
+        return new YamlConfig(plugin, file, false);
     }
 
     private void uncacheMeta(ItemStack... stacks) {
@@ -121,8 +134,10 @@ public class ItemManager extends AbstractService {
                 continue;
             }
 
+            logger.info("Saving and removing from cache: " + meta.getUniqueId());
+
             // Save meta
-            YamlConfig metaConfig = getConfig(meta);
+            YamlConfig metaConfig = getConfig(getConfigFile(meta));
             meta.saveTo(metaConfig);
             metaConfig.save();
         }

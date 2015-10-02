@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import net.goldiriath.plugin.item.ItemTier;
 import net.goldiriath.plugin.persist.DelegatePersistence;
 import net.goldiriath.plugin.persist.Persist;
 import net.goldiriath.plugin.player.persist.PersistentStorage;
@@ -57,11 +56,13 @@ public class ItemMeta extends PersistentStorage {
 
     public static ItemMeta createItemMeta(ItemStack stack, UUID uuid) {
 
-        // Create itemmeta
+        // Create new itemmeta
         ItemMeta meta = new ItemMeta(stack, uuid);
 
-        // Attach itemmeta to stack
-        setMetaUuid(stack, uuid);
+        org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
+        meta.setLore(bMeta.getLore()); // Delegate lore
+        bMeta.setLore(Arrays.asList(new String[]{uuid.toString()}));
+        stack.setItemMeta(bMeta);
 
         return meta;
     }
@@ -83,10 +84,6 @@ public class ItemMeta extends PersistentStorage {
         } catch (IllegalArgumentException ex) {
             return null;
         }
-    }
-
-    public static void setMetaUuid(ItemStack stack, UUID uuid) {
-        stack.getItemMeta().setLore(Arrays.asList(new String[]{uuid.toString()}));
     }
 
 }

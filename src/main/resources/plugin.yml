@@ -17,7 +17,15 @@ commands:
     option:
         usage: /<command> <dialoghandler> <optionset> <choice>
         description: Selects the option for use.
-    godev:
+    gdev:
         usage: /<command> <values...>
         description: Goldiriath development command
         aliases: [gd]
+    gitemmeta:
+        usage: /<command>
+        description: Shows information about the item meta on an item.
+        aliases: [gim]
+    gitem:
+        usage: /<command> <itemid>
+        description: Obtains an item from the custom item storage.
+        aliases: [gi]
