@@ -7,6 +7,7 @@ import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.dialog.DialogManager;
 import net.goldiriath.plugin.infidispenser.InfiDispenser;
 import net.goldiriath.plugin.item.ItemStorage;
+import net.goldiriath.plugin.listeners.PlayerListener;
 import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
@@ -88,6 +89,9 @@ public class Goldiriath extends BukkitPlugin {
         ms.start();
         ac.start();
 
+        // Register events
+        new PlayerListener(plugin).register();
+        
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
 
