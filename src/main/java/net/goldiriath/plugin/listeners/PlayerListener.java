@@ -17,6 +17,7 @@ public class PlayerListener extends RegistrableListener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        
         if (event.getSlot() == 0) {
             if (event.getCurrentItem().getData().getItemType() == Material.WOOD_SWORD) {
                 player.sendMessage("Wood sword");
@@ -48,8 +49,27 @@ public class PlayerListener extends RegistrableListener {
                 player.sendMessage("Sorry you can not put that item in this slot.");
             }
         }
+    
+    
+    
+        if (event.getSlot() == 1) {
+            // Skill 1 todo
+        }
+    
+       if (event.getSlot() == 2) {
+            // Skill 2 todo
+        }
+    
+       if (event.getSlot() == 3) {
+            // Skill 3 todo
+        }
+       
+       if (event.getSlot() == 4) {
+            // Skill 4 todo
+        }
+       
+       if (event.getSlot() == 5) {
+            // Skill 5 todo
+        }
     }
-    
-    
-
 }
