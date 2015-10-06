@@ -84,7 +84,10 @@ public class HealthManager extends AbstractService {
         event.setDroppedExp(0);
 
         // TODO: Subtact money, drop inventory if the player is out
-        event.setKeepInventory(true);
+
+        // TODO: 1.7.10 doesn't have this...
+        // https://github.com/Bukkit/Bukkit/commit/e0dc9470efa3487c4d00a67a4d62de6d05d4985a
+        //event.setKeepInventory(true);
 
         // Reset player's health
         final PlayerData data = plugin.pm.getData(event.getEntity());

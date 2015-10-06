@@ -1,7 +1,6 @@
 package net.goldiriath.plugin.metacycler;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import net.goldiriath.plugin.ConfigPaths;
@@ -455,7 +454,10 @@ public class MetaCycler extends AbstractService {
         }
 
         try {
-            Block targetBlock = event.getPlayer().getTargetBlock((HashSet<Material>) null, 50);
+            // TODO: 1.7.10 doesn't have this...
+            // Block targetBlock = event.getPlayer().getTargetBlock((HashSet<Material>) null, 50);
+            Block targetBlock = event.getPlayer().getTargetBlock(null, 50);
+
 
             if (targetBlock == null) {
                 setDisplay(player.getItemInHand(), "");
