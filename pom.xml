@@ -104,9 +104,18 @@
 
     <!-- Repositories -->
     <repositories>
-        <repository>
+        <!--
+            Workaround:
+            Bukkit 1.7.10-R0.1-SNAPSHOT is not avaiable at the spigot repository
+            The worldedit repository is a stable alternative.
+        -->
+        <!--<repository>
             <id>spigot</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+        </repository>-->
+        <repository>
+            <id>worldedit</id>
+            <url>http://maven.sk89q.com/repo</url>
         </repository>
 
         <repository>
@@ -123,9 +132,9 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.7-R0.1-SNAPSHOT</version>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
