@@ -51,7 +51,7 @@ public class OptionSet implements ConfigLoadable {
             message
                     .then(option.getDisplay())
                     .style(ChatColor.ITALIC)
-                    .command("/option " + option.getDialog().getHandler().getId() + " " + this.getId() + " " + option.getId() + " ")
+                    .command("/goption " + option.getDialog().getHandler().getId() + " " + this.getId() + " " + option.getId() + " ")
                     .then(" | ");
         }
 

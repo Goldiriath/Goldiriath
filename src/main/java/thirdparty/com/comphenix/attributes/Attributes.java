@@ -20,7 +20,9 @@ import javax.annotation.Nullable;
 import org.bukkit.inventory.ItemStack;
 
 public class Attributes {
+
     public enum Operation {
+
         ADD_NUMBER(0),
         MULTIPLY_PERCENTAGE(1),
         ADD_PERCENTAGE(2);
@@ -46,6 +48,7 @@ public class Attributes {
     }
 
     public static class AttributeType {
+
         private static ConcurrentMap<String, AttributeType> LOOKUP = Maps.newConcurrentMap();
         public static final AttributeType GENERIC_MAX_HEALTH = new AttributeType("generic.maxHealth").register();
         public static final AttributeType GENERIC_FOLLOW_RANGE = new AttributeType("generic.followRange").register();
@@ -59,6 +62,7 @@ public class Attributes {
          * Construct a new attribute type.
          * <p>
          * Remember to {@link #register()} the type.
+         *
          * @param minecraftId - the ID of the type.
          */
         public AttributeType(String minecraftId) {
@@ -67,6 +71,7 @@ public class Attributes {
 
         /**
          * Retrieve the associated minecraft ID.
+         *
          * @return The associated ID.
          */
         public String getMinecraftId() {
@@ -75,6 +80,7 @@ public class Attributes {
 
         /**
          * Register the type in the central registry.
+         *
          * @return The registered type.
          */
         // Constructors should have no side-effects!
@@ -85,6 +91,7 @@ public class Attributes {
 
         /**
          * Retrieve the attribute type associated with a given ID.
+         *
          * @param minecraftId The ID to search for.
          * @return The attribute type, or NULL if not found.
          */
@@ -94,6 +101,7 @@ public class Attributes {
 
         /**
          * Retrieve every registered attribute type.
+         *
          * @return Every type.
          */
         public static Iterable<AttributeType> values() {
@@ -102,6 +110,7 @@ public class Attributes {
     }
 
     public static class Attribute {
+
         private NbtCompound data;
 
         private Attribute(Builder builder) {
@@ -163,6 +172,7 @@ public class Attributes {
 
         /**
          * Construct a new attribute builder with a random UUID and default operation of adding numbers.
+         *
          * @return The attribute builder.
          */
         public static Builder newBuilder() {
@@ -171,6 +181,7 @@ public class Attributes {
 
         // Makes it easier to construct an attribute
         public static class Builder {
+
             private double amount;
             private Operation operation = Operation.ADD_NUMBER;
             private AttributeType type;
@@ -185,26 +196,32 @@ public class Attributes {
                 this.amount = amount;
                 return this;
             }
+
             public Builder operation(Operation operation) {
                 this.operation = operation;
                 return this;
             }
+
             public Builder type(AttributeType type) {
                 this.type = type;
                 return this;
             }
+
             public Builder name(String name) {
                 this.name = name;
                 return this;
             }
+
             public Builder uuid(UUID uuid) {
                 this.uuid = uuid;
                 return this;
             }
+
             public Attribute build() {
                 return new Attribute(this);
             }
         }
+
     }
 
     // This may be modified
@@ -223,6 +240,7 @@ public class Attributes {
 
     /**
      * Retrieve the modified item stack.
+     *
      * @return The modified item stack.
      */
     public ItemStack getStack() {
@@ -231,6 +249,7 @@ public class Attributes {
 
     /**
      * Retrieve the number of attributes.
+     *
      * @return Number of attributes.
      */
     public int size() {
@@ -239,6 +258,7 @@ public class Attributes {
 
     /**
      * Add a new attribute to the list.
+     *
      * @param attribute - the new attribute.
      */
     public void add(Attribute attribute) {
@@ -249,13 +269,14 @@ public class Attributes {
      * Remove the first instance of the given attribute.
      * <p>
      * The attribute will be removed using its UUID.
+     *
      * @param attribute - the attribute to remove.
      * @return TRUE if the attribute was removed, FALSE otherwise.
      */
     public boolean remove(Attribute attribute) {
         UUID uuid = attribute.getUUID();
 
-        for (Iterator<Attribute> it = values().iterator(); it.hasNext(); ) {
+        for (Iterator<Attribute> it = values().iterator(); it.hasNext();) {
             if (Objects.equal(it.next().getUUID(), uuid)) {
                 it.remove();
                 return true;
@@ -270,6 +291,7 @@ public class Attributes {
 
     /**
      * Retrieve the attribute at a given index.
+     *
      * @param index - the index to look up.
      * @return The attribute at that index.
      */
@@ -286,11 +308,11 @@ public class Attributes {
                 return Iterators.transform(
                         attributes.getValue().iterator(),
                         new Function<NbtBase<Map<String, NbtBase<?>>>, Attribute>() {
-                    @Override
-                    public Attribute apply(@Nullable NbtBase<Map<String, NbtBase<?>>> element) {
-                        return new Attribute((NbtCompound) element);
-                    }
-                });
+                            @Override
+                            public Attribute apply(@Nullable NbtBase<Map<String, NbtBase<?>>> element) {
+                                return new Attribute((NbtCompound) element);
+                            }
+                        });
             }
         };
     }

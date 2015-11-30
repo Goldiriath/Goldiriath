@@ -1,5 +1,6 @@
 package net.goldiriath.plugin;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.autoclose.AutoClose;
@@ -7,6 +8,7 @@ import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.dialog.DialogManager;
 import net.goldiriath.plugin.infidispenser.InfiDispenser;
 import net.goldiriath.plugin.item.ItemManager;
+import net.goldiriath.plugin.item.ItemMetaManager;
 import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
@@ -30,9 +32,8 @@ public class Goldiriath extends BukkitPlugin {
     //
     public BukkitLogger logger;
     public YamlConfig config;
+    public File dataLoadFolder;
     //
-
-    // Services
     protected ServiceManager services;
     public PlayerManager pm;
     public QuestManager qm;
@@ -54,14 +55,15 @@ public class Goldiriath extends BukkitPlugin {
         loadBuildProperties();
 
         config = new YamlConfig(plugin, "config.yml");
+        dataLoadFolder = new File(plugin.getDataFolder(), "data");
 
         // Services
         services = new ServiceManager(plugin);
+        im = services.registerService(ItemManager.class);
         pm = services.registerService(PlayerManager.class);
         qm = services.registerService(QuestManager.class);
         dm = services.registerService(DialogManager.class);
         msm = services.registerService(MobSpawnManager.class);
-        im = services.registerService(ItemManager.class);
         hb = services.registerService(HeartBeat.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);

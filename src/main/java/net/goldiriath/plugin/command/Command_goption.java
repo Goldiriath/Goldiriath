@@ -13,7 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(source = SourceType.PLAYER)
-public class Command_option extends BukkitCommand<Goldiriath> {
+public class Command_goption extends BukkitCommand<Goldiriath> {
 
     @Override
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {

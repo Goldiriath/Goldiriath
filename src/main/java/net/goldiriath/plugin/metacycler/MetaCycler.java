@@ -458,7 +458,6 @@ public class MetaCycler extends AbstractService {
             // Block targetBlock = event.getPlayer().getTargetBlock((HashSet<Material>) null, 50);
             Block targetBlock = event.getPlayer().getTargetBlock(null, 50);
 
-
             if (targetBlock == null) {
                 setDisplay(player.getItemInHand(), "");
                 return;

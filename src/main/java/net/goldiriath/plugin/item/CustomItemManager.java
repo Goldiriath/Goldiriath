@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.item;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.collect.Maps;
@@ -14,27 +15,24 @@ import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStorage extends AbstractService {
+public class CustomItemManager extends AbstractService {
 
     @Getter
     private final Map<String, ItemStack> itemMap = Maps.newHashMap();
-    private final ItemManager manager;
     private final YamlConfig config;
 
-    public ItemStorage(Goldiriath plugin, ItemManager manager) {
+    public CustomItemManager(Goldiriath plugin) {
         super(plugin);
-        this.manager = manager;
         this.config = new YamlConfig(plugin, "items.yml");
     }
 
     @Override
     protected void onStart() {
-
-        // Attach ProtocolLib adapter
-        ProtocolManager man = ProtocolLibrary.getProtocolManager();
-        man.addPacketListener(new ProtocolLibAdapter(plugin, man));
 
         // Load config
         config.load();
@@ -78,11 +76,11 @@ public class ItemStorage extends AbstractService {
             final ItemStack stack = new ItemStack(type, 1);
 
             // Create and load metadata, if present
-            final GItemMeta meta = GItemMeta.createItemMeta(stack, UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8)));
-            manager.getMetaCache().put(stack, meta);
-            ConfigurationSection metaSection = section.getConfigurationSection("meta");
-            if (metaSection != null) {
-                meta.loadFrom(section);
+            UUID stackUuid = UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8));
+            final GItemMeta meta = GItemMeta.createItemMeta(stack, stackUuid);
+            plugin.im.getItemMeta().getMetaCache().put(stackUuid, meta);
+            if (section.isConfigurationSection("meta")) {
+                meta.loadFrom(section.getConfigurationSection("meta"));
             }
 
             // Set bukkit GItemMeta properties below this point
@@ -110,6 +108,13 @@ public class ItemStorage extends AbstractService {
     @Override
     protected void onStop() {
         itemMap.clear();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerChangeGamemode(PlayerGameModeChangeEvent event) {
+        // Update inventory when switching gamemodes
+        // This is done so the inventory's itemmeta is re-sent
+        event.getPlayer().updateInventory();
     }
 
 }

@@ -28,8 +28,8 @@ public enum ItemTier {
         name = name.toLowerCase();
 
         for (ItemTier tier : ItemTier.values()) {
-            if (tier.toString().toLowerCase().equals(name)
-                    || tier.getAdjective().toLowerCase().equals(name)) {
+            if (tier.toString().equalsIgnoreCase(name)
+                    || tier.getAdjective().equalsIgnoreCase(name)) {
                 return tier;
             }
         }

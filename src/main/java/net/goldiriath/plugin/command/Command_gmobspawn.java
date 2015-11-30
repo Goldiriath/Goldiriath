@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(permission = "goldiriath.mobspawn", source = SourceType.PLAYER)
-public class Command_mobspawn extends BukkitCommand<Goldiriath> {
+public class Command_gmobspawn extends BukkitCommand<Goldiriath> {
 
     @Override
     protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {

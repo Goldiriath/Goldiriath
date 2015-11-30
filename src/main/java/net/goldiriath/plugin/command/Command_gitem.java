@@ -25,6 +25,9 @@ public class Command_gitem extends BukkitCommand<Goldiriath> {
             return true;
         }
 
+        // Precache meta
+        plugin.im.getMeta(stack);
+
         playerSender.getInventory().addItem(stack);
         msg("Here you go!", ChatColor.GREEN);
         return true;

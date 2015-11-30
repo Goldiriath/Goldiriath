@@ -7,11 +7,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import net.goldiriath.plugin.persist.delegate.ConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.DefaultConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.IntConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.ListConfigDelegate;
 import net.goldiriath.plugin.persist.delegate.StringConfigDelegate;
+import net.goldiriath.plugin.persist.delegate.UUIDConfigDelegate;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.ConfigSavable;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -21,16 +23,17 @@ import org.bukkit.configuration.ConfigurationSection;
 public class PersistentStorage implements ConfigLoadable, ConfigSavable {
 
     public static final Class<DefaultConfigDelegate> DEFAULT_DELEGATE_CLASS = DefaultConfigDelegate.class;
-    public static final Map<Class<?>, Class<? extends ConfigDelegate<?>>> DELEGATES = new HashMap<>();
+    private static final Map<Class<?>, Class<? extends ConfigDelegate<?>>> DELEGATES = new HashMap<>();
 
     static {
         register(int.class, IntConfigDelegate.class);
         register(Integer.class, IntConfigDelegate.class);
         register(String.class, StringConfigDelegate.class);
         register(List.class, ListConfigDelegate.class);
+        register(UUID.class, UUIDConfigDelegate.class);
     }
 
-    public static void register(Class<?> typeClass, Class<? extends ConfigDelegate<?>> delegateClass) {
+    public static <T> void register(Class<T> typeClass, Class<? extends ConfigDelegate<? extends T>> delegateClass) {
         DELEGATES.put(typeClass, delegateClass);
     }
 
@@ -51,12 +54,12 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
             String key = persistAnn.value().isEmpty() ? field.getName() : persistAnn.value();
             key = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, key);
 
-            // Find delegate class
+            // Custom persistence delegate
             final DelegatePersistence delegateAnn = field.getAnnotation(DelegatePersistence.class);
             Class<? extends ConfigDelegate<?>> delegateClass = (delegateAnn == null ? DELEGATES.get(field.getType()) : delegateAnn.value());
 
+            // Find a matching delegate
             if (delegateClass == null) {
-                // Custom delegate, supertype
                 final Class<?> fieldClass = field.getType();
                 for (Class<?> loopDelegateClass : DELEGATES.keySet()) {
                     if (loopDelegateClass.isAssignableFrom(fieldClass)) {
@@ -66,7 +69,7 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
                 }
             }
 
-            // Fallback to default
+            // Fallback to default delegate
             if (delegateClass == null) {
                 delegateClass = DEFAULT_DELEGATE_CLASS;
             }
@@ -76,12 +79,13 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
             try {
                 inst = delegateClass.getConstructor(String.class).newInstance(key);
             } catch (Exception ex) {
-                Bukkit.getLogger().severe("Could not setup persistent storage. Could not instance String-arg delegate constructor!");
+                Bukkit.getLogger().severe("Could not setup persistent storage for field. Could not instance String-arg delegate constructor!");
                 Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
                 continue;
             }
 
-            fields.add(new Persistence(field, inst));
+            Persistence<?> pers = new Persistence(field, inst);
+            fields.add(pers);
         }
     }
 
@@ -110,23 +114,26 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
 
         for (Persistence<?> persist : fields) {
             try {
-                Object value = persist.getDelegate().loadValue(config, persist.getField());
+                Object newValue = persist.getDelegate().loadValue(config, persist.getField());
 
-                if (value == null) {
-                    value = persist.getDefaultValue();
+                if (newValue == null) {
+                    newValue = persist.getDefaultValue();
                 }
 
                 Field field = persist.getField();
-                if (!(value instanceof Collection)) {
-                    field.set(this, value);
+                if (!Collection.class.isAssignableFrom(field.getType())
+                        || field.get(this) == null) {
+                    field.set(this, newValue);
+                    continue;
                 }
 
                 // Collection handling
                 Collection<?> col = Collection.class.cast(field.get(this));
                 col.clear();
-                col.addAll((Collection) value);
+                col.addAll(Collection.class.cast(newValue));
             } catch (IllegalArgumentException | IllegalAccessException ex) {
                 Bukkit.getLogger().severe("Could not load persistent storage value: " + persist.getField().getName());
+                Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
             }
         }
     }
@@ -139,9 +146,15 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
         for (Persistence<?> persist : fields) {
             try {
                 Object value = persist.getField().get(this);
-                persist.getDelegate().saveValue(config, value);
+                if (value != null) {
+                    persist.getDelegate().saveValue(config, value);
+                } else {
+                    config.set(persist.getDelegate().getKey(), null);
+                }
+
             } catch (IllegalArgumentException | IllegalAccessException ex) {
                 Bukkit.getLogger().severe("Could not save persistent storage value: " + persist.getField().getName());
+                Bukkit.getLogger().severe(ExceptionUtils.getFullStackTrace(ex));
             }
         }
     }

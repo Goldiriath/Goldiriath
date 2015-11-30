@@ -7,23 +7,21 @@ commands:
         usage: /<command> [reload]
         aliases: [go]
         description: Shows information about the Goldiriath plugin.
-    mobspawn:
+    gmobspawn:
         usage: /<command> dev <on | off>
         description: Manages mobspawns.
-        aliases: [ms,mobmanage]
-    resetquest:
-        usage: /<command> <player>
-        description: Resets all quest progress.
-    option:
+        aliases: [gms,gmob]
+    goption:
         usage: /<command> <dialoghandler> <optionset> <choice>
         description: Selects the option for use.
+        aliases: [gopt]
     gdev:
         usage: /<command> <values...>
         description: Goldiriath development command
         aliases: [gd]
     gitemmeta:
-        usage: /<command>
-        description: Shows information about the item meta on an item.
+        usage: /<command> <info | create | delete | set <lore | name | level | tier> <value>>
+        description: Shows information about or creates the item meta for an item.
         aliases: [gim]
     gitem:
         usage: /<command> <itemid>
