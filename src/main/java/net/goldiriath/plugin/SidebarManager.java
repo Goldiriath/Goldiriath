@@ -3,6 +3,7 @@ package net.goldiriath.plugin;
 import com.google.common.collect.Lists;
 import java.util.List;
 import lombok.Getter;
+import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.SidebarData;
 import net.goldiriath.plugin.util.Util;
@@ -42,11 +43,16 @@ public class SidebarManager extends AbstractService {
 
     public void update(PlayerData data) {
         List<String> lines = Lists.newArrayList();
+
+        int xp = data.getXp();
+        int level = XPMath.xpToLevel(xp);
+
         lines.add("money " + ChatColor.GOLD + data.getMoney());
-        lines.add("xp " + ChatColor.LIGHT_PURPLE + data.getXp() + "/" + data.calculateNextXp());
-        lines.add("level " + ChatColor.DARK_GREEN + data.calculateLevel());
+        lines.add("xp " + ChatColor.LIGHT_PURPLE + xp + "/" + XPMath.xpToNextXp(xp));
+        lines.add("level " + ChatColor.DARK_GREEN + level);
         lines.add("health " + ChatColor.RED + data.getHealth() + "/" + data.getMaxHealth());
         lines.add("mana " + ChatColor.BLUE + data.getMana() + "/" + data.getMana());
+
         data.getSidebar().setData(lines);
     }
 

@@ -10,6 +10,7 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.dialog.Dialog;
 import net.goldiriath.plugin.dialog.OptionSet;
 import net.goldiriath.plugin.dialog.script.ScriptRunner;
+import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.mobspawn.MobSpawn;
 import net.goldiriath.plugin.skill.Skill;
 import net.goldiriath.plugin.skill.SkillType;
@@ -63,7 +64,7 @@ public class PlayerData {
         final MobSpawn mobSpawn = (MobSpawn) metadataList.get(0).value();
         final int mobLevel = mobSpawn.getProfile().getLevel();
 
-        int level = calculateLevel();
+        int level = XPMath.xpToLevel(persistent.xp);
         double diff = Math.abs(level - mobLevel);
 
         int xp = 1;
@@ -79,25 +80,17 @@ public class PlayerData {
         addXp(xp);
     }
 
-    public int calculateLevel() {
-        return (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5));
-    }
-
-    public int calculateNextXp() {
-        int x = (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5) + 1);
-        return 50 * (x - 1) * x;
-    }
-
     public int getXp() {
         return persistent.xp;
     }
 
     public void addXp(int amt) {
-        int currentlevel = calculateLevel();
+        int currentlevel = XPMath.xpToLevel(persistent.xp);
         persistent.xp += amt;
-        int newlevel = calculateLevel();
-        if (currentlevel != newlevel) {
+        int newlevel = XPMath.xpToLevel(persistent.xp);
+        while (currentlevel < newlevel) {
             gainLevel();
+            currentlevel++;
         }
     }
 
@@ -108,11 +101,15 @@ public class PlayerData {
         meta.addEffect(effect);
         meta.setPower(0);
         fw.setFireworkMeta(meta);
-
         addSkillPoints(1);
-        persistent.maxHealth += (100 * calculateLevel());
-        persistent.maxMana += (100 * calculateLevel());
-        player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + calculateLevel());
+
+        int xp = persistent.xp;
+        int newLevel = XPMath.xpToLevel(xp);
+
+        // TODO: These shouldn't be levelled this way
+        persistent.maxHealth += (100 * newLevel);
+        persistent.maxMana += (100 * newLevel);
+        player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + newLevel);
     }
 
     public boolean isShowingOption() {
