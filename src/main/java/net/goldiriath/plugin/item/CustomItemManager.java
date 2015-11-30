@@ -1,8 +1,5 @@
 package net.goldiriath.plugin.item;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.google.common.collect.Maps;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

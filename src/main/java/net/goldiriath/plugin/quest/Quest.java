@@ -1,6 +1,6 @@
 package net.goldiriath.plugin.quest;
 
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,7 +101,7 @@ public class Quest implements ConfigLoadable, Validatable, Triggerable<Player> {
         // Get meta
         name = config.getString("meta.name", null);
         String[] desc = config.getString("meta.description", "").split("\\n");
-        description = new ArrayList<>();
+        description = Lists.newArrayList();
         description.addAll(Arrays.asList(desc));
         ask = config.getBoolean("meta.ask", true);
 

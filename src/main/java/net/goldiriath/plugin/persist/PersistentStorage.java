@@ -1,8 +1,8 @@
 package net.goldiriath.plugin.persist;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public class PersistentStorage implements ConfigLoadable, ConfigSavable {
     }
 
     protected boolean init = false;
-    protected final List<Persistence<?>> fields = new ArrayList<>();
+    protected final List<Persistence<?>> fields = Lists.newArrayList();
 
     @SuppressWarnings("unchecked")
     public PersistentStorage() {

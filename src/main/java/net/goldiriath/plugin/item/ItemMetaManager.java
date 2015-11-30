@@ -11,7 +11,6 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.util.FileUtils;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +20,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 public class Util {
 
@@ -56,6 +57,13 @@ public class Util {
 
     public static long getServerTick() {
         return Bukkit.getWorlds().get(0).getFullTime();
+    }
+
+    public static void cancel(BukkitTask task) {
+        try {
+            task.cancel();
+        } catch(Exception ex) {
+        }
     }
 
 }

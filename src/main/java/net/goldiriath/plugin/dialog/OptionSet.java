@@ -1,6 +1,6 @@
 package net.goldiriath.plugin.dialog;
 
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import net.goldiriath.plugin.quest.ParseException;
@@ -16,7 +16,7 @@ public class OptionSet implements ConfigLoadable {
     private final NPCDialogHandler handler;
     private final String id;
     //
-    private final List<Option> options = new ArrayList<>();
+    private final List<Option> options = Lists.newArrayList();
     private FancyMessage message;
 
     public OptionSet(NPCDialogHandler handler, String id) {

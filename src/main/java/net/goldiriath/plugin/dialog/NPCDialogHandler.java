@@ -1,6 +1,6 @@
 package net.goldiriath.plugin.dialog;
 
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
     private int npcId;
     private String npcName;
     private final Map<String, Dialog> dialogs = new HashMap<>();
-    private final List<Dialog> clickDialogs = new ArrayList<>();
+    private final List<Dialog> clickDialogs = Lists.newArrayList();
     private final Map<String, OptionSet> options = new HashMap<>();
 
     public String getId() {

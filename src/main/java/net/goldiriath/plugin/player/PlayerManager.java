@@ -92,12 +92,6 @@ public class PlayerManager extends AbstractService {
         }
     }
 
-    public void updateAll() {
-        for (PlayerData data : players.values()) {
-            data.update();
-        }
-    }
-
     private void savePlayer(Player player) {
         final PersistentData data = getData(player, false).getPersistent();
 

@@ -2,7 +2,7 @@ package net.goldiriath.plugin.item;
 
 import net.goldiriath.plugin.item.meta.ItemTier;
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Material;
@@ -60,7 +60,7 @@ public class ItemFactory {
         final ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name != null ? name : tier.getAdjective(type) + " " + type.toString().toLowerCase().replace('_', ' '));
 
-        final List<String> loreList = new ArrayList<>();
+        final List<String> loreList = Lists.newArrayList();
         loreList.add("Level " + level);
         loreList.addAll(Arrays.asList(lore));
         meta.setLore(loreList);

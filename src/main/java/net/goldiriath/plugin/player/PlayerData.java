@@ -1,6 +1,5 @@
 package net.goldiriath.plugin.player;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import net.goldiriath.plugin.dialog.script.ScriptRunner;
 import net.goldiriath.plugin.mobspawn.MobSpawn;
 import net.goldiriath.plugin.skill.Skill;
 import net.goldiriath.plugin.skill.SkillType;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -26,9 +24,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 
 public class PlayerData {
 
@@ -40,57 +35,20 @@ public class PlayerData {
     private final Player player;
     @Getter
     private final PersistentData persistent;
-    //
     @Getter
-    private final Objective sidebar;
+    private final SidebarData sidebar;
+    //
     @Getter
     private OptionSet currentOption;
     private BukkitTask currentOptionTimeout;
     private ScriptRunner scriptRunner;
-    //
-    private final List<String> scoreList = new ArrayList<>();
 
     public PlayerData(PlayerManager manager, Player player) {
         this.plugin = manager.getPlugin();
         this.manager = manager;
         this.player = player;
         this.persistent = new PersistentData(this);
-        //
-        this.sidebar = Bukkit.getScoreboardManager().getNewScoreboard().registerNewObjective("sidebar", "dummy");
-        this.sidebar.setDisplayName("Statistics");
-        this.sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-        player.setScoreboard(sidebar.getScoreboard());
-    }
-
-    public void update() {
-
-        for (String score : scoreList) {
-            sidebar.getScoreboard().resetScores(score);
-        }
-
-        scoreList.clear();
-
-        Score moneyscore = sidebar.getScore("money " + ChatColor.GOLD + persistent.money);
-        moneyscore.setScore(1);
-        scoreList.add("money " + ChatColor.GOLD + persistent.money);
-
-        int nextxp = calculatenextxp();
-        Score xpscore = sidebar.getScore("xp " + ChatColor.LIGHT_PURPLE + persistent.xp + "/" + nextxp);
-        xpscore.setScore(2);
-        scoreList.add("xp " + ChatColor.LIGHT_PURPLE + persistent.xp + "/" + nextxp);
-
-        int level = calculateLevel();
-        Score levelScore = sidebar.getScore("level " + ChatColor.DARK_GREEN + level);
-        levelScore.setScore(3);
-        scoreList.add("level " + ChatColor.DARK_GREEN + level);
-
-        Score healthScore = sidebar.getScore("health " + ChatColor.RED + persistent.health + "/" + persistent.maxHealth);
-        healthScore.setScore(4);
-        scoreList.add("health " + ChatColor.RED + persistent.health + "/" + persistent.maxHealth);
-
-        Score manaScore = sidebar.getScore("mana " + ChatColor.BLUE + persistent.mana + "/" + persistent.maxMana);
-        manaScore.setScore(5);
-        scoreList.add("mana " + ChatColor.BLUE + persistent.mana + "/" + persistent.maxMana);
+        this.sidebar = new SidebarData(player);
     }
 
     //
@@ -125,9 +83,13 @@ public class PlayerData {
         return (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5));
     }
 
-    public int calculatenextxp() {
+    public int calculateNextXp() {
         int x = (int) Math.floor(0.1 * (Math.sqrt(2 * persistent.xp + 25) + 5) + 1);
         return 50 * (x - 1) * x;
+    }
+
+    public int getXp() {
+        return persistent.xp;
     }
 
     public void addXp(int amt) {
@@ -322,6 +284,10 @@ public class PlayerData {
 
     public boolean hasHealth(int health) {
         return persistent.health >= health;
+    }
+
+    public int getMaxMana() {
+        return persistent.maxMana;
     }
 
     public int getMana() {

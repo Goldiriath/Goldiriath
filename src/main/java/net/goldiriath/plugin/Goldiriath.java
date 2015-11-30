@@ -8,7 +8,6 @@ import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.dialog.DialogManager;
 import net.goldiriath.plugin.infidispenser.InfiDispenser;
 import net.goldiriath.plugin.item.ItemManager;
-import net.goldiriath.plugin.item.ItemMetaManager;
 import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
@@ -40,7 +39,7 @@ public class Goldiriath extends BukkitPlugin {
     public DialogManager dm;
     public MobSpawnManager msm;
     public ItemManager im;
-    public HeartBeat hb;
+    public SidebarManager sb;
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
@@ -64,7 +63,7 @@ public class Goldiriath extends BukkitPlugin {
         qm = services.registerService(QuestManager.class);
         dm = services.registerService(DialogManager.class);
         msm = services.registerService(MobSpawnManager.class);
-        hb = services.registerService(HeartBeat.class);
+        sb = services.registerService(SidebarManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);

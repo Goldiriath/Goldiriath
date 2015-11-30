@@ -12,7 +12,6 @@ import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.pravian.bukkitlib.util.ChatUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
