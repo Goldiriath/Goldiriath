@@ -20,11 +20,13 @@ public class ItemManager extends AbstractService {
     @Override
     protected void onStart() {
         itemMeta.start();
+        itemStorage.start();
     }
 
     @Override
     protected void onStop() {
-        itemStorage.start();
+        itemStorage.stop();
+        itemMeta.stop();
     }
 
     public ItemStack getItem(String id) {

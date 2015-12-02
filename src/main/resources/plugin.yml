@@ -24,6 +24,6 @@ commands:
         description: Shows information about or creates the item meta for an item.
         aliases: [gim]
     gitem:
-        usage: /<command> <itemid>
+        usage: /<command> <list | get <itemid>>
         description: Obtains an item from the custom item storage.
         aliases: [gi]
