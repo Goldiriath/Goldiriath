@@ -6,16 +6,19 @@ import java.util.Properties;
 import net.goldiriath.plugin.autoclose.AutoClose;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.dialog.DialogManager;
+import net.goldiriath.plugin.health.HealthManager;
 import net.goldiriath.plugin.infidispenser.InfiDispenser;
 import net.goldiriath.plugin.item.ItemManager;
+import net.goldiriath.plugin.logging.GLogger;
+import net.goldiriath.plugin.logging.PlayerListLogSink;
 import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.quest.QuestManager;
+import net.goldiriath.plugin.util.PlayerList;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.implementation.BukkitLogger;
 import net.pravian.bukkitlib.implementation.BukkitPlugin;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.Command;
@@ -29,16 +32,18 @@ public class Goldiriath extends BukkitPlugin {
     public static String buildVersion = "";
     public static String buildDate = "";
     //
-    public BukkitLogger logger;
+    public GLogger logger;
+    public final PlayerList loggerPlayers = new PlayerList();
     public YamlConfig config;
     public File dataLoadFolder;
     //
     protected ServiceManager services;
+    public ItemManager im;
     public PlayerManager pm;
     public QuestManager qm;
     public DialogManager dm;
     public MobSpawnManager msm;
-    public ItemManager im;
+    public HealthManager hm;
     public SidebarManager sb;
     public MetaCycler ms;
     public AutoClose ac;
@@ -49,7 +54,10 @@ public class Goldiriath extends BukkitPlugin {
     @Override
     public void onLoad() {
         plugin = this;
-        logger = new BukkitLogger(plugin);
+
+        // Setup logger
+        logger = new GLogger(getPluginLogger());
+        logger.addSink(new PlayerListLogSink(loggerPlayers));
 
         loadBuildProperties();
 
@@ -63,6 +71,7 @@ public class Goldiriath extends BukkitPlugin {
         qm = services.registerService(QuestManager.class);
         dm = services.registerService(DialogManager.class);
         msm = services.registerService(MobSpawnManager.class);
+        hm = services.registerService(HealthManager.class);
         sb = services.registerService(SidebarManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
@@ -86,7 +95,7 @@ public class Goldiriath extends BukkitPlugin {
         // Setup command handler
         ch.setCommandLocation(Command_goldiriath.class.getPackage());
 
-        logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by derfacedirk and Prozza is enabled.");
+        logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by Prozza and derpfacedirk is enabled");
     }
 
     @Override

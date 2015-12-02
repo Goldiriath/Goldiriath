@@ -18,8 +18,27 @@ public class ServiceManager extends AbstractService {
 
     @Override
     protected void onStart() {
+
+        long longestTime = 0;
+        Service longestService = null;
+
+        long startTime = System.currentTimeMillis();
         for (Service service : services) {
+            long serviceStart = System.currentTimeMillis();
+
             service.start();
+
+            long serviceTime = System.currentTimeMillis() - serviceStart;
+            if (serviceTime > longestTime) {
+                longestTime = serviceTime;
+                longestService = service;
+            }
+        }
+        long stopTime = System.currentTimeMillis();
+        logger.info("Started " + services.size() + " services in " + (stopTime - startTime) + "ms");
+
+        if (longestTime > 20 && longestService != null) {
+            logger.info(longestService.getServiceId() + " took longest to load: " + longestTime + "ms");
         }
     }
 
@@ -55,8 +74,7 @@ public class ServiceManager extends AbstractService {
                 }
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            logger.severe("Could not register service class: " + serviceClass.getSimpleName());
-            logger.severe(ex);
+            logger.severe("Could not register service class: " + serviceClass.getSimpleName(), ex);
         }
 
         if (service == null) {

@@ -112,6 +112,8 @@ public class MobSpawnManager extends AbstractService {
                 }
             }
         }.runTaskTimer(Goldiriath.plugin, 2, 2); // Run every other tick
+
+        logger.info("Loaded " + profiles + " mobspawn profiles for + " + spawns.size() + " mobspawns");
     }
 
     @Override

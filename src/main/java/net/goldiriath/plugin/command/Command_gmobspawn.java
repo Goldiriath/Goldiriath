@@ -8,7 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(permission = "goldiriath.mobspawn", source = SourceType.PLAYER)
+@CommandPermissions(permission = "goldiriath.gmobspawn", source = SourceType.PLAYER)
 public class Command_gmobspawn extends BukkitCommand<Goldiriath> {
 
     @Override

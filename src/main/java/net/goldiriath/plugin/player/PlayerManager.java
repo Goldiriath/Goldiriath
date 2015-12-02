@@ -25,8 +25,12 @@ public class PlayerManager extends AbstractService {
 
     @Override
     public void onStart() {
+        players.clear();
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             getData(player, true); // Preload player
+        }
+        if (players.size() > 1) {
+            logger.info("Precached playerdata for " + players.size() + " players");
         }
     }
 

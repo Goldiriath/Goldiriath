@@ -100,6 +100,8 @@ public class CustomItemManager extends AbstractService {
 
             itemMap.put(id, stack);
         }
+
+        logger.info("Loaded " + itemMap.size() + " custom items");
     }
 
     @Override

@@ -43,8 +43,7 @@ public class Command_goldiriath extends BukkitCommand<Goldiriath> {
                 Goldiriath.buildVersion,
                 Goldiriath.buildDate), ChatColor.GOLD);
         msg("Running on Minecraft " + Bukkit.getBukkitVersion() + ".", ChatColor.GOLD);
-        msg("Created by derpfacedirk and Prozza with " + ChatColor.LIGHT_PURPLE + "<3" + ChatColor.GOLD + ".", ChatColor.GOLD);
-
+        msg("Created by Prozza and derpfacedirk with " + ChatColor.LIGHT_PURPLE + "<3" + ChatColor.GOLD + ".", ChatColor.GOLD);
         return true;
     }
 

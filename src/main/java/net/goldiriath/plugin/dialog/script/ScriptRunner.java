@@ -23,6 +23,11 @@ public class ScriptRunner extends BukkitRunnable implements Service {
     }
 
     @Override
+    public String getServiceId() {
+        return "ScriptRunner-" + script.getDialog().getId() + "-" + player.getName();
+    }
+
+    @Override
     public void start() {
         index = 0;
         tick = -1; // Start at tick -1 so that 0-delays are ran properly

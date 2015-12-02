@@ -2,11 +2,12 @@ name: Goldiriath
 version: 0.0.1
 main: net.goldiriath.plugin.Goldiriath
 depend: [Citizens, ProtocolLib]
+authors: [Prozza, derpfacedirk]
 commands:
     goldiriath:
         usage: /<command> [reload]
-        aliases: [go]
         description: Shows information about the Goldiriath plugin.
+        aliases: [go]
     gmobspawn:
         usage: /<command> dev <on | off>
         description: Manages mobspawns.
@@ -17,7 +18,7 @@ commands:
         aliases: [gopt]
     gdev:
         usage: /<command> <values...>
-        description: Goldiriath development command
+        description: Goldiriath development command.
         aliases: [gd]
     gitemmeta:
         usage: /<command> <info | create | delete | set <lore | name | level | tier> <value>>
@@ -25,5 +26,9 @@ commands:
         aliases: [gim]
     gitem:
         usage: /<command> <list | get <itemid>>
-        description: Obtains an item from the custom item storage.
+        description: Manages custom item storage.
         aliases: [gi]
+    glog:
+        usage: /<command> <list | add | remove>
+        description: Manages player logging.
+        aliases: [gl]
