@@ -173,7 +173,7 @@ public class InventoryManager extends AbstractService {
 
         // Loop through the inventory
         for (SlotType slot : SlotType.values()) {
-            if (slot == SlotType.ANY || !slot.hasPlaceHolder()) {
+            if (!slot.hasPlaceHolder()) {
                 continue;
             }
 
@@ -186,7 +186,13 @@ public class InventoryManager extends AbstractService {
                     continue;
                 }
 
-                if (!SlotType.isPlaceHolder(stack) && !slot.validate(stack)) {
+                if (SlotType.isPlaceHolder(stack)) {
+                    // Re-set placeholder in case it's incorrect
+                    inv.setItem(i, slot.getPlaceHolder());
+                    continue;
+                }
+
+                if (!slot.validate(stack)) {
                     // Move the item somewhere where it fits
                     InventoryUtil.storeInInventory(inv, stack);
                     inv.setItem(i, slot.getPlaceHolder());

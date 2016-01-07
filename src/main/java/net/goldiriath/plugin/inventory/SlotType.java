@@ -14,7 +14,7 @@ import org.bukkit.material.MaterialData;
 @SuppressWarnings("deprecation")
 public enum SlotType implements ItemStackValidatable {
 
-    ANY(Material.AIR, 0) {
+    ANY(Material.AIR, (byte) 0) {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -22,7 +22,7 @@ public enum SlotType implements ItemStackValidatable {
                 }
 
             },
-    WEAPON(Material.THIN_GLASS, 0x15, 0) {
+    WEAPON(Material.STAINED_GLASS_PANE, 14, 0) {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -30,7 +30,7 @@ public enum SlotType implements ItemStackValidatable {
                 }
 
             },
-    SKILL(Material.THIN_GLASS, 0x14, 1, 2, 3, 4, 5) {
+    SKILL(Material.STAINED_GLASS_PANE, 15, 1, 2, 3, 4, 5) {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -39,31 +39,16 @@ public enum SlotType implements ItemStackValidatable {
 
             };
     //
-    private static final List<ItemStack> placeHolders;
-    //
     @Getter
     private final ItemStack placeHolder;
-
-    static {
-        List<ItemStack> holders = new ArrayList<>();
-        for (SlotType slot : values()) {
-            if (slot != ANY) {
-                holders.add(slot.placeHolder);
-            }
-        }
-        placeHolders = Collections.unmodifiableList(holders);
-    }
 
     @Getter
     private final int[] indices;
 
     @SuppressWarnings("deprecation")
-    private SlotType(Material material, int dataInt, int... indices) {
+    private SlotType(Material material, int durability, int... indices) {
         this.placeHolder = new ItemStack(material, 1);
-        MaterialData data = placeHolder.getData().clone();
-        data.setData(new Integer(dataInt).byteValue());
-        placeHolder.setData(data);
-
+        this.placeHolder.setDurability((short) durability);
         this.indices = indices;
     }
 
@@ -72,7 +57,17 @@ public enum SlotType implements ItemStackValidatable {
     }
 
     public static boolean isPlaceHolder(ItemStack stack) {
-        return !InventoryUtil.isEmpty(stack) && placeHolders.contains(stack);
+        if (InventoryUtil.isEmpty(stack)) {
+            return false;
+        }
+
+        for (SlotType type : SlotType.values()) {
+            if (type.hasPlaceHolder() && type.getPlaceHolder().equals(stack)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static SlotType ofIndex(int targetIndex) {
