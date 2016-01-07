@@ -2,16 +2,19 @@ package net.goldiriath.plugin.inventory;
 
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
@@ -43,36 +46,6 @@ public class InventoryManager extends AbstractService {
         prepareInventory(event.getPlayer());
     }
 
-    private void prepareInventory(Player player) {
-        PlayerInventory inv = player.getInventory();
-
-        // Loop through the inventory
-        for (SlotType slot : SlotType.values()) {
-            if (slot == SlotType.ANY || !slot.hasPlaceHolder()) {
-                continue;
-            }
-
-            for (int i : slot.getIndices()) {
-                final ItemStack stack = inv.getItem(i);
-
-                // Place placeholder
-                if (InventoryUtil.isEmpty(stack)) {
-                    inv.setItem(i, slot.getPlaceHolder());
-                    continue;
-                }
-
-                if (!SlotType.isPlaceHolder(stack) && !slot.validate(stack)) {
-                    // Move the item somewhere where it fits
-                    logger.info("Moving item out restricted slot: " + i);
-
-                    InventoryUtil.storeInInventory(inv, stack);
-                    inv.setItem(i, slot.getPlaceHolder());
-                }
-            }
-        }
-
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory() instanceof CraftingInventory)) {
@@ -89,7 +62,6 @@ public class InventoryManager extends AbstractService {
         //String curI = event.getCurrentItem() == null ? "none" : event.getCurrentItem().getType().toString();
         //String curC = event.getCursor() == null ? "none" : event.getCursor().getType().toString();
         //logger.info(event.getClick() + " - " + event.getAction() + ": " + curI + " @ " + curC + " (" + event.getSlot() + ":" + event.getRawSlot() + ")");
-
         final int index = event.getSlot(); // https://bugs.mojang.com/secure/attachment/61101/Items_slot_number.jpg
         final SlotType slot = SlotType.ofIndex(index);
         final ItemStack current = event.getCurrentItem();
@@ -149,7 +121,7 @@ public class InventoryManager extends AbstractService {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false) // false: See bug below
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
         if (!SlotType.isPlaceHolder(event.getItemDrop().getItemStack())) {
@@ -168,6 +140,58 @@ public class InventoryManager extends AbstractService {
             stack.setAmount(player.getInventory().getItemInHand().getAmount() + 1);
             event.getItemDrop().remove();
             player.getInventory().setItem(player.getInventory().getHeldItemSlot(), stack);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        if (!event.hasItem() || event.getAction() == Action.PHYSICAL) {
+            return;
+        }
+
+        ItemStack stack = event.getItem();
+
+        // Prevent item use outside of slot
+        for (SlotType slot : SlotType.values()) {
+            if (slot == SlotType.ANY) {
+                continue;
+            }
+
+            if (!slot.validate(stack)) {
+                continue;
+            }
+
+            // This item must be used in a slot
+            event.getPlayer().sendMessage(ChatColor.RED + "You must use this item in the designated slot.");
+            event.setUseItemInHand(Event.Result.DENY);
+            return;
+        }
+    }
+
+    private void prepareInventory(Player player) {
+        PlayerInventory inv = player.getInventory();
+
+        // Loop through the inventory
+        for (SlotType slot : SlotType.values()) {
+            if (slot == SlotType.ANY || !slot.hasPlaceHolder()) {
+                continue;
+            }
+
+            for (int i : slot.getIndices()) {
+                final ItemStack stack = inv.getItem(i);
+
+                // Place placeholder
+                if (InventoryUtil.isEmpty(stack)) {
+                    inv.setItem(i, slot.getPlaceHolder());
+                    continue;
+                }
+
+                if (!SlotType.isPlaceHolder(stack) && !slot.validate(stack)) {
+                    // Move the item somewhere where it fits
+                    InventoryUtil.storeInInventory(inv, stack);
+                    inv.setItem(i, slot.getPlaceHolder());
+                }
+            }
         }
 
     }
