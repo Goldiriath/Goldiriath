@@ -74,7 +74,6 @@ public class GLogger implements LogSink {
     }
 
     // Sink handling
-
     public void addSink(LogSink sink) {
         if (sinks.contains(sink)) {
             return;
@@ -122,7 +121,6 @@ public class GLogger implements LogSink {
     }
 
     // Logging methods
-
     public void debug(String message) {
         log(Level.FINE, message, null);
     }
@@ -130,7 +128,6 @@ public class GLogger implements LogSink {
     public void debug(String message, Throwable t) {
         log(Level.FINE, message, t);
     }
-
 
     public void info(String message) {
         log(Level.INFO, message, null);
@@ -147,6 +144,7 @@ public class GLogger implements LogSink {
     public void warning(String message, Throwable t) {
         log(Level.WARNING, message, t);
     }
+
     public void severe(String message) {
         log(Level.SEVERE, message, null);
     }
@@ -181,7 +179,5 @@ public class GLogger implements LogSink {
         }
         return Objects.equals(this.name, other.name);
     }
-
-
 
 }

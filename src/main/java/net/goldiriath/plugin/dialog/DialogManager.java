@@ -68,7 +68,7 @@ public class DialogManager extends AbstractService {
         for (NPCDialogHandler handler : handlers.values()) {
             dialogs += handler.getDialogs().size();
         }
-        logger.info("Loaded " + handlers.size() + " NPC dialog handlers for " + dialogs  + " dialogs");
+        logger.info("Loaded " + handlers.size() + " NPC dialog handlers for " + dialogs + " dialogs");
     }
 
     @Override

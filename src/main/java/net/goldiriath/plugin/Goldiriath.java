@@ -1,5 +1,6 @@
 package net.goldiriath.plugin;
 
+import net.goldiriath.plugin.inventory.InventoryManager;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -45,6 +46,7 @@ public class Goldiriath extends BukkitPlugin {
     public MobSpawnManager msm;
     public HealthManager hm;
     public SidebarManager sb;
+    public InventoryManager iv;
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
@@ -73,6 +75,7 @@ public class Goldiriath extends BukkitPlugin {
         msm = services.registerService(MobSpawnManager.class);
         hm = services.registerService(HealthManager.class);
         sb = services.registerService(SidebarManager.class);
+        iv = services.registerService(InventoryManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);

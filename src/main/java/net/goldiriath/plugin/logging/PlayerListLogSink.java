@@ -30,7 +30,7 @@ public class PlayerListLogSink implements LogSink {
         }
 
         // Message color
-        prefix+= ChatColor.WHITE;
+        prefix += ChatColor.WHITE;
 
         if (!prefix.endsWith(" ")) {
             prefix += " ";

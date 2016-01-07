@@ -77,5 +77,4 @@ public class SidebarManager extends AbstractService {
 
     }
 
-
 }

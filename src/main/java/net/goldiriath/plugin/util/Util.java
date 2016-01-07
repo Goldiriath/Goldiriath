@@ -62,7 +62,7 @@ public class Util {
     public static void cancel(BukkitTask task) {
         try {
             task.cancel();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
