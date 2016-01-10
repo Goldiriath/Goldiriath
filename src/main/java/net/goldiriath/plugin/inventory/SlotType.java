@@ -1,20 +1,12 @@
 package net.goldiriath.plugin.inventory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import lombok.Getter;
-import net.goldiriath.plugin.util.Util;
-import net.pravian.bukkitlib.util.MaterialUtils;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 @SuppressWarnings("deprecation")
 public enum SlotType implements ItemStackValidatable {
 
-    ANY(Material.AIR, (byte) 0) {
+    ANY() {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -22,7 +14,7 @@ public enum SlotType implements ItemStackValidatable {
                 }
 
             },
-    WEAPON(Material.STAINED_GLASS_PANE, 14, 0) {
+    WEAPON(0) {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -30,7 +22,7 @@ public enum SlotType implements ItemStackValidatable {
                 }
 
             },
-    SKILL(Material.STAINED_GLASS_PANE, 15, 1, 2, 3, 4, 5) {
+    SKILL(1, 2, 3, 4, 5) {
 
                 @Override
                 public boolean validate(ItemStack stack) {
@@ -40,34 +32,11 @@ public enum SlotType implements ItemStackValidatable {
             };
     //
     @Getter
-    private final ItemStack placeHolder;
-
-    @Getter
     private final int[] indices;
 
     @SuppressWarnings("deprecation")
-    private SlotType(Material material, int durability, int... indices) {
-        this.placeHolder = new ItemStack(material, 1);
-        this.placeHolder.setDurability((short) durability);
+    private SlotType(int... indices) {
         this.indices = indices;
-    }
-
-    public boolean hasPlaceHolder() {
-        return this != ANY;
-    }
-
-    public static boolean isPlaceHolder(ItemStack stack) {
-        if (InventoryUtil.isEmpty(stack)) {
-            return false;
-        }
-
-        for (SlotType type : SlotType.values()) {
-            if (type.hasPlaceHolder() && type.getPlaceHolder().equals(stack)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static SlotType ofIndex(int targetIndex) {

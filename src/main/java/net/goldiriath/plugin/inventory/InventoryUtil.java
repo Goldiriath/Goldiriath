@@ -31,14 +31,16 @@ public class InventoryUtil {
         return stack == null || stack.getType() == Material.AIR;
     }
 
-    public static void storeInInventory(PlayerInventory inv, ItemStack stack) {
+    public static int getStoreIndex(PlayerInventory inv, ItemStack stack) {
+        if (isEmpty(stack)) {
+            return -1;
+        }
 
         final ItemStack[] contents = inv.getContents();
 
         // Loop through the items
         for (int i = 0; i < inv.getSize(); i++) {
             final SlotType slot = SlotType.ofIndex(i);
-            final ItemStack item = contents[i];
 
             // Does the item fit here?
             if (!slot.validate(stack)) {
@@ -46,18 +48,32 @@ public class InventoryUtil {
             }
 
             // If the slot's empty, put it there
-            if (item == null || item.equals(slot.getPlaceHolder())) {
-                inv.setItem(i, stack);
-                return;
+            if (isEmpty(contents[i])) {
+                return i;
             }
+        }
+
+
+        return -1;
+    }
+
+    public static boolean storeInInventory(PlayerInventory inv, ItemStack stack) {
+        int index = getStoreIndex(inv, stack);
+
+        if (index >= 0) {
+            inv.setItem(index, stack);
+            return true;
         }
 
         // Drop on the floor
         final HumanEntity hEntity = inv.getHolder();
         final Location loc = hEntity.getEyeLocation();
-        final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.1);
+        final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.5);
 
         loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
+        return false;
+
+
     }
 
 }

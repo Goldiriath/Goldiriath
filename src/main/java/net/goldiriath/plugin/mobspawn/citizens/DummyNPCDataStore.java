@@ -16,7 +16,7 @@ public class DummyNPCDataStore implements NPCDataStore {
 
     @Override
     public int createUniqueNPCId(NPCRegistry npcr) {
-        return NPC_ID_OFFSET = counter++;
+        return NPC_ID_OFFSET + counter++;
     }
 
     @Override
