@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
+import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.dialog.Dialog;
@@ -12,6 +13,7 @@ import net.goldiriath.plugin.dialog.OptionSet;
 import net.goldiriath.plugin.dialog.script.ScriptRunner;
 import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.mobspawn.MobSpawn;
+import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
 import net.goldiriath.plugin.skill.Skill;
 import net.goldiriath.plugin.skill.SkillType;
 import org.bukkit.ChatColor;
@@ -22,7 +24,6 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -56,12 +57,19 @@ public class PlayerData {
     //
     //
     public void recordKill(LivingEntity killed) {
-        final List<MetadataValue> metadataList = killed.getMetadata(MobSpawn.METADATA_ID);
-        if (metadataList.isEmpty()) {
+
+        NPC npc = plugin.msm.getBridge().getNPC(killed);
+        if (npc == null) {
             return;
         }
 
-        final MobSpawn mobSpawn = (MobSpawn) metadataList.get(0).value();
+        MobSpawnTrait mobSpawnTrait = npc.getTrait(MobSpawnTrait.class);
+        if (mobSpawnTrait == null) {
+            manager.getPlugin().logger.warning(player.getName() + " killed NPC without MobSpawn trait!");
+            return;
+        }
+
+        final MobSpawn mobSpawn = mobSpawnTrait.getSpawn();
         final int mobLevel = mobSpawn.getProfile().getLevel();
 
         int level = XPMath.xpToLevel(persistent.xp);

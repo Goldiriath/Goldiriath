@@ -15,10 +15,9 @@ public enum ConfigPaths implements PathContainer {
     //
     MOBSPAWNER_ENABLED("mobspawner.enabled"),
     MOBSPAWNER_DEV_MODE("mobspawner.dev_mode"),
-    MOBSPAWNER_RADIUS("mobspawner.radius"),
     MOBSPAWNER_MAX_MOBS("mobspawner.max_mobs"),
-    MOBSPAWNER_SPAWN_THRESHOLD("mobspawner.spawn_threshold"),
-    MOBSPAWNER_PLAYER_RADIUS_THRESHOLD("mobspawner.player_radius_threshold"),
+    MOBSPAWNER_TIME_THRESHOLD("mobspawner.time_threshold"),
+    MOBSPAWNER_RADIUS_THRESHOLD("mobspawner.radius_threshold"),
     MOBSPAWNER_PROFILES("mobspawner.profiles"),
     //
     METACYCLER_ENABLED("metacycler.enabled"),

@@ -30,19 +30,16 @@ mobspawner:
     # When this is set to true, all mobspawns will be disabled and presented as signs.
     dev_mode: true
 
-    # Radius for mob spawners
-    radius: 20
-
     # Default maximum amount of mobs a spawner can spawn
     max_mobs: 5
 
     # Minimum delay after a spawn in ticks
     # 600 ticks: 600 / 20 ticks = 30 seconds
-    spawn_threshold: 600
+    time_threshold: 600
 
     # The radius in which a player must reside in order to start spawning mobs
     # Set to 0 to always spawn.
-    player_radius_threshold: 50
+    radius_threshold: 50
 
 # Metacycler
 metacycler:

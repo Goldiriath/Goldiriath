@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -66,8 +65,6 @@ public class InventoryManager extends AbstractService {
         final SlotType slot = SlotType.ofIndex(index);
         final ItemStack current = event.getCurrentItem();
         final ItemStack cursor = event.getCursor();
-
-        logger.info("Slot: " + slot.name());
 
         switch (event.getAction()) {
 

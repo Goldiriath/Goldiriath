@@ -1,98 +1,72 @@
 package net.goldiriath.plugin.mobspawn;
 
+import com.google.common.collect.Sets;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
+import lombok.Getter;
+import lombok.Setter;
+import net.citizensnpcs.api.npc.NPC;
+import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.ConfigSavable;
+import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
 import net.pravian.bukkitlib.serializable.SerializableBlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
 
-    public static final String METADATA_ID = "mobspawn";
-    //
     private final MobSpawnManager msm;
     private final Logger logger;
+    @Getter
     private final String id;
-    private final Set<LivingEntity> spawns;
+    private final Set<NPC> mobs = Sets.newHashSet();
     //
+    @Getter
+    @Setter
     private MobSpawnProfile profile;
+    @Getter
+    @Setter
     private Location location;
-    private long lastSpawn;
+    @Getter
+    @Setter
     private int maxMobs;
+    @Getter
+    private long lastSpawn = 0;
 
     public MobSpawn(MobSpawnManager msm, String id) {
         this.msm = msm;
         this.logger = msm.getPlugin().getLogger();
         this.id = id;
-        this.lastSpawn = 0;
-        this.spawns = new HashSet<>();
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setProfile(MobSpawnProfile profile) {
-        this.profile = profile;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public MobSpawnProfile getProfile() {
-        return profile;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public long getLastSpawn() {
-        return lastSpawn;
     }
 
     public boolean hasMaxMobs() {
         return maxMobs >= 1;
     }
 
-    public Set<LivingEntity> getSpawns() {
-        return Collections.unmodifiableSet(spawns);
+    public Set<NPC> getMobs() {
+        return Collections.unmodifiableSet(mobs);
     }
 
-    public int kill() {
-        int killed = 0;
+    public int killAll() {
+        removeDead();
+        int count = mobs.size();
 
-        for (LivingEntity entity : spawns) {
-            entity.remove();
-            killed++;
+        for (NPC mob : mobs) {
+            mob.destroy();
         }
-        spawns.clear();
 
-        return killed;
-    }
-
-    public int getMaxMobs() {
-        return maxMobs;
-    }
-
-    public void setMaxMobs(int maxMobs) {
-        this.maxMobs = maxMobs;
+        return count;
     }
 
     @Override
     public void loadFrom(ConfigurationSection config) {
-        kill();
+        killAll();
 
         final String locationString = config.getString("location", null);
         if (locationString == null) {
@@ -137,7 +111,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
             return false;
         }
 
-        return spawn() != null;
+        return spawn();
     }
 
     public boolean canSpawn() {
@@ -146,27 +120,22 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         }
 
         // Check spawn timeout
-        if (getCurrentTicks() - lastSpawn < (profile.hasSpawnThreshold() ? profile.getSpawnThreshold() : msm.getSpawnThreshold())) {
+        if (Util.getServerTick() - lastSpawn < (profile.hasTimeThreshold() ? profile.getTimeThreshold() : msm.getTimeThreshold())) {
             return false;
         }
 
-        // Remove old spawns
-        final Iterator<LivingEntity> it = spawns.iterator();
-        while (it.hasNext()) {
-            if (it.next().isDead()) {
-                it.remove();
-            }
-        }
+        // Remove dead mobs
+        removeDead();
 
         // Check max mobs
-        if (spawns.size() >= (hasMaxMobs() ? maxMobs : msm.getMaxMobs())) {
+        if (mobs.size() >= (hasMaxMobs() ? maxMobs : msm.getMaxMobs())) {
             return false;
         }
 
         // Check player close
         boolean playerClose = false;
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (player.getLocation().distanceSquared(location) > msm.getRadiusSquared()) {
+            if (player.getLocation().distanceSquared(location) > msm.getRadiusSquaredThreshold()) {
                 continue;
             }
 
@@ -177,21 +146,19 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         return playerClose;
     }
 
-    public LivingEntity spawn() {
+    public boolean spawn() {
         if (!isValid()) {
-            return null;
+            return false;
         }
 
-        lastSpawn = getCurrentTicks();
+        lastSpawn = Util.getServerTick();
 
-        // Spawn
-        final LivingEntity entity = profile.spawn(location);
+        final NPC mob = profile.spawn(this, location);
+        mobs.add(mob);
 
-        // Set metadata
-        entity.setMetadata(METADATA_ID, new FixedMetadataValue(msm.getPlugin(), this));
+        mob.getDefaultGoalController().addBehavior(new HostileMobBehavior(msm.getPlugin(), mob, location, 15), 1);
 
-        spawns.add(entity);
-        return entity;
+        return true;
     }
 
     @Override
@@ -201,8 +168,16 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
                 && profile != null;
     }
 
-    private long getCurrentTicks() {
-        return location.getWorld().getFullTime();
+    private void removeDead() {
+        Iterator<NPC> it = mobs.iterator();
+        while (it.hasNext()) {
+            NPC npc = it.next();
+            if (!npc.isSpawned()) {
+                npc.destroy();
+                it.remove();
+            }
+        }
+
     }
 
 }

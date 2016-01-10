@@ -1,10 +1,16 @@
 package net.goldiriath.plugin.mobspawn;
 
+import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Getter;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.npc.ai.NPCHolder;
 import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.logging.GLogger;
+import net.goldiriath.plugin.mobspawn.citizens.CitizensBridge;
 import net.goldiriath.plugin.quest.ParseException;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -15,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,36 +33,37 @@ public class MobSpawnManager extends AbstractService {
 
     private final YamlConfig profileConfig;
     private final YamlConfig spawnConfig;
-    private BukkitTask spawnTask;
+    @Getter
+    private final CitizensBridge bridge;
+    @Getter
+    private final Set<MobSpawnProfile> profiles = Sets.newHashSet();
+    @Getter
+    private final Set<MobSpawn> spawns = Sets.newHashSet();
     //
-    private final Set<MobSpawnProfile> profiles;
-    private final Set<MobSpawn> spawns;
-    private boolean enabled;
-    private boolean devMode;
-    private int radiusSquared;
+    private boolean enabled = false;
+    @Getter
+    private boolean devMode = false;
+    @Getter
     private int maxMobs;
-    private int spawnThreshold;
-    private int playerRadiusThresholdSquared;
+    @Getter
+    private int timeThreshold;
+    @Getter
+    private int radiusSquaredThreshold;
+    private BukkitTask spawnTask;
 
     public MobSpawnManager(Goldiriath plugin) {
         super(plugin);
         this.profileConfig = new YamlConfig(plugin, "profiles.yml", true);
         this.spawnConfig = new YamlConfig(plugin, "mobspawns.yml", false);
-        this.spawns = new HashSet<>();
-        this.profiles = new HashSet<>();
+        this.bridge = new CitizensBridge(plugin);
         this.devMode = false;
-    }
-
-    // Public/protected methods
-    public Set<MobSpawn> getSpawns() {
-        return Collections.unmodifiableSet(spawns);
     }
 
     public int killAll() {
         int killed = 0;
 
         for (MobSpawn spawn : spawns) {
-            killed += spawn.kill();
+            killed += spawn.killAll();
         }
 
         return killed;
@@ -98,6 +106,8 @@ public class MobSpawnManager extends AbstractService {
             return;
         }
 
+        bridge.start();
+
         // Start ticking
         spawnTask = new BukkitRunnable() {
 
@@ -113,12 +123,14 @@ public class MobSpawnManager extends AbstractService {
             }
         }.runTaskTimer(Goldiriath.plugin, 2, 2); // Run every other tick
 
-        logger.info("Loaded " + profiles + " mobspawn profiles for + " + spawns.size() + " mobspawns");
+        logger.info("Loaded " + profiles.size() + " mobspawn profiles for + " + spawns.size() + " mobspawns");
     }
 
     @Override
     public void onStop() {
         saveConfig();
+
+        bridge.stop();
 
         try {
             spawnTask.cancel();
@@ -275,12 +287,10 @@ public class MobSpawnManager extends AbstractService {
         // Load vars
         enabled = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_ENABLED);
         devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
-        radiusSquared = plugin.config.getInt(ConfigPaths.MOBSPAWNER_RADIUS);
-        radiusSquared *= radiusSquared;
         maxMobs = plugin.config.getInt(ConfigPaths.MOBSPAWNER_MAX_MOBS);
-        spawnThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_SPAWN_THRESHOLD);
-        playerRadiusThresholdSquared = plugin.config.getInt(ConfigPaths.MOBSPAWNER_PLAYER_RADIUS_THRESHOLD);
-        playerRadiusThresholdSquared *= playerRadiusThresholdSquared;
+        timeThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_TIME_THRESHOLD);
+        radiusSquaredThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_RADIUS_THRESHOLD);
+        radiusSquaredThreshold *= radiusSquaredThreshold;
 
         // Load Profiles
         profileConfig.load();
@@ -336,32 +346,15 @@ public class MobSpawnManager extends AbstractService {
         spawnConfig.save();
     }
 
-    // Getters, Setters
     public void setDevMode(boolean devMode) {
         this.devMode = devMode;
+        if (devMode) {
+            killAll();
+        }
+
         for (MobSpawn spawn : spawns) {
             updateSign(spawn);
         }
-    }
-
-    public Goldiriath getPlugin() {
-        return plugin;
-    }
-
-    public boolean isDevMode() {
-        return devMode;
-    }
-
-    public int getRadiusSquared() {
-        return radiusSquared;
-    }
-
-    public int getMaxMobs() {
-        return maxMobs;
-    }
-
-    public int getSpawnThreshold() {
-        return spawnThreshold;
     }
 
     public MobSpawnProfile getProfile(String id) {

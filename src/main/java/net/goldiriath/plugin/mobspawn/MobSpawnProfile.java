@@ -3,6 +3,9 @@ package net.goldiriath.plugin.mobspawn;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import lombok.Getter;
+import net.citizensnpcs.api.npc.NPC;
+import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
@@ -10,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
@@ -17,25 +21,35 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
     public static final int INFINITE_POTION_DURATION = 1000000;
     //
+    @Getter
     private final String id;
     private final MobSpawnManager msm;
     private final Logger logger;
     //
+    @Getter
     private final Set<PotionEffect> effects;
+    @Getter
     private EntityType type;
+    @Getter
     private int level;
+    @Getter
     private String customName;
-    private long spawnThreshold;
-    private ItemStack carryItem;
+    @Getter
+    private long timeThreshold;
+    @Getter
+    private ItemStack item;
+    @Getter
     private ItemStack helmet;
+    @Getter
     private ItemStack chestplate;
+    @Getter
     private ItemStack leggings;
+    @Getter
     private ItemStack boots;
 
     public MobSpawnProfile(MobSpawnManager msm, String id) {
@@ -45,52 +59,78 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         this.effects = new HashSet<>();
     }
 
-    public MobSpawnManager getManager() {
-        return msm;
+    public boolean hasTimeThreshold() {
+        return timeThreshold > 0;
     }
 
-    public String getId() {
-        return id;
-    }
+    public NPC spawn(MobSpawn spawn, Location loc) {
+        final NPC npc;
 
-    public EntityType getType() {
-        return type;
-    }
+        if (type == EntityType.PLAYER) {
+            throw new UnsupportedOperationException("Players are not yet supported!");
+        } else {
+            npc = msm.getBridge().createMob(type);
+        }
 
-    public int getLevel() {
-        return level;
-    }
+        // Spawn
+        npc.spawn(loc);
+        npc.addTrait(new MobSpawnTrait(spawn));
+        npc.setProtected(false);
 
-    public boolean hasSpawnThreshold() {
-        return spawnThreshold >= 0;
-    }
+        // Setup
+        final Entity entity = npc.getEntity();
 
-    public long getSpawnThreshold() {
-        return spawnThreshold;
-    }
+        if (!(entity instanceof LivingEntity)) {
+            npc.destroy();
+            throw new UnsupportedOperationException("Non-living entities are not supported!");
+        }
 
-    public String getCustomName() {
-        return customName;
-    }
+        final LivingEntity mob = (LivingEntity) entity;
 
-    public ItemStack getCarryItem() {
-        return carryItem;
-    }
+        // Set baby
+        if (mob instanceof Zombie) {
+            ((Zombie) mob).setBaby(false);
+        } else if (entity instanceof Ageable) {
+            ((Ageable) mob).setAdult();
+        }
 
-    public ItemStack getHelmet() {
-        return helmet;
-    }
+        mob.addPotionEffects(effects);
+        mob.setCanPickupItems(false);
+        if (customName != null) {
+            npc.setName(customName);
+            mob.setCustomName(customName);
+            mob.setCustomNameVisible(true);
+        }
 
-    public ItemStack getChestplate() {
-        return chestplate;
-    }
+        // Set equipment
+        final EntityEquipment equipment = mob.getEquipment();
 
-    public ItemStack getLeggings() {
-        return leggings;
-    }
+        equipment.setItemInHandDropChance(0);
+        if (item != null) {
+            equipment.setItemInHand(item);
+        }
 
-    public ItemStack getBoots() {
-        return boots;
+        equipment.setHelmetDropChance(0);
+        if (helmet != null) {
+            equipment.setHelmet(helmet);
+        }
+
+        equipment.setChestplateDropChance(0);
+        if (chestplate != null) {
+            equipment.setChestplate(chestplate);
+        }
+
+        equipment.setLeggingsDropChance(0);
+        if (leggings != null) {
+            equipment.setLeggings(leggings);
+        }
+
+        equipment.setBootsDropChance(0);
+        if (boots != null) {
+            equipment.setBoots(boots);
+        }
+
+        return npc;
     }
 
     @Override
@@ -105,7 +145,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
         // Meta
         customName = config.getString("name", null);
-        spawnThreshold = config.getInt("spawn_threshold", -1);
+        timeThreshold = config.getInt("spawn_threshold", -1);
         level = config.getInt("level", 1);
 
         // Effects
@@ -131,7 +171,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         }
 
         // Equipment
-        carryItem = Util.parseItem(config.getString("item", null));
+        item = Util.parseItem(config.getString("item", null));
         helmet = Util.parseItem(config.getString("helmet", null));
         chestplate = Util.parseItem(config.getString("chestplate", null));
         leggings = Util.parseItem(config.getString("leggings", null));
@@ -140,85 +180,6 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         if (customName != null) {
             customName = ChatColor.translateAlternateColorCodes('&', customName);
         }
-    }
-
-    public LivingEntity spawn(Location location) {
-        if (!isValid()) {
-            return null;
-        }
-
-        // Spawn entity
-        final LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
-
-        // Set baby
-        if (entity instanceof Zombie) {
-            ((Zombie) entity).setBaby(false);
-        } else if (entity instanceof Ageable) {
-            ((Ageable) entity).setAdult();
-        }
-
-        // Add potion effects
-        entity.addPotionEffects(effects);
-
-        // TODO: Find a better way to keep infinite potion effects lasting?
-        for (PotionEffect effect : effects) {
-            if (effect.getDuration() != INFINITE_POTION_DURATION) {
-                continue;
-            }
-
-            new BukkitRunnable() {
-
-                @Override
-                public void run() {
-                    if (!entity.isValid() || entity.isDead()) {
-                        cancel();
-                        return;
-                    }
-
-                    // Update potion effects
-                    for (PotionEffect effect : effects) {
-                        entity.addPotionEffect(effect, true);
-                    }
-                }
-
-            }.runTaskLater(msm.getPlugin(), 20);
-            break;
-        }
-
-        // Set equipment
-        final EntityEquipment equipment = entity.getEquipment();
-        equipment.setItemInHandDropChance(0);
-        equipment.setHelmetDropChance(0);
-        equipment.setChestplateDropChance(0);
-        equipment.setLeggingsDropChance(0);
-        equipment.setBootsDropChance(0);
-        entity.setCanPickupItems(false);
-
-        if (customName != null) {
-            entity.setCustomName(customName);
-        }
-
-        if (carryItem != null) {
-            equipment.setItemInHand(carryItem);
-        }
-
-        if (helmet != null) {
-            equipment.setHelmet(helmet);
-        }
-
-        if (chestplate != null) {
-            equipment.setChestplate(chestplate);
-        }
-
-        if (leggings != null) {
-            equipment.setLeggings(leggings);
-        }
-
-        if (boots != null) {
-            equipment.setBoots(boots);
-        }
-
-        return entity;
     }
 
     @Override
