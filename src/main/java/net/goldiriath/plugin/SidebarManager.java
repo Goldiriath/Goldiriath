@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.player.PlayerData;
-import net.goldiriath.plugin.player.SidebarData;
+import net.goldiriath.plugin.player.info.InfoSidebar;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.util.TimeUtils;
@@ -62,7 +62,7 @@ public class SidebarManager extends AbstractService {
         public void run() {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 PlayerData data = Goldiriath.plugin.pm.getData(player);
-                SidebarData sb = data.getSidebar();
+                InfoSidebar sb = data.getSidebar();
 
                 // Apply threshold
                 long currentTime = TimeUtils.getUnix();

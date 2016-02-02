@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import net.goldiriath.plugin.persist.DelegatePersistence;
-import net.goldiriath.plugin.persist.Persist;
-import net.goldiriath.plugin.persist.PersistentStorage;
+import net.goldiriath.plugin.util.persist.DelegatePersistence;
+import net.goldiriath.plugin.util.persist.Persist;
+import net.goldiriath.plugin.util.persist.PersistentStorage;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 

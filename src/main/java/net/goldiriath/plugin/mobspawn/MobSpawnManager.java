@@ -1,17 +1,12 @@
 package net.goldiriath.plugin.mobspawn;
 
 import com.google.common.collect.Sets;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.npc.ai.NPCHolder;
 import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.logging.GLogger;
+import net.goldiriath.plugin.questing.script.ParseException;
 import net.goldiriath.plugin.mobspawn.citizens.CitizensBridge;
-import net.goldiriath.plugin.quest.ParseException;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LocationUtils;
@@ -21,7 +16,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;

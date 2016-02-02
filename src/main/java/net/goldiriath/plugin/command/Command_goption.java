@@ -1,10 +1,11 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.dialog.NPCDialogHandler;
-import net.goldiriath.plugin.dialog.OptionSet;
-import net.goldiriath.plugin.dialog.OptionSet.Option;
+import net.goldiriath.plugin.questing.dialog.NPCDialogHandler;
+import net.goldiriath.plugin.questing.dialog.OptionSet;
+import net.goldiriath.plugin.questing.dialog.OptionSet.Option;
 import net.goldiriath.plugin.player.PlayerData;
+import net.goldiriath.plugin.player.info.InfoDialogs;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -43,7 +44,8 @@ public class Command_goption extends BukkitCommand<Goldiriath> {
         }
 
         final PlayerData gp = plugin.pm.getData(playerSender);
-        if (!optionSet.equals(gp.getCurrentOption())) {
+        final InfoDialogs info = gp.getDialogs();
+        if (!optionSet.equals(info.getCurrentOption())) {
             msg("Choice is no longer available.", ChatColor.RED);
             return true;
         }
@@ -53,8 +55,8 @@ public class Command_goption extends BukkitCommand<Goldiriath> {
             return true;
         }
 
-        gp.endOption();
-        gp.startDialog(option.getDialog());
+        info.endOption();
+        info.start(option.getDialog());
         return true;
 
     }
