@@ -4,31 +4,39 @@ main: net.goldiriath.plugin.Goldiriath
 depend: [Citizens, ProtocolLib]
 authors: [Prozza, derpfacedirk]
 commands:
-    goldiriath:
-        usage: /<command> [reload]
-        description: Shows information about the Goldiriath plugin.
-        aliases: [go]
-    gmobspawn:
-        usage: /<command> dev <on | off>
-        description: Manages mobspawns.
-        aliases: [gms,gmob]
-    goption:
-        usage: /<command> <dialoghandler> <optionset> <choice>
-        description: Selects the option for use.
-        aliases: [gopt]
     gdev:
         usage: /<command> <values...>
         description: Goldiriath development command.
         aliases: [gd]
-    gitemmeta:
-        usage: /<command> <info | create | delete | set <lore | name | level | tier> <value>>
-        description: Shows information about or creates the item meta for an item.
-        aliases: [gim]
+    gflag:
+        usage: /<command> <player> <list | <set | add | remove> <flag> <amount>>
+        description: Manage player flags
+        aliases: [gf]
     gitem:
         usage: /<command> <list | get <itemid>>
         description: Manages custom item storage.
         aliases: [gi]
+    gitemmeta:
+        usage: /<command> <info | create | delete | set <lore | name | level | tier> <value>>
+        description: Shows information about or creates the item meta for an item.
+        aliases: [gim]
     glog:
         usage: /<command> <list | add | remove>
         description: Manages player logging.
         aliases: [gl]
+    gmobspawn:
+        usage: /<command> dev <on | off>
+        description: Manages mobspawns.
+        aliases: [gms,gmob]
+    goldiriath:
+        usage: /<command> [reload]
+        description: Shows information about this plugin.
+        aliases: [go]
+    goption:
+        usage: /<command> <dialoghandler> <optionset> <choice>
+        description: Not for manual use! Selects the option for use.
+        aliases: [gopt]
+    gquest:
+        usage: /<command> <player> <list | <quest> <reset | <newstage>>
+        description: View and set a player's current quest stage
+        aliases: [gq]

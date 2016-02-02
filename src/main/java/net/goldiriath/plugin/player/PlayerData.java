@@ -1,21 +1,16 @@
 package net.goldiriath.plugin.player;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import net.goldiriath.plugin.player.info.InfoSidebar;
+import net.goldiriath.plugin.player.data.DataQuests;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.dialog.Dialog;
-import net.goldiriath.plugin.dialog.OptionSet;
-import net.goldiriath.plugin.dialog.script.ScriptRunner;
 import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.mobspawn.MobSpawn;
 import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
-import net.goldiriath.plugin.skill.Skill;
-import net.goldiriath.plugin.skill.SkillType;
+import net.goldiriath.plugin.player.data.DataFlags;
+import net.goldiriath.plugin.player.data.DataSkills;
+import net.goldiriath.plugin.player.info.InfoDialogs;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -24,8 +19,6 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 public class PlayerData {
 
@@ -37,20 +30,20 @@ public class PlayerData {
     private final Player player;
     @Getter
     private final PersistentData persistent;
-    @Getter
-    private final SidebarData sidebar;
     //
     @Getter
-    private OptionSet currentOption;
-    private BukkitTask currentOptionTimeout;
-    private ScriptRunner scriptRunner;
-
+    private final InfoSidebar sidebar;
+    @Getter
+    private final InfoDialogs dialogs;
+    //
     public PlayerData(PlayerManager manager, Player player) {
         this.plugin = manager.getPlugin();
         this.manager = manager;
         this.player = player;
         this.persistent = new PersistentData(this);
-        this.sidebar = new SidebarData(player);
+        //
+        this.sidebar = new InfoSidebar(this);
+        this.dialogs = new InfoDialogs(this);
     }
 
     //
@@ -102,6 +95,10 @@ public class PlayerData {
         }
     }
 
+    public void removeXp(int amt) {
+        persistent.xp -= amt;
+    }
+
     public void gainLevel() {
         Firework fw = (Firework) player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
         FireworkMeta meta = fw.getFireworkMeta();
@@ -120,157 +117,16 @@ public class PlayerData {
         player.sendMessage(ChatColor.YELLOW + "Congratulations on reaching level " + newLevel);
     }
 
-    public boolean isShowingOption() {
-        return getCurrentOption() != null;
+    public DataFlags getFlags() {
+        return persistent.flags;
     }
 
-    public void showOption(final OptionSet option) {
-        endOption();
-        this.currentOption = option;
-        option.getMessage().send(player);
-
-        this.currentOptionTimeout = new BukkitRunnable() {
-            @Override
-            public void run() {
-                // TODO improve?
-                if (getCurrentOption().equals(option)) {
-                    endOption();
-                }
-                player.sendMessage(ChatColor.YELLOW + "Note" + ChatColor.WHITE + ": You've stopped speaking to this character.");
-                endOption();
-            }
-        }.runTaskLater(manager.getPlugin(), manager.getPlugin().config.getInt(ConfigPaths.DIALOG_TIMEOUT));
+    public DataQuests getQuests() {
+        return persistent.quest;
     }
 
-    public void endOption() {
-        this.currentOption = null;
-        try {
-            this.currentOptionTimeout.cancel();
-        } catch (Exception ignored) {
-        } finally {
-            this.currentOptionTimeout = null;
-        }
-    }
-
-    public void endDialog() {
-        this.scriptRunner.stop();
-        this.scriptRunner = null;
-    }
-
-    public void startDialog(Dialog dialog) {
-        if (scriptRunner != null) {
-            endDialog();
-        }
-
-        recordDialog(dialog.getId());
-
-        final ScriptRunner sr = new ScriptRunner(dialog.getScript(), player);
-        sr.start();
-        this.scriptRunner = sr;
-    }
-
-    public boolean isInDialog() {
-        return getScriptRunner() != null;
-    }
-
-    public boolean hasHadDialog(String id) {
-        return persistent.dialogs.containsKey(id) && persistent.dialogs.get(id) > 0;
-    }
-
-    public ScriptRunner getScriptRunner() {
-        if (scriptRunner != null && !scriptRunner.isStarted()) {
-            scriptRunner = null;
-        }
-
-        return scriptRunner;
-    }
-
-    public Set<Skill> getSkills() {
-        return Collections.unmodifiableSet(persistent.skills);
-    }
-
-    public void addSkill(Skill skill) {
-        persistent.skills.add(skill);
-    }
-
-    public void removeSkill(Skill skill) {
-        persistent.skills.remove(skill);
-    }
-
-    public boolean hasSkill(SkillType type) {
-        for (Skill loopSkill : persistent.skills) {
-            if (loopSkill.getType() == type) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public Map<String, Integer> getFlags() {
-        return Collections.unmodifiableMap(persistent.flags);
-    }
-
-    public boolean hasFlag(String flag) {
-        return hasFlag(flag, 1);
-    }
-
-    public boolean hasFlag(String flag, int amount) {
-        return persistent.flags.containsKey(flag) && persistent.flags.get(flag) >= amount;
-    }
-
-    public int getFlag(String flag) {
-        return persistent.flags.containsKey(flag) ? persistent.flags.get(flag) : 0;
-    }
-
-    public void setFlag(String flag, int amount) {
-        persistent.flags.put(flag, amount);
-    }
-
-    public void addFlag(String flag) {
-        addFlag(flag, 1);
-    }
-
-    public void addFlag(String flag, int amount) {
-        if (persistent.flags.containsKey(flag)) {
-            persistent.flags.put(flag, persistent.flags.get(flag) + amount);
-        } else {
-            persistent.flags.put(flag, amount);
-        }
-    }
-
-    public void removeFlag(String flag) {
-        removeFlag(flag, 1);
-    }
-
-    public void removeFlag(String flag, int amount) {
-        if (!persistent.flags.containsKey(flag)) {
-            return;
-        }
-
-        int newAmount = persistent.flags.get(flag) - amount;
-
-        if (newAmount > 0) {
-            persistent.flags.put(flag, newAmount);
-        } else {
-            persistent.flags.remove(flag);
-        }
-    }
-
-    public void deleteFlag(String flag) {
-        persistent.flags.remove(flag);
-    }
-
-    public int getDialogCount(String id) {
-        return persistent.dialogs.get(id);
-    }
-
-    public void recordDialog(String id) {
-        if (persistent.dialogs.containsKey(id)) {
-            persistent.dialogs.put(id, persistent.dialogs.get(id) + 1);
-        } else {
-            persistent.dialogs.put(id, 1);
-        }
+    public DataSkills getSkills() {
+        return persistent.skills;
     }
 
     public int addMoney(int added) {
@@ -341,10 +197,6 @@ public class PlayerData {
 
     public void setMaxHealth(int maxHealth) {
         persistent.maxHealth = maxHealth;
-    }
-
-    public QuestData getQuestData() {
-        return persistent.questData;
     }
 
 }

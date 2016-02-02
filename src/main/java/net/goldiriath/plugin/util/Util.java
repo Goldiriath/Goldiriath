@@ -1,10 +1,8 @@
 package net.goldiriath.plugin.util;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.quest.ServerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -13,10 +11,7 @@ public class Util {
     private Util() {
     }
 
-    public static void msg(Player player, ServerProfile profile, String message) {
-        player.sendMessage(profile.getName() + ": " + message);
-    }
-
+    @SuppressWarnings("deprecation")
     public static ItemStack parseItem(String parseString) {
         if (parseString == null) {
             return null;
@@ -64,6 +59,10 @@ public class Util {
             task.cancel();
         } catch (Exception ex) {
         }
+    }
+
+    public static long getUnixSeconds() {
+        return System.currentTimeMillis() / 1000L;
     }
 
 }

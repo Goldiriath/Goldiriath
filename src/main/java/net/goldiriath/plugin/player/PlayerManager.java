@@ -62,10 +62,12 @@ public class PlayerManager extends AbstractService {
 
         if (config.exists()) {
             // Existing player
+            logger.info("Loading player data: " + player.getName());
             config.load();
             data.getPersistent().loadFrom(config);
         } else {
             // New player
+            logger.info("Creating player data: " + player.getName());
             data.getPersistent().saveTo(config);
             config.save();
         }

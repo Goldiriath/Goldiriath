@@ -8,7 +8,7 @@ import net.pravian.bukkitlib.command.SourceType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(permission = "goldiriath.godev", source = SourceType.PLAYER)
+@CommandPermissions(permission = "goldiriath.gdev", source = SourceType.PLAYER)
 public class Command_gdev extends BukkitCommand<Goldiriath> {
 
     @Override
