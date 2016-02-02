@@ -16,6 +16,7 @@ import net.goldiriath.plugin.metacycler.MetaCycler;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.quest.QuestManager;
+import net.goldiriath.plugin.shop.ShopManager;
 import net.goldiriath.plugin.util.PlayerList;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
@@ -47,6 +48,7 @@ public class Goldiriath extends BukkitPlugin {
     public HealthManager hm;
     public SidebarManager sb;
     public InventoryManager iv;
+    public ShopManager sm;
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
@@ -76,6 +78,7 @@ public class Goldiriath extends BukkitPlugin {
         hm = services.registerService(HealthManager.class);
         sb = services.registerService(SidebarManager.class);
         iv = services.registerService(InventoryManager.class);
+        sm = services.registerService(ShopManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);

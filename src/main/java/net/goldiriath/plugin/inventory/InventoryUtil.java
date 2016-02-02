@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.inventory;
 
+import net.goldiriath.plugin.Goldiriath;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -31,6 +32,10 @@ public class InventoryUtil {
         return stack == null || stack.getType() == Material.AIR;
     }
 
+    public static boolean canStore(PlayerInventory inv, ItemStack stack) {
+        return getStoreIndex(inv, stack) == -1;
+    }
+
     public static int getStoreIndex(PlayerInventory inv, ItemStack stack) {
         if (isEmpty(stack)) {
             return -1;
@@ -57,7 +62,7 @@ public class InventoryUtil {
         return -1;
     }
 
-    public static boolean storeInInventory(PlayerInventory inv, ItemStack stack) {
+    public static boolean storeItem(PlayerInventory inv, ItemStack stack, boolean drop) {
         int index = getStoreIndex(inv, stack);
 
         if (index >= 0) {
@@ -66,14 +71,46 @@ public class InventoryUtil {
         }
 
         // Drop on the floor
-        final HumanEntity hEntity = inv.getHolder();
-        final Location loc = hEntity.getEyeLocation();
-        final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.5);
+        if (drop) {
+            final HumanEntity hEntity = inv.getHolder();
+            final Location loc = hEntity.getEyeLocation();
+            final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.5);
 
-        loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
+            loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
+        }
+
         return false;
+    }
+
+    public static boolean removeItem(PlayerInventory inv, ItemStack remove) {
+        int amount = remove.getAmount();
+
+        if (!inv.containsAtLeast(remove, amount)) {
+            return false;
+        }
+
+        ItemStack[] contents = inv.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack stack = contents[i];
+            if (isEmpty(stack) || !stack.isSimilar(remove)) {
+                continue;
+            }
+
+            if (stack.getAmount() > amount) { // Enough items in the stack
+                stack.setAmount(stack.getAmount() - amount);
+                inv.setItem(i, stack);
+                return true;
+            } else { // Too few items
+                amount -= stack.getAmount();
+                inv.setItem(i, null);
+            }
 
 
+        }
+
+        Goldiriath.plugin.logger.warning("Could not remove enough " + remove.toString() + " from inventory!");
+        storeItem(inv, remove, true);
+        return false;
     }
 
 }

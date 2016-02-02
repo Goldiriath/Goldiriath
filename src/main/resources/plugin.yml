@@ -11,7 +11,7 @@ commands:
     gmobspawn:
         usage: /<command> dev <on | off>
         description: Manages mobspawns.
-        aliases: [gms,gmob]
+        aliases: [gmob]
     goption:
         usage: /<command> <dialoghandler> <optionset> <choice>
         description: Selects the option for use.
@@ -32,3 +32,7 @@ commands:
         usage: /<command> <list | add | remove>
         description: Manages player logging.
         aliases: [gl]
+    gshop:
+        usage: /<command> <shopprofile> <info | open>
+        description: Open a shop
+        aliases: [gs]

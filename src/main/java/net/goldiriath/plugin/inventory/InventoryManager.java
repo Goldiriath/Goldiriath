@@ -135,7 +135,7 @@ public class InventoryManager extends AbstractService {
                 continue;
             }
 
-            InventoryUtil.storeInInventory(inventory, contents[i]);
+            InventoryUtil.storeItem(inventory, contents[i], true);
             inventory.setItem(i, null);
         }
     }
