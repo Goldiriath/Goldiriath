@@ -1,4 +1,3 @@
-
 package net.goldiriath.plugin.questing.quest.requirement;
 
 import net.goldiriath.plugin.Goldiriath;

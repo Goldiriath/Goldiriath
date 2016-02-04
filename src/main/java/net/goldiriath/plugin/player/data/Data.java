@@ -1,4 +1,3 @@
-
 package net.goldiriath.plugin.player.data;
 
 import lombok.Getter;
@@ -13,7 +12,9 @@ import org.bukkit.configuration.ConfigurationSection;
 public abstract class Data extends AbstractAttachement implements ConfigLoadable, ConfigSavable {
 
     @Getter
-    private final String key;;
+    private final String key;
+
+    ;
 
     public Data(PlayerData data, String key) {
         super(data);
@@ -37,7 +38,5 @@ public abstract class Data extends AbstractAttachement implements ConfigLoadable
     public final void saveTo(ConfigurationSection config) {
         save(config.createSection(key));
     }
-
-
 
 }

@@ -1,4 +1,3 @@
-
 package net.goldiriath.plugin.player.info;
 
 import net.goldiriath.plugin.player.AbstractAttachement;

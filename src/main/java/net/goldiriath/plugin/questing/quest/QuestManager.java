@@ -111,7 +111,7 @@ public class QuestManager extends AbstractService {
         for (Quest quest : questMap.values()) {
             stages += quest.getStages().size();
         }
-        logger.info("Loaded " + stages  + " stages for " + questMap.size() + " quests");
+        logger.info("Loaded " + stages + " stages for " + questMap.size() + " quests");
     }
 
     @Override

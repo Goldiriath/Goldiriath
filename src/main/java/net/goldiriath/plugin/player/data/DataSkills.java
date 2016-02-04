@@ -1,4 +1,3 @@
-
 package net.goldiriath.plugin.player.data;
 
 import java.util.Collections;
@@ -40,11 +39,9 @@ public class DataSkills extends Data {
         return false;
     }
 
-
     @Override
     protected void load(ConfigurationSection config) {
         skills.clear();
-
 
         // Loop through loaded skills
         for (String skillName : config.getKeys(false)) {

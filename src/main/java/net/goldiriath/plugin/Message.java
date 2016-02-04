@@ -16,8 +16,7 @@ public enum Message implements BukkitMessage {
     QUEST_LEVEL_TO_LOW("Your level is not high enough to atempt this quest"),
     QUEST_NEED_ITEMS("You don't have the required items"),
     //
-    COMMAND_PLAYER_NOT_FOUND(ChatColor.RED + "Player not found!")
-    ;
+    COMMAND_PLAYER_NOT_FOUND(ChatColor.RED + "Player not found!");
     //
     private final String message;
 

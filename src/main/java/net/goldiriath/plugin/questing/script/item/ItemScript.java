@@ -19,7 +19,7 @@ public class ItemScript extends ScriptItem {
             throw new ParseException("Invalid operation '" + args[1] + "'. Either 'add' or 'remove'");
         }
 
-        ItemStack temp  = Util.parseItem(args[2]);
+        ItemStack temp = Util.parseItem(args[2]);
         if (temp == null) {
             throw new ParseException("Item '" + args[2] + "' not found");
         }

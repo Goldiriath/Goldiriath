@@ -1,4 +1,3 @@
-
 package net.goldiriath.plugin.player;
 
 import net.goldiriath.plugin.Goldiriath;
