@@ -50,7 +50,7 @@ public class RequirementParser {
                     case "delay":
                         req = new DelayRequirement(plugin, args);
                         break;
-                        
+
                     case "flag":
                         req = new FlagRequirement(plugin, args);
                         break;

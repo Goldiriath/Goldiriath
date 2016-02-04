@@ -35,6 +35,7 @@ public class PlayerData {
     private final InfoSidebar sidebar;
     @Getter
     private final InfoDialogs dialogs;
+
     //
     public PlayerData(PlayerManager manager, Player player) {
         this.plugin = manager.getPlugin();

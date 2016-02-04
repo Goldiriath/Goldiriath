@@ -38,9 +38,8 @@ public class FlagScript extends ScriptItem {
 
     }
 
-
     @Override
-        public void execute(Player player) {
+    public void execute(Player player) {
         if (set) {
             plugin.pm.getData(player).getFlags().put(flag, amt);
         } else {

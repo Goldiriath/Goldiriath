@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 public interface Requirement {
 
     public boolean has(Player player);
+
     public BukkitMessage getMessage(Player player);
 
 }

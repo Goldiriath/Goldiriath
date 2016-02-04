@@ -44,6 +44,7 @@ public class ScriptContext {
     }
 
     public static enum ScriptContextType {
+
         NONE,
         DIALOG,
         QUEST;

@@ -1,21 +1,15 @@
 package net.goldiriath.plugin.inventory;
 
-import net.citizensnpcs.api.ai.PrioritisableGoal;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -54,6 +48,10 @@ public class InventoryManager extends AbstractService {
             return;
         }
 
+        if (event.getView().getPlayer().getGameMode() != GameMode.SURVIVAL) {
+            return;
+        }
+
         // Debug
         switch (event.getAction()) {
 
@@ -82,6 +80,10 @@ public class InventoryManager extends AbstractService {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
+            return;
+        }
+
         final int storeSlot = InventoryUtil.getStoreIndex(event.getPlayer().getInventory(), event.getItem().getItemStack());
 
         if (storeSlot < 0) {
@@ -105,27 +107,44 @@ public class InventoryManager extends AbstractService {
             return;
         }
 
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
+            return;
+        }
+
         final ItemStack stack = event.getItem();
         final SlotType slot = SlotType.ofIndex(event.getPlayer().getInventory().getHeldItemSlot());
 
+        // Does the item even belong in this slot?
         if (!slot.validate(stack)) {
             event.getPlayer().sendMessage(ChatColor.RED + "You must use this item in the designated slot.");
             event.setUseItemInHand(Event.Result.DENY);
+            event.setCancelled(true);
         }
 
+        // Item is already in a non-any slot
         if (slot != SlotType.ANY) {
             return;
         }
 
         for (SlotType loopSlot : SlotType.values()) {
+            if (loopSlot == SlotType.ANY) {
+                continue;
+            }
+
+            // Is this slot a non-any slot that can hold the item?
             if (loopSlot.validate(stack)) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You must use this item in the designated slot.");
                 event.setUseItemInHand(Event.Result.DENY);
+                event.setCancelled(true);
             }
         }
     }
 
     private void validateInventory(PlayerInventory inventory) {
+        if (inventory.getHolder().getGameMode() != GameMode.SURVIVAL) {
+            return;
+        }
+
         ItemStack[] contents = inventory.getContents();
 
         for (int i = 0; i < contents.length; i++) {

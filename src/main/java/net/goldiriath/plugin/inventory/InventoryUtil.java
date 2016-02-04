@@ -53,7 +53,6 @@ public class InventoryUtil {
             }
         }
 
-
         return -1;
     }
 
@@ -72,7 +71,6 @@ public class InventoryUtil {
 
         loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
         return false;
-
 
     }
 
