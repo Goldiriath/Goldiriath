@@ -2,6 +2,7 @@ package net.goldiriath.plugin.questing.script.item;
 
 import net.goldiriath.plugin.questing.script.Script;
 import net.goldiriath.plugin.questing.script.ScriptContext;
+import net.goldiriath.plugin.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,7 +21,9 @@ public class OutScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        player.sendMessage(script.getContext().getDialog().getHandler().getNpcName() + ChatColor.RESET + ": " + line);
+        String playerLine = Util.prepareLine(line, player);
+
+        player.sendMessage(script.getContext().getDialog().getHandler().getNpcName() + ChatColor.RESET + ": " + playerLine);
         if (sound != null) {
             player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
         }

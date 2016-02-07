@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.questing.script.item;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.questing.script.InvalidContextException;
 import net.goldiriath.plugin.questing.script.ParseException;
 import net.goldiriath.plugin.questing.script.Script;

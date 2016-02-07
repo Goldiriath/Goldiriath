@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.questing.script.item;
 
 import net.goldiriath.plugin.questing.script.Script;
+import net.goldiriath.plugin.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,7 +18,9 @@ public class NoteScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        player.sendMessage(ChatColor.GREEN + "Note" + ChatColor.RESET + ": " + ChatColor.YELLOW + line);
+        String playerLine = Util.prepareLine(line, player);
+
+        player.sendMessage(ChatColor.GREEN + "Note" + ChatColor.RESET + ": " + ChatColor.YELLOW + playerLine);
     }
 
 }
