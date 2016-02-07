@@ -1,25 +1,21 @@
 package net.goldiriath.plugin.shop;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Exchanger;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.inventory.InventoryUtil;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.ConfigLoadable;
-import net.goldiriath.plugin.util.Registrable;
-import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
-import net.pravian.bukkitlib.util.InventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,6 +25,9 @@ import thirdparty.menu.OptionMenu;
 
 public class ShopProfile implements ConfigLoadable, Validatable, OptionClickEventHandler {
 
+    public static ItemStack CANCEL_BUTTON = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
+    public static ItemStack TRANSACTION = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
+    //
     @Getter
     private final Goldiriath plugin;
     @Getter
@@ -105,6 +104,17 @@ public class ShopProfile implements ConfigLoadable, Validatable, OptionClickEven
         final PlayerData data = plugin.pm.getData(player);
         final InventoryClickEvent iClickEvent = event.getEvent();
 
+        if (!iClickEvent.isLeftClick()) {
+            iClickEvent.setResult(Result.DENY);
+            return;
+        }
+
+        // Click transaction placeholders
+        if (name.equals("transaction")) {
+            iClickEvent.setResult(Result.DENY);
+            return;
+        }
+
         if (iClickEvent.isLeftClick()) { // Shop sells item
             if (!data.hasMoney(product.getAmount())) {
                 player.sendMessage(ChatColor.RED + "You don't have enough money for that!");
@@ -131,16 +141,15 @@ public class ShopProfile implements ConfigLoadable, Validatable, OptionClickEven
     }
 
     private OptionMenu makeMenu() {
-        int size = products.size();
-        while (size % 9 != 0) {
-            size++;
-        }
-        if (size < 28) { // At least two rows
-            size = 28;
-        }
+        int rows = (int) Math.ceil((double) products.size() / 3.0);
 
-        OptionMenu optionMenu = new OptionMenu(plugin, id, size, this);
+        // One row extra space
+        // One row: transaction + buttons
+        rows += 2;
 
+        OptionMenu optionMenu = new OptionMenu(plugin, id, rows * 3, this);
+
+        // Fill items
         int slot = 0;
         for (Product product : products) {
             // Bake item with meta
@@ -156,7 +165,17 @@ public class ShopProfile implements ConfigLoadable, Validatable, OptionClickEven
             slot++;
         }
 
-        optionMenu.option(size - 1, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14), "exit");
+        // Transaction placeholders
+        optionMenu.option(rows - 9, TRANSACTION, "transaction");
+        optionMenu.option(rows - 8, TRANSACTION, "transaction");
+        optionMenu.option(rows - 7, TRANSACTION, "transaction");
+        optionMenu.option(rows - 6, TRANSACTION, "transaction");
+        optionMenu.option(rows - 5, TRANSACTION, "transaction");
+        optionMenu.option(rows - 4, TRANSACTION, "transaction");
+        optionMenu.option(rows - 3, TRANSACTION, "transaction");
+
+        // Cancel button
+        optionMenu.option(rows - 1, CANCEL_BUTTON, "exit");
 
         return optionMenu;
     }
