@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
+import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
 import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
@@ -63,7 +64,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         return timeThreshold > 0;
     }
 
-    public NPC spawn(MobSpawn spawn, Location loc) {
+    public NPC spawn(Location location) {
         final NPC npc;
 
         if (type == EntityType.PLAYER) {
@@ -73,9 +74,9 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         }
 
         // Spawn
-        npc.spawn(loc);
-        npc.addTrait(new MobSpawnTrait(spawn));
+        npc.spawn(location);
         npc.setProtected(false);
+        npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(msm.getPlugin(), npc, location, 15), 1);
 
         // Setup
         final Entity entity = npc.getEntity();

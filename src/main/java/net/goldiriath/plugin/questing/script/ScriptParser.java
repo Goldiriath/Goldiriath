@@ -76,7 +76,7 @@ public class ScriptParser {
                     case "out":
                         si = new OutScript(script, args);
                         break;
-                        
+
                     case "potion":
                         si = new PotionScript(script, args);
                         break;
