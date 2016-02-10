@@ -21,25 +21,26 @@ class PersistentData extends PersistentStorage {
     final DataSkills skills;
 
     @Persist
-    int money = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MONEY);
+    int money = plugin().config.getInt(ConfigPaths.DEFAULT_MONEY);
 
     @Persist
-    int health = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    int health = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
 
     @Persist
-    int maxHealth = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    int maxHealth = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
 
     @Persist
-    int mana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+    int mana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
 
     @Persist
-    int maxMana = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_MANA);
+    int maxMana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
 
     @Persist
-    int xp = Goldiriath.plugin.config.getInt(ConfigPaths.DEFAULT_XP);
+    int xp = plugin().config.getInt(ConfigPaths.DEFAULT_XP);
 
     @Persist
     int skillPoints = 0;
+
 
     PersistentData(PlayerData data) {
         this.data = data;
@@ -47,6 +48,10 @@ class PersistentData extends PersistentStorage {
         this.quest = new DataQuests(data);
         this.flags = new DataFlags(data);
         this.skills = new DataSkills(data);
+    }
+
+    private Goldiriath plugin() {
+        return Goldiriath.instance();
     }
 
     @Override

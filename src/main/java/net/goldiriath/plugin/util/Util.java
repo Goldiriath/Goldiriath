@@ -20,7 +20,7 @@ public class Util {
         }
 
         if (parseString.startsWith("_")) {
-            return Goldiriath.plugin.im.getItem(parseString.substring(1));
+            return Goldiriath.instance().im.getItem(parseString.substring(1));
         }
 
         final String[] parts = parseString.split(":");
@@ -70,7 +70,7 @@ public class Util {
     public static String prepareLine(String line, Player player) {
 
         if (line.contains("<")) {
-            PlayerData data = Goldiriath.plugin.pm.getData(player);
+            PlayerData data = Goldiriath.instance().pm.getData(player);
             line = line
                     .replace("<player>", player.getName())
                     .replace("<money>", "" + data.getMoney())

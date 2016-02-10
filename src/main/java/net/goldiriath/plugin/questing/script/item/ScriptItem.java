@@ -10,11 +10,13 @@ import org.bukkit.entity.Player;
 
 public abstract class ScriptItem {
 
-    protected final Goldiriath plugin = Goldiriath.plugin; // TODO: Avoid static reference
+    protected final Goldiriath plugin;
     protected final Script script;
-    protected int delay;
+    //
+    protected int delay = 0;
 
     public ScriptItem(Script script) {
+        this.plugin = script.getPlugin();
         this.script = script;
     }
 

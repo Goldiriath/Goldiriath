@@ -139,7 +139,7 @@ public class AutoClose extends AbstractService {
             try {
                 this.openable = (Openable) state.getData();
             } catch (ClassCastException ex) {
-                Goldiriath.plugin.logger.warning("AutoClose: BlockState is not castable to be cast to Openable!");
+                plugin.logger.warning("AutoClose: BlockState is not castable to be cast to Openable!");
             }
             this.defaultOpen = defaultOpen;
             this.finished = false;
