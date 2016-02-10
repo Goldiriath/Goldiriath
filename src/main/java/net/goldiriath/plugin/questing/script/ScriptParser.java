@@ -9,6 +9,7 @@ import net.goldiriath.plugin.questing.script.item.MoneyScript;
 import net.goldiriath.plugin.questing.script.item.NoteScript;
 import net.goldiriath.plugin.questing.script.item.OptionScript;
 import net.goldiriath.plugin.questing.script.item.OutScript;
+import net.goldiriath.plugin.questing.script.item.PotionScript;
 import net.goldiriath.plugin.questing.script.item.QuestScript;
 import net.goldiriath.plugin.questing.script.item.ScriptItem;
 import net.goldiriath.plugin.questing.script.item.SkillpointScript;
@@ -76,6 +77,10 @@ public class ScriptParser {
                         si = new OutScript(script, args);
                         break;
 
+                    case "potion":
+                        si = new PotionScript(script, args);
+                        break;
+
                     case "quest":
                         si = new QuestScript(script, args);
                         break;
@@ -92,7 +97,6 @@ public class ScriptParser {
                         si = new ZapScript(script, args);
                         break;
 
-                    // TODO: rest of the script items
                     default:
                         logger.warning("[" + context.getId() + "] Skipping script line: '" + scriptLine + "'. Could not find command! (Is it supported?)");
                 }

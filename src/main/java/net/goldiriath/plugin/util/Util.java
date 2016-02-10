@@ -1,8 +1,10 @@
 package net.goldiriath.plugin.util;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,7 +20,7 @@ public class Util {
         }
 
         if (parseString.startsWith("_")) {
-            return Goldiriath.plugin.im.getItem(parseString.substring(1));
+            return Goldiriath.instance().im.getItem(parseString.substring(1));
         }
 
         final String[] parts = parseString.split(":");
@@ -63,6 +65,23 @@ public class Util {
 
     public static long getUnixSeconds() {
         return System.currentTimeMillis() / 1000L;
+    }
+
+    public static String prepareLine(String line, Player player) {
+
+        if (line.contains("<")) {
+            PlayerData data = Goldiriath.instance().pm.getData(player);
+            line = line
+                    .replace("<player>", player.getName())
+                    .replace("<money>", "" + data.getMoney())
+                    .replace("<maxmoney>", "" + data.getMoney())
+                    .replace("<mana>", "" + data.getMana())
+                    .replace("<maxmana>", "" + data.getMaxMana())
+                    .replace("<health>", "" + data.getHealth())
+                    .replace("<mana>", "" + data.getMaxHealth());
+        }
+
+        return line;
     }
 
 }

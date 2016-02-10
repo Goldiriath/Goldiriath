@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.questing.script.item;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.questing.script.InvalidContextException;
 import net.goldiriath.plugin.questing.script.ParseException;
 import net.goldiriath.plugin.questing.script.Script;
@@ -9,11 +10,13 @@ import org.bukkit.entity.Player;
 
 public abstract class ScriptItem {
 
-    protected final Goldiriath plugin = Goldiriath.plugin; // TODO: Avoid static reference
+    protected final Goldiriath plugin;
     protected final Script script;
-    protected int delay;
+    //
+    protected int delay = 0;
 
     public ScriptItem(Script script) {
+        this.plugin = script.getPlugin();
         this.script = script;
     }
 

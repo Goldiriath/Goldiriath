@@ -12,14 +12,22 @@ import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.LocationUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Dispenser;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -115,7 +123,7 @@ public class MobSpawnManager extends AbstractService {
                     spawn.tick();
                 }
             }
-        }.runTaskTimer(Goldiriath.plugin, 2, 2); // Run every other tick
+        }.runTaskTimer(plugin, 2, 2); // Run every other tick
 
         logger.info("Loaded " + profiles.size() + " mobspawn profiles for " + spawns.size() + " mobspawns");
     }
@@ -246,6 +254,50 @@ public class MobSpawnManager extends AbstractService {
 
         removeSpawn(spawn);
         player.sendMessage(ChatColor.GREEN + "Deleted MobSpawn: " + spawn.getId());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onItemDispense(BlockDispenseEvent event) {
+        ItemStack stack = event.getItem();
+        if (stack.getType() != Material.MONSTER_EGG
+                && stack.getType() != Material.MONSTER_EGGS) {
+            logger.info("Not monster egg!");
+            return;
+        }
+
+        ItemMeta meta = stack.getItemMeta();
+        if (!meta.hasDisplayName()) {
+            return;
+        }
+
+        String name = meta.getDisplayName();
+        if (name == null) {
+            return;
+        }
+
+        MobSpawnProfile profile = plugin.msm.getProfile(name);
+        if (profile == null) {
+            return;
+        }
+
+        MaterialData data = event.getBlock().getState().getData();
+        if (!(data instanceof Dispenser)) {
+            return;
+        }
+
+        Dispenser dis = (Dispenser) data;
+        BlockFace face = dis.getFacing();
+
+        Location location = event.getBlock().getRelative(face, 1).getLocation();
+
+        if (face == BlockFace.DOWN) {
+            location = location.add(0, -1, 0);
+        }
+
+        location = location.add(0.5, 0.5, 0.5);
+
+        event.setCancelled(true);
+        profile.spawn(location);
     }
 
     // Private methods

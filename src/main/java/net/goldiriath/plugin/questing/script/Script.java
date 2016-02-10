@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class Script extends SafeArrayList<ScriptItem> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -275727347234888L;
 
     @Getter
     private final Goldiriath plugin;

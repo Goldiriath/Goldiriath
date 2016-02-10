@@ -19,16 +19,18 @@ import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.implementation.BukkitPlugin;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
 public class Goldiriath extends BukkitPlugin {
 
-    public static Goldiriath plugin;
     public static String name = "";
     public static String buildVersion = "";
     public static String buildDate = "";
+    //
+    private Goldiriath plugin;
     //
     public GLogger logger;
     public final PlayerList loggerPlayers = new PlayerList();
@@ -112,7 +114,6 @@ public class Goldiriath extends BukkitPlugin {
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
 
-        // Free plugin
         plugin = null;
     }
 
@@ -136,6 +137,10 @@ public class Goldiriath extends BukkitPlugin {
             logger.warning("Could not load build  properties!");
             logger.warning(ExceptionUtils.getFullStackTrace(ex));
         }
+    }
+
+    public static Goldiriath instance() {
+        return (Goldiriath) Bukkit.getServer().getPluginManager().getPlugin("Goldiriath");
     }
 
 }

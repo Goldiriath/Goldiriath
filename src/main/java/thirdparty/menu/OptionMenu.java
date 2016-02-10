@@ -55,7 +55,7 @@ public class OptionMenu implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().equals(name)) {
             return;
         }
