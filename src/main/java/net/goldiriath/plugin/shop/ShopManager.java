@@ -10,6 +10,9 @@ import net.goldiriath.plugin.util.PrefixFileFilter;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import thirdparty.nisovin.iconmenu.OptionClickEvent;
+import thirdparty.nisovin.iconmenu.OptionClickEventHandler;
+import thirdparty.nisovin.iconmenu.OptionMenu;
 
 public class ShopManager extends AbstractService {
 

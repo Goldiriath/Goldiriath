@@ -17,7 +17,7 @@ public class Product {
     private final ProductAction action;
 
     public Product(int amount, ItemStack stack, int value) {
-        this(amount, stack, value, ProductAction.BUY_OR_SELL);
+        this(amount, stack, value, ProductAction.BOTH);
     }
 
     public Product(int amount, ItemStack stack, int value, ProductAction action) {
@@ -70,7 +70,7 @@ public class Product {
             return null;
         }
 
-        ProductAction action = ProductAction.BUY_OR_SELL;
+        ProductAction action = ProductAction.BOTH;
         if (parts.length == 4 && parts[3] != null) {
             switch (parts[3]) {
                 case "buy":

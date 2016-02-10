@@ -107,7 +107,7 @@ public class InventoryUtil {
 
         }
 
-        Goldiriath.plugin.logger.warning("Could not remove enough " + remove.toString() + " from inventory!");
+        Goldiriath.instance().logger.warning("Could not remove enough " + remove.toString() + " from inventory!");
         storeItem(inv, remove, true);
         return false;
     }

@@ -1,5 +1,5 @@
 
-package thirdparty.menu;
+package thirdparty.nisovin.iconmenu;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +28,11 @@ public class OptionClickEvent {
         this.position = position;
         this.option = option;
     }
+
+    public boolean hasOption() {
+        return option != null;
+    }
+
 
 
 }

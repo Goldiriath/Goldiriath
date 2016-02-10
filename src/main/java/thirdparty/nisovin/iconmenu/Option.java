@@ -1,5 +1,5 @@
 
-package thirdparty.menu;
+package thirdparty.nisovin.iconmenu;
 
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
