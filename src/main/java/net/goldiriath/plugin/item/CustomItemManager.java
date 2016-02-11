@@ -2,6 +2,7 @@ package net.goldiriath.plugin.item;
 
 import com.google.common.collect.Maps;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -68,6 +70,22 @@ public class CustomItemManager extends AbstractService {
                 continue;
             }
 
+            // Enchantments
+            final Map<Enchantment, Integer> enchantments = new HashMap<>();
+            ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
+            if (enchantmentsSection != null) {
+                for (String name : enchantmentsSection.getKeys(false)) {
+                    Enchantment enchantment = Enchantment.getByName(name.toUpperCase());
+                    if (enchantment == null) {
+                        logger.warning("Ignoring unknown enchantment: " + name.toUpperCase() + " for custom item " + id);
+                        continue;
+                    }
+
+                    int level = enchantmentsSection.getInt(name, 1);
+                    enchantments.put(enchantment, level);
+                }
+            }
+
             // No validation below this point
             // Create itemstack
             final ItemStack stack = new ItemStack(type, 1);
@@ -97,6 +115,8 @@ public class CustomItemManager extends AbstractService {
 
             // Data value
             stack.getData().setData(data);
+
+            stack.addEnchantments(enchantments);
 
             itemMap.put(id, stack);
         }

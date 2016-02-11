@@ -15,6 +15,10 @@ goliath:
     data: 2
     level: 16
     tier: LEGENDARY
+    enchantments:
+        FIRE_ASPECT: 1
+        KNOCKBACK: 1
+        DURABILITY: 2
     lore:
     - '&4There''s no sword quite like it, it''s just amazingly good at what it does:'
     - '&4Killing people'
