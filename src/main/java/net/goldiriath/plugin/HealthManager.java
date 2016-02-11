@@ -4,6 +4,7 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +25,33 @@ public class HealthManager extends AbstractService {
 
     @Override
     protected void onStop() {
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerFall(EntityDamageEvent event) {
+        if (event.getEntityType() != EntityType.PLAYER) {
+            return;
+        }
+
+        switch (event.getCause()) {
+
+            // https://github.com/Goldiriath/Goldiriath/issues
+            case FALL: {
+                Player player = (Player) event.getEntity();
+
+                double remaining = takeBukkitDamage(player, event.getDamage());
+                event.setCancelled(true);
+                player.setHealth(remaining);
+                break;
+            }
+
+            // TODO: POISON, DROWNING, what do...
+            
+            default: {
+                break;
+            }
+
+        }
     }
 
     // TODO: Health implementation.
@@ -79,6 +107,7 @@ public class HealthManager extends AbstractService {
         plugin.pm.getData(player).setHealth((int) health);
     }
 
+    @EventHandler
     public void playerDeath(PlayerDeathEvent event) {
         event.setKeepLevel(true);
         event.setDroppedExp(0);
@@ -90,6 +119,60 @@ public class HealthManager extends AbstractService {
         // Reset player's health
         final PlayerData data = plugin.pm.getData(event.getEntity());
         data.setHealth(data.getMaxHealth());
+    }
+
+    /**
+     * Applies raw Bukkit damage to the player.
+     * 
+     * @param player The player taking damage
+     * @param damage The amount of raw Bukkit (1-20) damage the player should 
+     * take
+     * @return The remaining Bukkit health of the player. Zero if the player has
+     * died.
+     */
+    private double takeBukkitDamage(Player player, double damage) {
+
+        final PlayerData data = plugin.pm.getData(player);
+
+        // Calculate goldiriath damage
+        int goldiriathDamage = (int) ((damage / 20.0) * data.getMaxHealth());
+
+        return takeGoldiriathDamage(player, goldiriathDamage);
+    }
+
+    /**
+     * Applies damage to the player
+     *
+     * @param player The player taking damage
+     * @param damage The amount of Goldiriath damage the player should take
+     * @return The remaining Bukkit health of the player. Zero if the player has
+     * died.
+     */
+    private double takeGoldiriathDamage(Player player, int damage) {
+
+        final PlayerData data = plugin.pm.getData(player);
+
+        // Calculate remaining goldiriath damage
+        int remaining = data.getHealth() - damage;
+
+        if (remaining < 1) {
+
+            // Player is dead
+            data.setHealth(data.getMaxHealth());
+
+            return 0;
+
+        } else {
+
+            // Player is alive
+            data.setHealth(remaining);
+
+            // Calculate health bar
+            double bar = remaining / data.getMaxHealth();
+
+            return bar * 20.0; // Player have 20 hearts
+        }
+
     }
 
 }
