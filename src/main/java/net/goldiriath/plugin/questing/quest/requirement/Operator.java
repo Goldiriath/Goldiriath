@@ -3,41 +3,41 @@ package net.goldiriath.plugin.questing.quest.requirement;
 public enum Operator implements Operatable {
 
     LESSER("<") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a < b;
-                }
-            },
+        @Override
+        public boolean operate(int a, int b) {
+            return a < b;
+        }
+    },
     GREATER(">") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a > b;
-                }
-            },
+        @Override
+        public boolean operate(int a, int b) {
+            return a > b;
+        }
+    },
     LESSER_OR_EQUAL("<=") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a <= b;
-                }
-            },
+        @Override
+        public boolean operate(int a, int b) {
+            return a <= b;
+        }
+    },
     GREATER_OR_EQUAL(">=") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a >= b;
-                }
-            },
+        @Override
+        public boolean operate(int a, int b) {
+            return a >= b;
+        }
+    },
     EQUAL("==") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a == b;
-                }
-            },
+        @Override
+        public boolean operate(int a, int b) {
+            return a == b;
+        }
+    },
     NOT_EQUAL("!=") {
-                @Override
-                public boolean operate(int a, int b) {
-                    return a != b;
-                }
-            };
+        @Override
+        public boolean operate(int a, int b) {
+            return a != b;
+        }
+    };
 
     private final String operator;
 

@@ -28,7 +28,7 @@ public class HealthRequirement extends AbstractRequirement {
         PlayerData data = plugin.pm.getData(player);
 
         if (!perc) {
-            return data.hasHealth(health);
+            return data.getHealth() >= health;
         } else {
             return ((double) data.getHealth() / (double) data.getMaxHealth()) * 100 >= health;
         }

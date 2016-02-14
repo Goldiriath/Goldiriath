@@ -8,28 +8,28 @@ public enum SlotType implements ItemStackValidatable {
 
     ANY() {
 
-                @Override
-                public boolean validate(ItemStack stack) {
-                    return true;
-                }
+        @Override
+        public boolean validate(ItemStack stack) {
+            return true;
+        }
 
-            },
+    },
     WEAPON(0) {
 
-                @Override
-                public boolean validate(ItemStack stack) {
-                    return InventoryUtil.isWeapon(stack.getType());
-                }
+        @Override
+        public boolean validate(ItemStack stack) {
+            return InventoryUtil.isWeapon(stack.getType());
+        }
 
-            },
+    },
     SKILL(1, 2, 3, 4, 5) {
 
-                @Override
-                public boolean validate(ItemStack stack) {
-                    return InventoryUtil.isSkill(stack);
-                }
+        @Override
+        public boolean validate(ItemStack stack) {
+            return InventoryUtil.isSkill(stack);
+        }
 
-            };
+    };
     //
     @Getter
     private final int[] indices;

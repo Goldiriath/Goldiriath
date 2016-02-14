@@ -10,9 +10,12 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 /**
- * Represents a textual component of a message part. This can be used to not only represent string literals in a JSON message, but also to represent localized strings and other text values.
+ * Represents a textual component of a message part. This can be used to not
+ * only represent string literals in a JSON message, but also to represent
+ * localized strings and other text values.
  * <p>
- * Different instances of this class can be created with static constructor methods.</p>
+ * Different instances of this class can be created with static constructor
+ * methods.</p>
  */
 public abstract class TextualComponent implements Cloneable {
 
@@ -37,13 +40,17 @@ public abstract class TextualComponent implements Cloneable {
     public abstract String getReadableString();
 
     /**
-     * Clones a textual component instance. The returned object should not reference this textual component instance, but should maintain the same key and value.
+     * Clones a textual component instance. The returned object should not
+     * reference this textual component instance, but should maintain the same
+     * key and value.
      */
     @Override
     public abstract TextualComponent clone() throws CloneNotSupportedException;
 
     /**
-     * Writes the text data represented by this textual component to the specified JSON writer object. A new object within the writer is not started.
+     * Writes the text data represented by this textual component to the
+     * specified JSON writer object. A new object within the writer is not
+     * started.
      *
      * @param writer The object to which to write the JSON data.
      * @throws IOException If an error occurs while writing to the stream.
@@ -73,7 +80,8 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Internal class used to represent all types of text components. Exception validating done is on keys and values.
+     * Internal class used to represent all types of text components. Exception
+     * validating done is on keys and values.
      */
     private static final class ArbitraryTextTypeComponent extends TextualComponent implements ConfigurationSerializable {
 
@@ -136,7 +144,8 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Internal class used to represent a text component with a nested JSON value. Exception validating done is on keys and values.
+     * Internal class used to represent a text component with a nested JSON
+     * value. Exception validating done is on keys and values.
      */
     private static final class ComplexTextTypeComponent extends TextualComponent implements ConfigurationSerializable {
 
@@ -217,7 +226,9 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Create a textual component representing a string literal. This is the default type of textual component when a single string literal is given to a method.
+     * Create a textual component representing a string literal. This is the
+     * default type of textual component when a single string literal is given
+     * to a method.
      *
      * @param textValue The text which will be represented.
      * @return The text component representing the specified literal text.
@@ -227,10 +238,13 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Create a textual component representing a localized string. The client will see this text component as their localized version of the specified string <em>key</em>, which can be overridden by a
-     * resource pack.
+     * Create a textual component representing a localized string. The client
+     * will see this text component as their localized version of the specified
+     * string <em>key</em>, which can be overridden by a resource pack.
      * <p>
-     * If the specified translation key is not present on the client resource pack, the translation key will be displayed as a string literal to the client.
+     * If the specified translation key is not present on the client resource
+     * pack, the translation key will be displayed as a string literal to the
+     * client.
      * </p>
      *
      * @param translateKey The string key which maps to localized text.
@@ -245,28 +259,44 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Create a textual component representing a scoreboard value. The client will see their own score for the specified objective as the text represented by this component.
+     * Create a textual component representing a scoreboard value. The client
+     * will see their own score for the specified objective as the text
+     * represented by this component.
      * <p>
-     * <b>This method is currently guaranteed to throw an {@code UnsupportedOperationException} as it is only supported on snapshot clients.</b>
+     * <b>This method is currently guaranteed to throw an
+     * {@code UnsupportedOperationException} as it is only supported on snapshot
+     * clients.</b>
      * </p>
      *
-     * @param scoreboardObjective The name of the objective for which to display the score.
-     * @return The text component representing the specified scoreboard score (for the viewing player), or {@code null} if an error occurs during JSON serialization.
+     * @param scoreboardObjective The name of the objective for which to display
+     * the score.
+     * @return The text component representing the specified scoreboard score
+     * (for the viewing player), or {@code null} if an error occurs during JSON
+     * serialization.
      */
     public static TextualComponent objectiveScore(String scoreboardObjective) {
         return objectiveScore("*", scoreboardObjective);
     }
 
     /**
-     * Create a textual component representing a scoreboard value. The client will see the score of the specified player for the specified objective as the text represented by this component.
+     * Create a textual component representing a scoreboard value. The client
+     * will see the score of the specified player for the specified objective as
+     * the text represented by this component.
      * <p>
-     * <b>This method is currently guaranteed to throw an {@code UnsupportedOperationException} as it is only supported on snapshot clients.</b>
+     * <b>This method is currently guaranteed to throw an
+     * {@code UnsupportedOperationException} as it is only supported on snapshot
+     * clients.</b>
      * </p>
      *
-     * @param playerName The name of the player whos score will be shown. If this string represents the single-character sequence "*", the viewing player's score will be displayed. Standard minecraft
-     * selectors (@a, @p, etc) are <em>not</em> supported.
-     * @param scoreboardObjective The name of the objective for which to display the score.
-     * @return The text component representing the specified scoreboard score for the specified player, or {@code null} if an error occurs during JSON serialization.
+     * @param playerName The name of the player whos score will be shown. If
+     * this string represents the single-character sequence "*", the viewing
+     * player's score will be displayed. Standard minecraft selectors (@a, @p,
+     * etc) are <em>not</em> supported.
+     * @param scoreboardObjective The name of the objective for which to display
+     * the score.
+     * @return The text component representing the specified scoreboard score
+     * for the specified player, or {@code null} if an error occurs during JSON
+     * serialization.
      */
     public static TextualComponent objectiveScore(String playerName, String scoreboardObjective) {
         throwUnsupportedSnapshot(); // Remove this line when the feature is released to non-snapshot versions, in addition to updating ALL THE OVERLOADS documentation accordingly
@@ -278,14 +308,21 @@ public abstract class TextualComponent implements Cloneable {
     }
 
     /**
-     * Create a textual component representing a player name, retrievable by using a standard minecraft selector. The client will see the players or entities captured by the specified selector as the
-     * text represented by this component.
+     * Create a textual component representing a player name, retrievable by
+     * using a standard minecraft selector. The client will see the players or
+     * entities captured by the specified selector as the text represented by
+     * this component.
      * <p>
-     * <b>This method is currently guaranteed to throw an {@code UnsupportedOperationException} as it is only supported on snapshot clients.</b>
+     * <b>This method is currently guaranteed to throw an
+     * {@code UnsupportedOperationException} as it is only supported on snapshot
+     * clients.</b>
      * </p>
      *
-     * @param selector The minecraft player or entity selector which will capture the entities whose string representations will be displayed in the place of this text component.
-     * @return The text component representing the name of the entities captured by the selector.
+     * @param selector The minecraft player or entity selector which will
+     * capture the entities whose string representations will be displayed in
+     * the place of this text component.
+     * @return The text component representing the name of the entities captured
+     * by the selector.
      */
     public static TextualComponent selector(String selector) {
         throwUnsupportedSnapshot(); // Remove this line when the feature is released to non-snapshot versions, in addition to updating ALL THE OVERLOADS documentation accordingly

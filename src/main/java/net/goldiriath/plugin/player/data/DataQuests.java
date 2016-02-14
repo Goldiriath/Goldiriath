@@ -3,13 +3,10 @@ package net.goldiriath.plugin.player.data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import lombok.Getter;
-import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.questing.quest.Quest;
 import net.goldiriath.plugin.questing.quest.Stage;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class DataQuests extends Data {
 

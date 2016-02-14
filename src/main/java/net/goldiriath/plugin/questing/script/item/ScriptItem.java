@@ -36,21 +36,21 @@ public abstract class ScriptItem {
     public abstract void execute(Player player);
 
     // util
-    protected ScriptContext context() {
+    protected final ScriptContext context() {
         return script.getContext();
     }
 
-    protected void context(ScriptContext.ScriptContextType type) {
+    protected final void context(ScriptContext.ScriptContextType type) {
         if (script.getContext().getType() != type) {
             invalidContext();
         }
     }
 
-    protected void invalidContext() {
+    protected final void invalidContext() {
         throw new InvalidContextException(script.getContext().getType());
     }
 
-    protected int parseInt(String string) {
+    protected final int parseInt(String string) {
         try {
             return Integer.parseInt(string);
         } catch (NumberFormatException ex) {

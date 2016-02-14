@@ -64,11 +64,11 @@ public class PlayerManager extends AbstractService {
             // Existing player
             logger.info("Loading player data: " + player.getName());
             config.load();
-            data.getPersistent().loadFrom(config);
+            data.loadFrom(config);
         } else {
             // New player
             logger.info("Creating player data: " + player.getName());
-            data.getPersistent().saveTo(config);
+            data.saveTo(config);
             config.save();
         }
 
@@ -99,7 +99,7 @@ public class PlayerManager extends AbstractService {
     }
 
     private void savePlayer(Player player) {
-        final PersistentData data = getData(player, false).getPersistent();
+        final PlayerData data = getData(player, false);
 
         if (data == null) {
             LoggerUtils.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");

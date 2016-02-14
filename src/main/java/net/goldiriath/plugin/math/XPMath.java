@@ -10,6 +10,9 @@ public class XPMath {
     public static final int MAX_LEVEL = 50;
     public static final int MAX_XP = f(MAX_LEVEL);
 
+    private XPMath() {
+    }
+
     @VisibleForTesting
     static int f(int x) {
         return 50 * (x - 1) * x;
@@ -18,6 +21,25 @@ public class XPMath {
     @VisibleForTesting
     static double g(int x) {
         return 0.1 * (Math.sqrt(2 * x + 25) + 5);
+    }
+
+    // TODO: Document on the forums
+    @VisibleForTesting
+    static int h(int p, int m) {
+        int xpGain = 1;
+        int diffLevel = Math.abs(p - m);
+
+        if (diffLevel <= 1) {
+            xpGain = 5;
+        }
+        if (diffLevel >= 2 && diffLevel <= 3 && m >= p) {
+            xpGain = 7;
+        }
+        if (diffLevel >= 2 && diffLevel <= 3 && p >= m) {
+            xpGain = 2;
+        }
+
+        return xpGain;
     }
 
     // Level -> Something
@@ -29,7 +51,6 @@ public class XPMath {
         return levelToXp(level + 1) - levelToXp(level);
     }
 
-    // XP -> Something
     public static int xpToLevel(int xp) {
         return (int) Math.floor(g(xp));
     }
@@ -43,5 +64,9 @@ public class XPMath {
         int currentLevel = xpToLevel(xp);
         int levelXp = xpToLevelXp(xp);
         return levelToXp(currentLevel + 1) - levelToXp(currentLevel) - levelXp;
+    }
+
+    public static int xpGainForKill(int playerLevel, int mobLevel) {
+        return h(playerLevel, mobLevel);
     }
 }
