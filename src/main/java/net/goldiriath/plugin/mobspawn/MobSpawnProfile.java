@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
-import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
+import net.goldiriath.plugin.loot.LootProfile;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
@@ -29,7 +29,8 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     //
     @Getter
     private final String id;
-    private final MobSpawnManager msm;
+    @Getter
+    private final MobSpawnManager manager;
     private final Logger logger;
     //
     @Getter
@@ -44,6 +45,9 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     private long timeThreshold;
     @Getter
     private ItemStack item;
+    private long spawnThreshold;
+    @Getter
+    private ItemStack carryItem;
     @Getter
     private ItemStack helmet;
     @Getter
@@ -52,11 +56,15 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     private ItemStack leggings;
     @Getter
     private ItemStack boots;
+    @Getter
+    private MobTier tier;
+    @Getter
+    private LootProfile loot;
 
-    public MobSpawnProfile(MobSpawnManager msm, String id) {
+    public MobSpawnProfile(MobSpawnManager manager, String id) {
         this.id = id;
-        this.msm = msm;
-        this.logger = msm.getPlugin().getLogger();
+        this.manager = manager;
+        this.logger = manager.getPlugin().getLogger();
         this.effects = new HashSet<>();
     }
 
@@ -70,13 +78,13 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         if (type == EntityType.PLAYER) {
             throw new UnsupportedOperationException("Players are not yet supported!");
         } else {
-            npc = msm.getBridge().createMob(type);
+            npc = manager.getBridge().createMob(type);
         }
 
         // Spawn
         npc.spawn(location);
         npc.setProtected(false);
-        npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(msm.getPlugin(), npc, location, 15), 1);
+        npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(manager.getPlugin(), npc, location, 15), 1);
 
         // Setup
         final Entity entity = npc.getEntity();
@@ -95,8 +103,10 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
             ((Ageable) mob).setAdult();
         }
 
+        // Potion Effective
         mob.addPotionEffects(effects);
-        mob.setCanPickupItems(false);
+
+        // Custom name
         if (customName != null) {
             npc.setName(customName);
             mob.setCustomName(customName);
@@ -105,6 +115,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
         // Set equipment
         final EntityEquipment equipment = mob.getEquipment();
+        mob.setCanPickupItems(false);
 
         equipment.setItemInHandDropChance(0);
         if (item != null) {
@@ -134,6 +145,10 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         return npc;
     }
 
+    public boolean hasSpawnThreshold() {
+        return spawnThreshold >= 0;
+    }
+
     @Override
     public void loadFrom(ConfigurationSection config) {
 
@@ -148,6 +163,8 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         customName = config.getString("name", null);
         timeThreshold = config.getInt("spawn_threshold", -1);
         level = config.getInt("level", 1);
+        tier = MobTier.valueOf(config.getString("tier", MobTier.NORMAL.name()));
+        loot = manager.getPlugin().lm.getProfileMap().get(config.getString("loot_profile", "default"));
 
         // Effects
         effects.clear();

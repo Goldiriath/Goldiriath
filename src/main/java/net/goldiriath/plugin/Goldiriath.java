@@ -9,6 +9,7 @@ import net.goldiriath.plugin.questing.dialog.DialogManager;
 import net.goldiriath.plugin.item.ItemManager;
 import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.logging.PlayerListLogSink;
+import net.goldiriath.plugin.loot.LootManager;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.questing.quest.QuestManager;
@@ -42,6 +43,7 @@ public class Goldiriath extends BukkitPlugin {
     public XPManager xm;
     public QuestManager qm;
     public DialogManager dm;
+    public LootManager lm;
     public MobSpawnManager msm;
     public HealthManager hm;
     public SidebarManager sb;
@@ -72,6 +74,7 @@ public class Goldiriath extends BukkitPlugin {
         xm = services.registerService(XPManager.class);
         qm = services.registerService(QuestManager.class);
         dm = services.registerService(DialogManager.class);
+        lm = services.registerService(LootManager.class);
         msm = services.registerService(MobSpawnManager.class);
         hm = services.registerService(HealthManager.class);
         sb = services.registerService(SidebarManager.class);

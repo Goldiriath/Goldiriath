@@ -116,6 +116,7 @@ public class CustomItemManager extends AbstractService {
             // Data value
             stack.getData().setData(data);
 
+            // Enchantments
             stack.addEnchantments(enchantments);
 
             itemMap.put(id, stack);

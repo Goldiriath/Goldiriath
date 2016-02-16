@@ -178,7 +178,6 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
                 it.remove();
             }
         }
-
     }
 
 }

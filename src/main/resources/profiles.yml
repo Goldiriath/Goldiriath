@@ -4,6 +4,7 @@ hellzombie:
     type: ZOMBIE
     level: 5
     spawn_threshold: 600
+    loot_profile: 
     item: IRON_SWORD:5
     helmet: LEATHER_HELMET:3
     chestplate: DIAMOND_CHESTPLATE:2

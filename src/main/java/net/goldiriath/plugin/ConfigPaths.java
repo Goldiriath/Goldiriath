@@ -24,7 +24,9 @@ public enum ConfigPaths implements PathContainer {
     METACYCLER_META_TOOL("metacycler.meta_tool"),
     METACYCLER_BIOME_TOOL("metacycler.biome_tool"),
     //
-    INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled");
+    INFINITE_DISPENSER_ENABLED("infinite_dispenser.enabled"),
+    //
+    CHESTSPAWNER_ENABLED("chestspawner.enabled");
 
     private final String path;
 
