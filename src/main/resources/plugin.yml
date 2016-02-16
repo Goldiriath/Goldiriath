@@ -4,6 +4,10 @@ main: net.goldiriath.plugin.Goldiriath
 depend: [Citizens, ProtocolLib]
 authors: [Prozza, derpfacedirk]
 commands:
+    chat:
+        usage: /<command> <ignore | send> [channel] <yes | no>
+        description: Chat channel switching
+        aliases: [gc]
     gdev:
         usage: /<command> <values...>
         description: Goldiriath development command.
@@ -34,9 +38,14 @@ commands:
         aliases: [go]
     goption:
         usage: /<command> <dialoghandler> <optionset> <choice>
-        description: Not for manual use! Selects the option for use.
+        description: Selects the option for use.
         aliases: [gopt]
     gquest:
         usage: /<command> <player> <list | <quest> <reset | <newstage>>
         description: View and set a player's current quest stage
         aliases: [gq]
+    party:
+        usage: /<command> <invite | kick | disband | leave> [player]
+        description: Party commands
+        description: Not for manual use! Selects the option for use.
+        aliases: [gp]

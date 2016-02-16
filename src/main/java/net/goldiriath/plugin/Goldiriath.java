@@ -4,6 +4,7 @@ import net.goldiriath.plugin.inventory.InventoryManager;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
+import net.goldiriath.plugin.chat.ChatManager;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.questing.dialog.DialogManager;
 import net.goldiriath.plugin.item.ItemManager;
@@ -50,6 +51,7 @@ public class Goldiriath extends BukkitPlugin {
     public InventoryManager iv;
     public MetaCycler ms;
     public AutoClose ac;
+    public ChatManager cm;
     public InfiDispenser id;
     //
     public BukkitCommandHandler<Goldiriath> ch;
@@ -81,6 +83,7 @@ public class Goldiriath extends BukkitPlugin {
         iv = services.registerService(InventoryManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
+        cm = services.registerService(ChatManager.class);
         id = services.registerService(InfiDispenser.class);
 
         // Commands
@@ -108,6 +111,7 @@ public class Goldiriath extends BukkitPlugin {
     public void onDisable() {
 
         // Stop services
+
         services.stop();
 
         // Unregister events

@@ -9,6 +9,7 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataFlags;
 import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.player.info.InfoDialogs;
+import net.goldiriath.plugin.player.info.InfoChat;
 import net.goldiriath.plugin.util.persist.Persist;
 import net.goldiriath.plugin.util.persist.PersistentStorage;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,6 +28,8 @@ public class PlayerData extends PersistentStorage {
     private final InfoSidebar sidebar;
     @Getter
     private final InfoDialogs dialogs;
+    @Getter
+    private final InfoChat chat;
     //
     @Getter
     private final DataQuests quests;
@@ -79,6 +82,7 @@ public class PlayerData extends PersistentStorage {
         //
         this.sidebar = new InfoSidebar(this);
         this.dialogs = new InfoDialogs(this);
+        this.chat = new InfoChat(this);
         //
         this.quests = new DataQuests(this);
         this.flags = new DataFlags(this);
