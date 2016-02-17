@@ -3,6 +3,7 @@ package net.goldiriath.plugin.util;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -81,7 +82,7 @@ public class Util {
                     .replace("<mana>", "" + data.getMaxHealth());
         }
 
-        return line;
+        return ChatColor.translateAlternateColorCodes('&', line);
     }
 
 }

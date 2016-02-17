@@ -3,12 +3,14 @@ package net.goldiriath.plugin.questing.script;
 import java.util.List;
 import java.util.logging.Logger;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.questing.script.item.DialogScript;
 import net.goldiriath.plugin.questing.script.item.FlagScript;
 import net.goldiriath.plugin.questing.script.item.ItemScript;
 import net.goldiriath.plugin.questing.script.item.MoneyScript;
 import net.goldiriath.plugin.questing.script.item.NoteScript;
 import net.goldiriath.plugin.questing.script.item.OptionScript;
 import net.goldiriath.plugin.questing.script.item.OutScript;
+import net.goldiriath.plugin.questing.script.item.MeScript;
 import net.goldiriath.plugin.questing.script.item.PotionScript;
 import net.goldiriath.plugin.questing.script.item.QuestScript;
 import net.goldiriath.plugin.questing.script.item.ScriptItem;
@@ -53,12 +55,21 @@ public class ScriptParser {
 
             try {
                 switch (parts[1]) {
+
+                    case "dialog":
+                        si = new DialogScript(script, args);
+                        break;
+
                     case "flag":
                         si = new FlagScript(script, args);
                         break;
 
                     case "item":
                         si = new ItemScript(script, args);
+                        break;
+
+                    case "me":
+                        si = new MeScript(script, args);
                         break;
 
                     case "money":
