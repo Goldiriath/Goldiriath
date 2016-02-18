@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.mobspawn.citizens;
 
+import java.util.UUID;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCRegistry;
@@ -70,6 +71,10 @@ public class CitizensBridge extends AbstractService {
         }
 
         return ((NPCHolder) entity).getNPC();
+    }
+
+    public NPC getNPC(UUID uuid) {
+        return memoryReg.getByUniqueId(uuid);
     }
 
     public boolean isNPC(LivingEntity entity) {

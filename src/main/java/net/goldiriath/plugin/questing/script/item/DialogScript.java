@@ -13,7 +13,7 @@ public class DialogScript extends ScriptItem {
     public DialogScript(Script script, String[] args) {
         super(script);
 
-        final NPCDialogHandler handler = plugin.dm.getHandlers().get(args[1]);
+        final NPCDialogHandler handler = plugin.dlm.getHandlers().get(args[1]);
         if (handler == null) {
             throw new ParseException("Could not find NPC dialog handler: " + args[1]);
         }

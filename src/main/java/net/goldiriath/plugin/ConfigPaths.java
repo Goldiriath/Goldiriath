@@ -4,6 +4,8 @@ import net.pravian.bukkitlib.config.PathContainer;
 
 public enum ConfigPaths implements PathContainer {
 
+    DEATH_COST("death.cost"),
+    //
     DEFAULT_MONEY("default.money"),
     DEFAULT_HEALTH("default.health"),
     DEFAULT_MANA("default.mana"),

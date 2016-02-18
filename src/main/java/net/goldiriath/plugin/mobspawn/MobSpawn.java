@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
-import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
+import net.goldiriath.plugin.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.ConfigSavable;
 import net.goldiriath.plugin.util.Util;
@@ -157,8 +157,7 @@ public class MobSpawn implements ConfigLoadable, ConfigSavable, Validatable {
         final NPC mob = profile.spawn(location);
         mobs.add(mob);
 
-        mob.addTrait(new MobSpawnTrait(this));
-
+        //mob.addTrait(new MobProfileTrait(this));
         return true;
     }
 

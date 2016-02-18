@@ -5,8 +5,10 @@ import java.util.Set;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
 import net.goldiriath.plugin.loot.LootProfile;
+import net.goldiriath.plugin.mobspawn.citizens.HostileMobBehavior;
+import net.goldiriath.plugin.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
@@ -26,6 +28,7 @@ import org.bukkit.potion.PotionEffectType;
 public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
     public static final int INFINITE_POTION_DURATION = 1000000;
+    public static final int WANDER_RANGE = 15;
     //
     @Getter
     private final String id;
@@ -84,7 +87,9 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         // Spawn
         npc.spawn(location);
         npc.setProtected(false);
-        npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(manager.getPlugin(), npc, location, 15), 1);
+        npc.addTrait(new MobProfileTrait(this));
+        npc.addTrait(new HostileMobTrait(60)); // TODO: Make health customisable
+        npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(manager.getPlugin(), npc, location, WANDER_RANGE), 1);
 
         // Setup
         final Entity entity = npc.getEntity();

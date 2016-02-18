@@ -2,6 +2,7 @@ package net.goldiriath.plugin;
 
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import thirdparty.com.virtivia.minecraft.bukkitplugins.dropprotect.InventorySnapshot;
 
 public class HealthManager extends AbstractService {
 
@@ -53,10 +55,10 @@ public class HealthManager extends AbstractService {
         }
 
         switch (event.getCause()) {
-
             case STARVATION: {
-                // Don't take damage from starvation, mana bar
+                // Don't take damage from starvation
                 event.setCancelled(true);
+                break;
             }
 
             case FALL: {
@@ -75,34 +77,12 @@ public class HealthManager extends AbstractService {
             default: {
                 break;
             }
-
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntityHitPlayer(EntityDamageEvent event) {
-
-        final Entity hit = event.getEntity();
-        if (!(hit instanceof Player)) {
-            return;
-        }
-
-        //Player player = (Player) hit;
-        double damage = event.getDamage();
-
-        // TODO: calculate armor and weapon damage modifiers, etc
-        event.setDamage(damage);
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        event.setKeepLevel(true);
-        event.setDroppedExp(0);
 
-        // TODO: Subtact money, drop inventory if the player is out
-        // TODO: 1.7.10 doesn't have this...
-        // https://github.com/Bukkit/Bukkit/commit/e0dc9470efa3487c4d00a67a4d62de6d05d4985a
-        //event.setKeepInventory(true);
         // Reset player's health
         final PlayerData data = plugin.pm.getData(event.getEntity());
         data.setHealth(data.getMaxHealth());

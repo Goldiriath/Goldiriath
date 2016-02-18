@@ -10,10 +10,8 @@ import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.mobspawn.MobSpawn;
 import net.goldiriath.plugin.mobspawn.MobSpawnProfile;
-import net.goldiriath.plugin.mobspawn.MobTier;
-import net.goldiriath.plugin.mobspawn.citizens.MobSpawnTrait;
+import net.goldiriath.plugin.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -131,13 +129,13 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        MobSpawnTrait trait = npc.getTrait(MobSpawnTrait.class);
+        MobProfileTrait trait = npc.getTrait(MobProfileTrait.class);
         if (trait == null) {
-            logger.warning(player.getName() + " killed NPC that does not have a mobspawn trait!");
+            logger.warning(player.getName() + " killed NPC that does not have a mobspawn profile!");
             return;
         }
 
-        MobSpawnProfile profile = trait.getSpawn().getProfile();
+        MobSpawnProfile profile = trait.getProfile();
 
         LootProfile loot = profile.getLoot();
         if (loot == null) {

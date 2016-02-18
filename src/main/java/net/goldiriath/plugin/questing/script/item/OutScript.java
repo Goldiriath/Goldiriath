@@ -25,7 +25,7 @@ public class OutScript extends ScriptItem {
             handler = script.getContext().getDialog().getHandler();
             this.message = StringUtils.join(args, " ", 2, args.length);
         } else {
-            handler = plugin.dm.getHandlers().get(args[2]);
+            handler = plugin.dlm.getHandlers().get(args[2]);
             if (handler == null) {
                 throw new ParseException("Could not find NPC dialog handler: " + args[2]);
             }

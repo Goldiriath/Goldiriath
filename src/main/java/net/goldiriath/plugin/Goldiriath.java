@@ -42,10 +42,12 @@ public class Goldiriath extends BukkitPlugin {
     public PlayerManager pm;
     public XPManager xm;
     public QuestManager qm;
-    public DialogManager dm;
+    public DialogManager dlm;
     public LootManager lm;
     public MobSpawnManager msm;
     public HealthManager hm;
+    public BattleManager bm;
+    public DeathManager dm;
     public SidebarManager sb;
     public InventoryManager iv;
     public MetaCycler ms;
@@ -73,10 +75,12 @@ public class Goldiriath extends BukkitPlugin {
         pm = services.registerService(PlayerManager.class);
         xm = services.registerService(XPManager.class);
         qm = services.registerService(QuestManager.class);
-        dm = services.registerService(DialogManager.class);
+        dlm = services.registerService(DialogManager.class);
         lm = services.registerService(LootManager.class);
         msm = services.registerService(MobSpawnManager.class);
         hm = services.registerService(HealthManager.class);
+        bm = services.registerService(BattleManager.class);
+        dm = services.registerService(DeathManager.class);
         sb = services.registerService(SidebarManager.class);
         iv = services.registerService(InventoryManager.class);
         ms = services.registerService(MetaCycler.class);

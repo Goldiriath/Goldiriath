@@ -2,9 +2,6 @@ package net.goldiriath.plugin.math;
 
 import com.google.common.annotations.VisibleForTesting;
 
-/*
- * https://github.com/Goldiriath/Goldiriath/wiki/Calculation:-Leveling
- */
 public class XPMath {
 
     public static final int MAX_LEVEL = 50;

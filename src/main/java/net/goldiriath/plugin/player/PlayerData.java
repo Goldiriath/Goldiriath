@@ -8,6 +8,7 @@ import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataFlags;
 import net.goldiriath.plugin.player.data.DataSkills;
+import net.goldiriath.plugin.player.info.InfoBattle;
 import net.goldiriath.plugin.player.info.InfoDialogs;
 import net.goldiriath.plugin.util.persist.Persist;
 import net.goldiriath.plugin.util.persist.PersistentStorage;
@@ -24,9 +25,11 @@ public class PlayerData extends PersistentStorage {
     private final Player player;
     //
     @Getter
-    private final InfoSidebar sidebar;
+    private final InfoBattle battle;
     @Getter
     private final InfoDialogs dialogs;
+    @Getter
+    private final InfoSidebar sidebar;
     //
     @Getter
     private final DataQuests quests;
@@ -34,7 +37,6 @@ public class PlayerData extends PersistentStorage {
     private final DataFlags flags;
     @Getter
     private final DataSkills skills;
-    //
 
     @Persist
     @Getter
@@ -72,17 +74,18 @@ public class PlayerData extends PersistentStorage {
     private int skillPoints = 0;
 
     public PlayerData(PlayerManager manager, Player player) {
-
         this.plugin = manager.getPlugin();
         this.manager = manager;
         this.player = player;
         //
+        this.battle = new InfoBattle(this);
         this.sidebar = new InfoSidebar(this);
         this.dialogs = new InfoDialogs(this);
         //
         this.quests = new DataQuests(this);
         this.flags = new DataFlags(this);
         this.skills = new DataSkills(this);
+
     }
 
     private Goldiriath plugin() {
