@@ -19,6 +19,7 @@ public class DeathManager extends AbstractService {
 
     private final Map<UUID, InventorySnapshot> deathInventories = new HashMap<>();
     private int cost;
+    private double multiplier;
 
     public DeathManager(Goldiriath plugin) {
         super(plugin);
@@ -26,7 +27,8 @@ public class DeathManager extends AbstractService {
 
     @Override
     protected void onStart() {
-        this.cost = plugin.config.getInt(ConfigPaths.DEATH_COST);
+        this.cost = plugin.config.getInt(ConfigPaths.DEATH_MONEY_COST);
+        this.multiplier = plugin.config.getDouble(ConfigPaths.DEATH_MONEY_MULTIPLIER);
     }
 
     @Override
@@ -47,11 +49,16 @@ public class DeathManager extends AbstractService {
 
         if (cost > 0) {
             PlayerData data = plugin.pm.getData(player);
-            if (data.getMoney() < cost) {
+            int money = data.getMoney();
+            if (money < cost) {
                 player.sendMessage(ChatColor.RED + "You lost your items because you didn't have enough money.");
                 return;
             }
-            data.setMoney(data.getMoney() - cost);
+
+            money -= cost;
+            money *= multiplier;
+
+            data.setMoney(money);
         }
 
         // TODO: 1.7.10 doesn't have the following, use it when we update

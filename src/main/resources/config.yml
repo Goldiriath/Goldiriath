@@ -2,6 +2,16 @@
 # Goldiriath v0.0.1 pre-alpha configuration
 #
 
+# Death
+death:
+
+    # The amount of money that is required to keep inventory
+    money_cost: 50
+
+    # Additional post-cost multipier
+    money_multiplier: 0.9
+
+
 # Defaults
 default:
     money: 10
@@ -18,12 +28,6 @@ dialog:
 
     # Timeout before another dialog can be started
     click_threshold: 100
-
-death:
-
-    # The amount of money that is required to keep inventory
-    cost: 50
-
 
 # Sign based mob spawner
 mobspawner:
