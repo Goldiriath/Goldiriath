@@ -23,7 +23,7 @@ public class Command_goption extends BukkitCommand<Goldiriath> {
         }
 
         // Args: DialogHandler ID, OptionSet ID, Option ID
-        final NPCDialogHandler handler = plugin.dm.getHandlers().get(args[0]);
+        final NPCDialogHandler handler = plugin.dlm.getHandlers().get(args[0]);
         if (handler == null) {
             msg("Could not find dialog handler: " + args[0], ChatColor.RED);
             return true;

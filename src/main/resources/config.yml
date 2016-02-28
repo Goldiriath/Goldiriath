@@ -2,6 +2,16 @@
 # Goldiriath v0.0.1 pre-alpha configuration
 #
 
+# Death
+death:
+
+    # The amount of money that is required to keep inventory
+    money_cost: 50
+
+    # Additional post-cost multipier
+    money_multiplier: 0.9
+
+
 # Defaults
 default:
     money: 10
@@ -9,9 +19,6 @@ default:
     mana: 100
     skillpoints: 0
     xp: 0
-
-#default xp
-default_xp: 0
 
 # Dialogs
 dialog:
@@ -27,7 +34,7 @@ mobspawner:
     enabled: true
 
     # Development mode
-    # When this is set to true, all mobspawns will be disabled and presented as signs.
+    # When this is set to true, all mobspawns will be disabled and presented as signs
     dev_mode: true
 
     # Default maximum amount of mobs a spawner can spawn

@@ -4,9 +4,11 @@ import static com.google.common.truth.Truth.*;
 
 import org.junit.Test;
 
+/*
+ * https://github.com/Goldiriath/Goldiriath/wiki/XP-Math
+ */
 public class XPMathTest {
 
-    // https://github.com/Goldiriath/Goldiriath/wiki/Calculation:-Leveling
     @Test
     public void testMax() {
         assertThat(XPMath.f(XPMath.MAX_LEVEL)).isEqualTo(XPMath.MAX_XP);
@@ -27,8 +29,10 @@ public class XPMathTest {
     @Test
     public void testWithXp() {
         assertThat(XPMath.xpToLevel(0)).isEqualTo(1);
+        assertThat(XPMath.xpToLevel(98)).isEqualTo(1);
         assertThat(XPMath.xpToLevel(99)).isEqualTo(1);
         assertThat(XPMath.xpToLevel(100)).isEqualTo(2);
+        assertThat(XPMath.xpToLevel(101)).isEqualTo(2);
 
         assertThat(XPMath.xpToLevel(15800)).isEqualTo(18);
         assertThat(XPMath.xpToLevelXp(15800)).isEqualTo(500);

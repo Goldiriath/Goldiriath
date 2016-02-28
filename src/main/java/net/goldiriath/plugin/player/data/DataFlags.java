@@ -3,7 +3,6 @@ package net.goldiriath.plugin.player.data;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import org.bukkit.configuration.ConfigurationSection;
 

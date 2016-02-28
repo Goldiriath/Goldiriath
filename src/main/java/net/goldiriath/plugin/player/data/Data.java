@@ -1,8 +1,6 @@
 package net.goldiriath.plugin.player.data;
 
 import lombok.Getter;
-import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.player.AbstractAttachement;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.ConfigLoadable;
@@ -13,8 +11,6 @@ public abstract class Data extends AbstractAttachement implements ConfigLoadable
 
     @Getter
     private final String key;
-
-    ;
 
     public Data(PlayerData data, String key) {
         super(data);

@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.questing.script.item;
 
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.questing.script.Script;
 import org.bukkit.entity.Player;
 
@@ -14,7 +15,8 @@ public class SkillpointScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        plugin.pm.getData(player).addSkillPoints(amt);
+        PlayerData data = plugin.pm.getData(player);
+        data.setSkillPoints(data.getSkillPoints() + amt);
     }
 
 }

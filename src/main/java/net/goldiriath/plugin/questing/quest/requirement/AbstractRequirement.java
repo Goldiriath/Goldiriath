@@ -21,7 +21,7 @@ public abstract class AbstractRequirement implements Requirement {
     }
 
     // Util methods
-    public int parseInt(String string) {
+    public final int parseInt(String string) {
         try {
             return Integer.parseInt(string);
         } catch (NumberFormatException ex) {

@@ -28,7 +28,7 @@ public class ManaRequirement extends AbstractRequirement {
         final PlayerData data = plugin.pm.getData(player);
 
         if (!perc) {
-            return data.hasMana(mana);
+            return data.getMana() >= mana;
         } else {
             return ((double) data.getMana() / (double) data.getMana()) * 100 >= mana;
         }

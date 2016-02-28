@@ -21,7 +21,7 @@ public class DelayRequirement extends AbstractRequirement {
     public DelayRequirement(Goldiriath plugin, String[] args) {
         super(plugin, Message.NO_MESSAGE);
 
-        flag = args[1];
+        flag = "delay-" + args[1];
         delaySeconds = parseInt(args[2]);
     }
 
