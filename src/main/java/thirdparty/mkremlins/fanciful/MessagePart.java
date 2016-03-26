@@ -16,8 +16,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 
 /**
- * Internal class: Represents a component of a JSON-serializable
- * {@link FancyMessage}.
+ * Internal class: Represents a component of a JSON-serializable {@link FancyMessage}.
  */
 final class MessagePart implements JsonRepresentedObject, ConfigurationSerializable, Cloneable {
 

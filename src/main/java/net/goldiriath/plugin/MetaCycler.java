@@ -1,10 +1,10 @@
 package net.goldiriath.plugin;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import net.goldiriath.plugin.ConfigPaths;
-import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.Art;
@@ -28,6 +28,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class MetaCycler extends AbstractService {
 
+    private static final List<Material> FORBIDDEN_MATERIALS = Arrays.asList(
+            Material.DOUBLE_PLANT
+    );
+    //
     private Material metaTool;
     private Material biomeTool;
     private final Map<UUID, Byte> dataMap = new HashMap<>();
@@ -60,6 +64,36 @@ public class MetaCycler extends AbstractService {
         biomeMap.clear();
     }
 
+    private boolean validate(PlayerInteractEvent event, boolean sneak, Action action, Material tool) {
+        if (event.getAction() != action) {
+            return false;
+        }
+
+        if (event.getPlayer().isSneaking() != sneak) {
+            return false;
+        }
+
+        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+            return false;
+        }
+
+        if (!event.hasItem()) {
+            return false;
+        }
+
+        if (event.getItem().getType() != tool) {
+            return false;
+        }
+
+        if (FORBIDDEN_MATERIALS.contains(event.getClickedBlock().getType())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
+            event.setCancelled(true);
+            return false;
+        }
+
+        return true;
+    }
+
     @SuppressWarnings("deprecation")
     private void setDisplay(ItemStack item, Block block) {
         setDisplay(item, block.getTypeId() + ":" + block.getData() + " (" + block.getBiome().name() + ")");
@@ -78,32 +112,11 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleRight(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != metaTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
         event.setCancelled(true);
-
-        if (event.getClickedBlock().getType() == Material.DOUBLE_PLANT) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
-            return;
-        }
 
         final Block block = event.getClickedBlock();
         block.setData((byte) ((block.getData() + 1) % 16));
@@ -114,32 +127,11 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleLeft(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != metaTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
         event.setCancelled(true);
-
-        if (event.getClickedBlock().getType() == Material.DOUBLE_PLANT) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
-            return;
-        }
 
         final Block block = event.getClickedBlock();
         final byte newData = (byte) (block.getData() - 1);
@@ -151,32 +143,11 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleCopy(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (!event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != metaTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
         event.setCancelled(true);
-
-        if (event.getClickedBlock().getType() == Material.DOUBLE_PLANT) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
-            return;
-        }
 
         final Block block = event.getClickedBlock();
         dataMap.put(event.getPlayer().getUniqueId(), block.getData());
@@ -187,23 +158,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCyclePaste(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (!event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != metaTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
@@ -227,23 +182,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCycleRight(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != biomeTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, biomeTool)) {
             return;
         }
 
@@ -266,23 +205,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCycleLeft(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != biomeTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, biomeTool)) {
             return;
         }
 
@@ -305,23 +228,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCycleCopy(PlayerInteractEvent event) {
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
-            return;
-        }
-
-        if (!event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != biomeTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, biomeTool)) {
             return;
         }
 
@@ -335,26 +242,9 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCyclePaste(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, biomeTool)) {
             return;
         }
-
-        if (!event.getPlayer().isSneaking()) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        if (event.getItem().getType() != biomeTool) {
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
-            return;
-        }
-
         event.setCancelled(true);
 
         final Biome biome = biomeMap.get(event.getPlayer().getUniqueId());
@@ -474,4 +364,22 @@ public class MetaCycler extends AbstractService {
         biomeMap.remove(event.getPlayer().getUniqueId());
     }
 
+    // https://github.com/Goldiriath/Goldiriath/issues/13
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void pressurePlateFix(PlayerInteractEvent event) {
+        if (!event.getAction().equals(Action.PHYSICAL)) {
+            return;
+        }
+
+        Block block = event.getClickedBlock();
+        Material type = block.getType();
+        if (type != Material.STONE_PLATE
+                && type != Material.WOOD_PLATE) {
+            return;
+        }
+
+        if (block.getState().getData().getData() != 0x00) {
+            event.setCancelled(true);
+        }
+    }
 }
