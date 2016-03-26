@@ -1,14 +1,15 @@
 package net.goldiriath.plugin.shop;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.goldiriath.plugin.util.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-public class Product {
+public class Product implements Comparable<Product> {
 
-    @Getter
-    private final int amount;
     @Getter
     private final ItemStack stack;
     @Getter
@@ -16,24 +17,43 @@ public class Product {
     @Getter
     private final ProductAction action;
 
-    public Product(int amount, ItemStack stack, int value) {
-        this(amount, stack, value, ProductAction.BOTH);
+    public Product(ItemStack stack, int value) {
+        this(stack, value, ProductAction.BOTH);
     }
 
-    public Product(int amount, ItemStack stack, int value, ProductAction action) {
-        this.amount = amount;
+    public Product(ItemStack stack, int value, ProductAction action) {
         this.stack = stack;
         this.price = value;
         this.action = action;
     }
 
-    @Override
-    public String toString() {
-        return stack.toString() + ":" + amount + ":" + price + ":" + action;
+    public String getDescription() {
+        return stack.getType().toString().toLowerCase().replace('_', ' ');
     }
 
-    public String getDescription() {
-        return amount + " " + stack.getType().toString().toLowerCase().replace('_', ' ');
+    public ItemStack getDisplayStack() {
+
+        ItemStack display = getStack().clone();
+        ItemMeta meta = display.getItemMeta();
+
+        meta.setLore(Arrays.asList(new String[]{
+            ChatColor.GOLD.toString() + ChatColor.ITALIC + getDescription(),
+            ChatColor.RED.toString() + price + " Pm"
+        }));
+
+        display.setItemMeta(meta);
+
+        return display;
+    }
+
+    @Override
+    public int compareTo(Product t) {
+        return stack.getType().compareTo(t.getStack().getType());
+    }
+
+    @Override
+    public String toString() {
+        return stack.toString() + ":" + price + ":" + action;
     }
 
     public static Product load(ShopProfile profile, String productString) {
@@ -46,32 +66,24 @@ public class Product {
             return null;
         }
 
-        int amount;
-        try {
-            amount = Integer.parseInt(parts[0]);
-        } catch (NumberFormatException ignored) {
-            logger.warning("Not loading shop product " + id + " - " + productString + ". Invalid amount!");
-            return null;
-        }
-
-        ItemStack stack = Util.parseItem(parts[1]);
+        ItemStack stack = Util.parseItem(parts[0]);
         if (stack == null) {
             logger.warning("Not loading shop product " + id + " - " + productString + ". Invalid item!");
             return null;
         }
         stack = stack.clone(); // Don't set amounts on ItemManager items
-        stack.setAmount(amount);
+        stack.setAmount(1);
 
         int price;
         try {
-            price = Integer.parseInt(parts[2]);
+            price = Integer.parseInt(parts[1]);
         } catch (NumberFormatException ignored) {
             logger.warning("Not loading shop product " + id + " - " + productString + ". Invalid price!");
             return null;
         }
 
         ProductAction action = ProductAction.BOTH;
-        if (parts.length == 4 && parts[3] != null) {
+        if (parts.length == 3 && parts[2] != null) {
             switch (parts[3]) {
                 case "buy":
                     action = ProductAction.BUY;
@@ -85,7 +97,7 @@ public class Product {
             }
         }
 
-        return new Product(amount, stack, price, action);
+        return new Product(stack, price, action);
     }
 
 }

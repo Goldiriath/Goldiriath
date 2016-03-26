@@ -4,12 +4,13 @@ import net.goldiriath.plugin.player.info.InfoSidebar;
 import net.goldiriath.plugin.player.data.DataQuests;
 import lombok.Getter;
 import lombok.Setter;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataFlags;
 import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.player.info.InfoBattle;
 import net.goldiriath.plugin.player.info.InfoDialogs;
+import net.goldiriath.plugin.player.info.InfoShop;
 import net.goldiriath.plugin.util.persist.Persist;
 import net.goldiriath.plugin.util.persist.PersistentStorage;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,6 +30,8 @@ public class PlayerData extends PersistentStorage {
     @Getter
     private final InfoDialogs dialogs;
     @Getter
+    private final InfoShop shop;
+    @Getter
     private final InfoSidebar sidebar;
     //
     @Getter
@@ -41,32 +44,32 @@ public class PlayerData extends PersistentStorage {
     @Persist
     @Getter
     @Setter
-    private int money = plugin().config.getInt(ConfigPaths.DEFAULT_MONEY);
+    private int money = plugin().config.getInt(ConfigPath.DEFAULT_MONEY);
 
     @Persist
     @Getter
     @Setter
-    private int health = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    private int health = plugin().config.getInt(ConfigPath.DEFAULT_HEALTH);
 
     @Persist
     @Getter
     @Setter
-    private int maxHealth = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    private int maxHealth = plugin().config.getInt(ConfigPath.DEFAULT_HEALTH);
 
     @Persist
     @Getter
     @Setter
-    private int mana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
+    private int mana = plugin().config.getInt(ConfigPath.DEFAULT_MANA);
 
     @Persist
     @Getter
     @Setter
-    private int maxMana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
+    private int maxMana = plugin().config.getInt(ConfigPath.DEFAULT_MANA);
 
     @Persist
     @Getter
     @Setter
-    private int xp = plugin().config.getInt(ConfigPaths.DEFAULT_XP);
+    private int xp = plugin().config.getInt(ConfigPath.DEFAULT_XP);
 
     @Persist
     @Getter
@@ -79,11 +82,12 @@ public class PlayerData extends PersistentStorage {
         this.player = player;
         //
         this.battle = new InfoBattle(this);
-        this.sidebar = new InfoSidebar(this);
         this.dialogs = new InfoDialogs(this);
+        this.shop = new InfoShop(this);
+        this.sidebar = new InfoSidebar(this);
         //
-        this.quests = new DataQuests(this);
         this.flags = new DataFlags(this);
+        this.quests = new DataQuests(this);
         this.skills = new DataSkills(this);
 
     }

@@ -37,7 +37,7 @@ public class Command_gshop extends BukkitCommand<Goldiriath> {
         }
 
         if (args[1].equals("open")) {
-            profile.open(playerSender);
+            profile.getTracker().open(playerSender);
             msg(ChatColor.GREEN + "Opened!");
             return true;
         }

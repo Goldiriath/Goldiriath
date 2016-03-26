@@ -1,7 +1,9 @@
 package thirdparty.nisovin.iconmenu;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,11 +46,18 @@ public class OptionMenu implements Listener {
         return this;
     }
 
-    public InventoryView open(Player player) {
-        return open(player, null);
+    public void closeAll() {
+        for (InventoryView view : inventories.values()) {
+            view.close();
+        }
+        inventories.clear();
     }
 
-    public InventoryView open(Player player, Inventory bottom) {
+    public InventoryView open(Player player) {
+        return open(player, true, null);
+    }
+
+    public InventoryView open(Player player, boolean top, Inventory other) {
         Inventory shopInventory = Bukkit.createInventory(player, size, name);
         for (int i = 0; i < options.length; i++) {
             if (options[i] != null) {
@@ -57,11 +66,14 @@ public class OptionMenu implements Listener {
         }
 
         InventoryView view;
-        if (bottom != null) {
-            view = new SimpleInventoryView(player, shopInventory, bottom);
-            player.openInventory(view);
-        } else {
+        if (top && other == null) {
             view = player.openInventory(shopInventory);
+        } else {
+            Inventory topInv = top ? shopInventory : other;
+            Inventory bottomInv = top ? other : shopInventory;
+
+            view = new SimpleInventoryView(player, topInv, bottomInv);
+            player.openInventory(view);
         }
 
         inventories.put(player.getUniqueId(), view);
@@ -69,6 +81,8 @@ public class OptionMenu implements Listener {
     }
 
     public void destroy() {
+        closeAll();
+
         HandlerList.unregisterAll(this);
 
         for (int i = 0; i < options.length; i++) {
@@ -94,15 +108,12 @@ public class OptionMenu implements Listener {
         }
 
         event.setCancelled(true);
-        int slot = event.getRawSlot();
+        int rawSlot = event.getRawSlot();
 
-        if (slot < 0 || slot >= options.length) {
-            return;
-        }
-
-        Option option = options[slot];
+        final Option option = rawSlot < 0 || rawSlot >= options.length ? null : options[rawSlot];
         final Player player = (Player) event.getWhoClicked();
-        final OptionClickEvent optEvent = new OptionClickEvent(event, player, slot, option);
+
+        final OptionClickEvent optEvent = new OptionClickEvent(event, player, rawSlot, this, option);
         handler.onOptionClick(optEvent);
 
         // Handle post-event
@@ -120,4 +131,32 @@ public class OptionMenu implements Listener {
             destroy();
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + Objects.hashCode(this.name);
+        hash = 89 * hash + this.size;
+        hash = 89 * hash + Arrays.deepHashCode(this.options);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OptionMenu other = (OptionMenu) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.size != other.size) {
+            return false;
+        }
+        return Arrays.deepEquals(this.options, other.options);
+    }
+
 }

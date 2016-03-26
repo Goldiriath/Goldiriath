@@ -27,8 +27,8 @@ public class DeathManager extends AbstractService {
 
     @Override
     protected void onStart() {
-        this.cost = plugin.config.getInt(ConfigPaths.DEATH_MONEY_COST);
-        this.multiplier = plugin.config.getDouble(ConfigPaths.DEATH_MONEY_MULTIPLIER);
+        this.cost = plugin.config.getInt(ConfigPath.DEATH_MONEY_COST);
+        this.multiplier = plugin.config.getDouble(ConfigPath.DEATH_MONEY_MULTIPLIER);
     }
 
     @Override

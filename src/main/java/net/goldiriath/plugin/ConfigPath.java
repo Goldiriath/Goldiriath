@@ -2,7 +2,7 @@ package net.goldiriath.plugin;
 
 import net.pravian.bukkitlib.config.PathContainer;
 
-public enum ConfigPaths implements PathContainer {
+public enum ConfigPath implements PathContainer {
 
     DEATH_MONEY_COST("death.money_cost"),
     DEATH_MONEY_MULTIPLIER("death.money_multiplier"),
@@ -33,7 +33,7 @@ public enum ConfigPaths implements PathContainer {
 
     private final String path;
 
-    private ConfigPaths(String path) {
+    private ConfigPath(String path) {
         this.path = path;
     }
 

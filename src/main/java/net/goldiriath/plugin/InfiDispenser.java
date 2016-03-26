@@ -1,6 +1,6 @@
 package net.goldiriath.plugin;
 
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.block.Dispenser;
@@ -24,7 +24,7 @@ public class InfiDispenser extends AbstractService {
 
     @EventHandler
     public void onDispenserFire(BlockDispenseEvent event) {
-        if (!plugin.config.getBoolean(ConfigPaths.INFINITE_DISPENSER_ENABLED)) {
+        if (!plugin.config.getBoolean(ConfigPath.INFINITE_DISPENSER_ENABLED)) {
             return;
         }
 

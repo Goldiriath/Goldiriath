@@ -3,7 +3,7 @@ package net.goldiriath.plugin.mobspawn;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import lombok.Getter;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.questing.script.ParseException;
 import net.goldiriath.plugin.mobspawn.citizens.CitizensBridge;
@@ -331,11 +331,11 @@ public class MobSpawnManager extends AbstractService {
         spawns.clear();
 
         // Load vars
-        enabled = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_ENABLED);
-        devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
-        maxMobs = plugin.config.getInt(ConfigPaths.MOBSPAWNER_MAX_MOBS);
-        timeThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_TIME_THRESHOLD);
-        radiusSquaredThreshold = plugin.config.getInt(ConfigPaths.MOBSPAWNER_RADIUS_THRESHOLD);
+        enabled = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_ENABLED);
+        devMode = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_DEV_MODE);
+        maxMobs = plugin.config.getInt(ConfigPath.MOBSPAWNER_MAX_MOBS);
+        timeThreshold = plugin.config.getInt(ConfigPath.MOBSPAWNER_TIME_THRESHOLD);
+        radiusSquaredThreshold = plugin.config.getInt(ConfigPath.MOBSPAWNER_RADIUS_THRESHOLD);
         radiusSquaredThreshold *= radiusSquaredThreshold;
 
         // Load Profiles

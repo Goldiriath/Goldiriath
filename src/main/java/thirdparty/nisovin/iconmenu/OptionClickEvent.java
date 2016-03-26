@@ -12,7 +12,9 @@ public class OptionClickEvent {
     @Getter
     private final Player player;
     @Getter
-    private final int position;
+    private final int rawSlot;
+    @Getter
+    private final OptionMenu menu;
     @Getter
     private final Option option;
     //
@@ -22,10 +24,11 @@ public class OptionClickEvent {
     @Getter
     @Setter
     private boolean destroy = false;
-    public OptionClickEvent(InventoryClickEvent event, Player player, int position, Option option) {
+    public OptionClickEvent(InventoryClickEvent event, Player player, int rawSlot, OptionMenu menu, Option option) {
         this.event = event;
         this.player = player;
-        this.position = position;
+        this.rawSlot = rawSlot;
+        this.menu = menu;
         this.option = option;
     }
 

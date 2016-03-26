@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.mobspawn.MobSpawnProfile;
 import net.goldiriath.plugin.mobspawn.citizens.MobProfileTrait;
@@ -313,8 +313,8 @@ public class LootManager extends AbstractService {
         spawns.clear();
 
         // Load vars
-        enabled = plugin.config.getBoolean(ConfigPaths.CHESTSPAWNER_ENABLED);
-        devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
+        enabled = plugin.config.getBoolean(ConfigPath.CHESTSPAWNER_ENABLED);
+        devMode = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_DEV_MODE);
 
         // Load spawns
         if (spawnConfig.exists()) {

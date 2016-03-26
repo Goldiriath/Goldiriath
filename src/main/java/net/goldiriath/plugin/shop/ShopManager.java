@@ -40,6 +40,11 @@ public class ShopManager extends AbstractService {
             shopContainer.mkdirs();
         }
 
+        // Close all open inventories
+        for (ShopProfile profile : profiles.values()) {
+            profile.getMenuManager().stop();
+        }
+
         // Load profiles
         profiles.clear();
         for (File file : shopContainer.listFiles(new PrefixFileFilter(plugin, "shop"))) {
