@@ -5,10 +5,12 @@ import net.citizensnpcs.api.event.NPCDamageEntityEvent;
 import net.goldiriath.plugin.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class BattleManager extends AbstractService {
@@ -60,5 +62,20 @@ public class BattleManager extends AbstractService {
         // TODO: calculate armor and weapon damage modifiers, etc
         event.setDamage((int) damage);
     }
+    
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerHitPlayer(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
+        
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        
+        // Disable PvP for now.
+        event.setCancelled(true);
+        ((Player) event.getDamager()).sendMessage(ChatColor.RED + "PvP is disabled in this area.");
+    } 
 
 }
