@@ -4,7 +4,6 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataQuests;
 import net.goldiriath.plugin.questing.quest.Quest;
 import net.goldiriath.plugin.questing.quest.Stage;
-import net.goldiriath.plugin.questing.script.ScriptContext;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -62,7 +61,7 @@ public class Command_gquest extends BukkitCommand<Goldiriath> {
         msg(ChatColor.GREEN
                 + "Set player's quest stage to "
                 + newStage == null ? "unstarted" : newStage.getId()
-                        + " for " + quest.getId());
+                + " for " + quest.getId());
         return true;
     }
 

@@ -1,20 +1,20 @@
 package net.goldiriath.plugin;
 
-import net.goldiriath.plugin.inventory.InventoryManager;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.chat.ChatManager;
 import net.goldiriath.plugin.command.Command_goldiriath;
-import net.goldiriath.plugin.questing.dialog.DialogManager;
+import net.goldiriath.plugin.inventory.InventoryManager;
 import net.goldiriath.plugin.item.ItemManager;
-import net.goldiriath.plugin.util.logging.GLogger;
-import net.goldiriath.plugin.util.logging.PlayerListLogSink;
 import net.goldiriath.plugin.loot.LootManager;
 import net.goldiriath.plugin.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.player.PlayerManager;
+import net.goldiriath.plugin.questing.dialog.DialogManager;
 import net.goldiriath.plugin.questing.quest.QuestManager;
 import net.goldiriath.plugin.util.PlayerList;
+import net.goldiriath.plugin.util.logging.GLogger;
+import net.goldiriath.plugin.util.logging.PlayerListLogSink;
 import net.pravian.bukkitlib.BukkitLib;
 import net.pravian.bukkitlib.command.BukkitCommandHandler;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -111,7 +111,6 @@ public class Goldiriath extends BukkitPlugin {
     public void onDisable() {
 
         // Stop services
-
         services.stop();
 
         // Unregister events

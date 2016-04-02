@@ -1,22 +1,24 @@
 package net.goldiriath.plugin.chat;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class Party {
 
-    private final SortedSet<UUID> members;
+    private final List<UUID> members = new ArrayList<>();
+    @Getter
+    private final List<UUID> invited = new ArrayList<>();
 
     public Party(Player leader) {
-        members = new TreeSet<>();
-        addMember(leader);
+        invited.add(leader.getUniqueId());
+        acceptInvite(leader);
     }
 
     private void removeGone() {
@@ -30,16 +32,26 @@ public final class Party {
 
     public Player getLeader() {
         removeGone();
-        try {
-            return Bukkit.getPlayer(members.first());
-        } catch (NoSuchElementException ex) {
+        if (members.isEmpty()) {
             return null;
         }
+        return Bukkit.getPlayer(members.get(0));
+
     }
 
-    public void addMember(Player member) {
+    public void acceptInvite(Player member) {
+        if (!(invited.contains(member.getUniqueId()))) {
+            return;
+        }
         members.add(member.getUniqueId());
         Goldiriath.instance().pm.getData(member).getChat().setParty(this);
+        invited.remove(member.getUniqueId());
+    }
+
+    public void denyInvite(Player member) {
+        if (invited.contains(member.getUniqueId())) {
+            invited.remove(member.getUniqueId());
+        }
     }
 
     public void removeMember(Player member) {
@@ -47,14 +59,14 @@ public final class Party {
         Goldiriath.instance().pm.getData(member).getChat().setParty(null);
     }
 
-    public SortedSet<UUID> getMembers() {
+    public List<UUID> getMembers() {
         removeGone();
-        return Collections.unmodifiableSortedSet(members);
+        return Collections.unmodifiableList(members);
     }
 
-    public SortedSet<Player> getPlayerMembers() {
+    public List<Player> getPlayerMembers() {
         removeGone();
-        SortedSet<Player> playerMembers = new TreeSet<>();
+        List<Player> playerMembers = new ArrayList<>();
         for (UUID member : members) {
             playerMembers.add(Bukkit.getPlayer(member));
         }
@@ -65,5 +77,9 @@ public final class Party {
         for (Player player : getPlayerMembers()) {
             removeMember(player);
         }
+    }
+
+    public void invite(Player player) {
+        invited.add(player.getUniqueId());
     }
 }
