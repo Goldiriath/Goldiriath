@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.inventory.InventoryUtil;
+import net.goldiriath.plugin.item.meta.ArmorType;
 import net.goldiriath.plugin.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.bukkitlib.config.YamlConfig;
@@ -69,6 +71,23 @@ public class CustomItemManager extends AbstractService {
                 logger.warning("Skipping item: " + id + ". Invalid data: " + data + "!");
                 continue;
             }
+            
+            // ArmorType
+            String weightString = section.getString("armor_type", null);
+            ArmorType armorType;
+            try {
+                armorType = ArmorType.valueOf(weightString);
+            } catch (IllegalArgumentException e) {
+                armorType = null;               
+            }
+            if(armorType != null && !InventoryUtil.isArmor(type)){
+                logger.warning("Skipping item: " + id + ". Armor type specified for non-armor!");
+                continue;
+            }
+            if(armorType == null && InventoryUtil.isArmor(type)){
+                logger.warning("Skipping item: " + id + ". No armor type specified for armor!");
+                continue;
+            }
 
             // Enchantments
             final Map<Enchantment, Integer> enchantments = new HashMap<>();
@@ -115,7 +134,10 @@ public class CustomItemManager extends AbstractService {
 
             // Data value
             stack.getData().setData(data);
-
+            
+            // Armor Type
+            meta.setArmorType(armorType);
+            
             // Enchantments
             stack.addEnchantments(enchantments);
 

@@ -39,6 +39,11 @@ public class GItemMeta extends PersistentStorage {
     @Setter
     @Persist
     private List<String> lore = null;
+    
+    @Getter
+    @Setter
+    @Persist
+    private ArmorType armorType = null;
 
     private GItemMeta(ItemStack stack, UUID uniqueId) {
         this.stack = stack;

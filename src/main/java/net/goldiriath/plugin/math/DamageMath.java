@@ -1,14 +1,30 @@
 package net.goldiriath.plugin.math;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.item.meta.GItemMeta;
 import org.bukkit.inventory.ItemStack;
 
 public class DamageMath {
-    Goldiriath plugin = new Goldiriath();
-    ArmorMath armor = new ArmorMath();
+    
+    @VisibleForTesting
+    static double b(double m, double t, double l){
+        return 10+m*t*Math.pow(1.1, l) ;
+    }
+    
+    @VisibleForTesting
+    static double a(double b, double s, double i, double e){
+        return b*s*i*e;
+    }
+    
+    @VisibleForTesting
+    static double e(double a, double d, double i){
+        return Math.max(a*d*i, 1);
+    }
     
 
-    public double baseDamage(ItemStack item){
+    public static double baseDamage(ItemStack item){
+        GItemMeta meta = Goldiriath.instance().im.getMeta(item, false);
         double m = 1;
         double t = 1;
         int l = 0;
@@ -21,38 +37,27 @@ public class DamageMath {
             case SHEARS:
                 m = 0.8;
                 break;
-            case STICK:
+            case BLAZE_ROD:
                 m = 1.025;
                 break;
         }
         
-        if(!plugin.im.getItemStorage().getItemMap().containsValue(item)){
-            return 10+m*t*Math.pow(1.1, l);
+        if(meta == null){
+            return b(m, t, t);
         }
         
         // tier determination
-        switch(plugin.im.getMeta(item).getTier()){
-            case BATTERED:
-                t = 0.8;
-                break;
-            case CRAFTED:
-                t = 1.1;
-                break;
-            case RARE:
-                t = 1.21;
-                break;
-            case LEGENDARY:
-                t = 1.33;
+        t = meta.getTier().getWeaponMulti();
         
-        }
+        
         //level determination
-        l = plugin.im.getMeta(item).getLevel();
+        l = meta.getLevel();
         
         
-        return 10+m*t*Math.pow(1.1, l) ;
+        return b(m, t, t);
     }
     
-    public double attackDamage(ItemStack item){
+    public static double attackDamage(ItemStack item){
         double b = baseDamage(item);
         double s = 1;
         double i = 1;
@@ -62,16 +67,16 @@ public class DamageMath {
         //TODO: implement inventory modifiers
         //TODO: implement enviromental modifiers
         
-        return b*s*i*e;
+        return a(b, s, i, e);
     }
     
-    public double effectiveDamage(ItemStack weapon, ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots){
+    public static double effectiveDamage(ItemStack weapon, ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots){
         double a = attackDamage(weapon);
-        double d = armor.armorModifier(helmet, chestplate, pants, boots);
+        double d = ArmorMath.armorModifier(helmet, chestplate, pants, boots);
         double i = 1;
         
         //TODO: implement inventory modifiers
         
-        return Math.max(a*d*i, 1);
+        return e(a, d, i);
     }
 }

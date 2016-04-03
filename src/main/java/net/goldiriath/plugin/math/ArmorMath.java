@@ -1,49 +1,49 @@
 package net.goldiriath.plugin.math;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.item.meta.GItemMeta;
 import org.bukkit.inventory.ItemStack;
 
 public class ArmorMath {
-    Goldiriath plugin = new Goldiriath();
-    
-    public double baseArmor(ItemStack item){
+
+    @VisibleForTesting
+    static double b(int l, double t, double h) {
+        return 1 + 10 * Math.pow(1.08306, l - 1) * t * h;
+    }
+
+    @VisibleForTesting
+    static double d(double b) {
+        return 1 - (b / (b + 2000));
+    }
+
+    public static double baseArmor(ItemStack item) {
+        GItemMeta meta = Goldiriath.instance().im.getMeta(item, false);
         int l = 0;
         double t = 1;
-        int h = 1;
-        
-        if (plugin.im.getItemStorage().getItemMap().containsValue(item)) {
-            return 1 + 10*Math.pow(1.08306, l-1)*t*h;
+        double h = 1;
+
+        if (meta == null) {
+            return b(l, t, h);
         }
-        
+
         //level determination
-        l = plugin.im.getMeta(item).getLevel();
+        l = meta.getLevel();
         
         // tier determination
-        switch(plugin.im.getMeta(item).getTier()){
-            case BATTERED:
-                t = 0.7;
-                break;
-            case CRAFTED:
-                t = 1.3;
-                break;
-            case RARE:
-                t = 1.6;
-                break;
-            case LEGENDARY:
-                t = 2;
-        }
+        t = meta.getTier().getArmorMulti();
         
-        //TODO: implement heavyness multipliers
-        
-        
-        return 1 + 10*Math.pow(1.08306, l-1)*t*h;
+        // Heavyness determination
+        h = meta.getArmorType().getMulti();
+        return b(l, t, h);
+
     }
-    
-    public double armorModifier(ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots){
+
+    public static double armorModifier(ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots) {
         double b = baseArmor(helmet)
-                   + baseArmor(chestplate)
-                   + baseArmor(pants)
-                   + baseArmor(boots);
-        return 1 - (b / (b + 2000));
+                + baseArmor(chestplate)
+                + baseArmor(pants)
+                + baseArmor(boots);
+        return d(b);
     }
 }
