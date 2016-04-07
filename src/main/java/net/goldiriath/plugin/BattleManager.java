@@ -2,16 +2,20 @@ package net.goldiriath.plugin;
 
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCDamageEntityEvent;
+import net.citizensnpcs.api.npc.NPC;
+import net.goldiriath.plugin.math.DamageMath;
 import net.goldiriath.plugin.mobspawn.citizens.HostileMobTrait;
-import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class BattleManager extends AbstractService {
 
@@ -28,8 +32,8 @@ public class BattleManager extends AbstractService {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerHitNpc(NPCDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
+    public void onEntityHitNpc(NPCDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player && event.getDamager() instanceof Arrow && event.getDamager() instanceof Egg)) {
             return;
         }
 
@@ -38,10 +42,31 @@ public class BattleManager extends AbstractService {
             return;
         }
 
-        Player player = (Player) event.getDamager();
+        Entity damager = event.getDamager();
+        if(damager instanceof Arrow){
+            Arrow arrow = (Arrow) damager;
+            if(!(arrow.getShooter() instanceof Player)){
+                return;
+            }
+            damager = (Entity) arrow.getShooter();
+        }
+        if(damager instanceof Egg){
+            Egg egg = (Egg) damager;
+            if(!(egg.getShooter() instanceof Player)){
+                return;
+            }
+            damager = (Entity) egg.getShooter();
+        }
+        Player player = (Player) damager;
+        NPC damaged = event.getNPC();
+        if(!(damaged.getEntity() instanceof LivingEntity)){
+            return;
+        }
+        LivingEntity entity = (LivingEntity) damaged.getEntity();
+        ItemStack npcArmor[] = entity.getEquipment().getArmorContents();
         double damage = event.getDamage();
-
-        // TODO: calculate armor and weapon damage modifiers, etc
+        
+        DamageMath.effectiveDamage(player.getItemInHand(), npcArmor[0], npcArmor[1], npcArmor[2], npcArmor[3]);
         boolean alive = trait.inflict(player, (int) damage);
 
         if (!alive) {
@@ -56,10 +81,31 @@ public class BattleManager extends AbstractService {
             return;
         }
 
+        NPC npcDamager = event.getNPC();
+        if(!(npcDamager.getEntity() instanceof LivingEntity && npcDamager.getEntity() instanceof Arrow && npcDamager.getEntity() instanceof Egg)){
+            return;
+        }
+        Entity damager =(Entity) event.getNPC();
+        if(damager instanceof Arrow){
+            Arrow arrow = (Arrow) damager;
+            if(!(arrow.getShooter() instanceof Player)){
+                return;
+            }
+            damager = (Entity) arrow.getShooter();
+        }
+        if(damager instanceof Egg){
+            Egg egg = (Egg) damager;
+            if(!(egg.getShooter() instanceof Player)){
+                return;
+            }
+            damager = (Entity) egg.getShooter();
+        }
+        LivingEntity entity = (LivingEntity) damager;       
         Player player = (Player) event.getDamaged();
+        ItemStack playerArmor[] = player.getEquipment().getArmorContents();
         double damage = event.getDamage();
 
-        // TODO: calculate armor and weapon damage modifiers, etc
+        DamageMath.effectiveDamage(entity.getEquipment().getItemInHand(), playerArmor[0], playerArmor[1], playerArmor[2], playerArmor[3]);
         event.setDamage((int) damage);
     }
     
