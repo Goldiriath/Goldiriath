@@ -64,9 +64,9 @@ public class BattleManager extends AbstractService {
         }
         LivingEntity entity = (LivingEntity) damaged.getEntity();
         ItemStack npcArmor[] = entity.getEquipment().getArmorContents();
-        double damage = event.getDamage();
+        double damage = DamageMath.effectiveDamage(player.getItemInHand(), npcArmor[0], npcArmor[1], npcArmor[2], npcArmor[3]);;
         
-        DamageMath.effectiveDamage(player.getItemInHand(), npcArmor[0], npcArmor[1], npcArmor[2], npcArmor[3]);
+        
         boolean alive = trait.inflict(player, (int) damage);
 
         if (!alive) {
@@ -103,9 +103,9 @@ public class BattleManager extends AbstractService {
         LivingEntity entity = (LivingEntity) damager;       
         Player player = (Player) event.getDamaged();
         ItemStack playerArmor[] = player.getEquipment().getArmorContents();
-        double damage = event.getDamage();
+        double damage = DamageMath.effectiveDamage(entity.getEquipment().getItemInHand(), playerArmor[0], playerArmor[1], playerArmor[2], playerArmor[3]);
 
-        DamageMath.effectiveDamage(entity.getEquipment().getItemInHand(), playerArmor[0], playerArmor[1], playerArmor[2], playerArmor[3]);
+        
         event.setDamage((int) damage);
     }
     
