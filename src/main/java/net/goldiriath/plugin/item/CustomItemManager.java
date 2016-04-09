@@ -77,7 +77,7 @@ public class CustomItemManager extends AbstractService {
             ArmorType armorType;
             try {
                 armorType = ArmorType.valueOf(weightString);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 armorType = null;               
             }
             if(armorType != null && !InventoryUtil.isArmor(type)){
