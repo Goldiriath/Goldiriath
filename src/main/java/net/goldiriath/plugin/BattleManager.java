@@ -7,14 +7,19 @@ import net.goldiriath.plugin.math.DamageMath;
 import net.goldiriath.plugin.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class BattleManager extends AbstractService {
@@ -122,6 +127,26 @@ public class BattleManager extends AbstractService {
         // Disable PvP for now.
         event.setCancelled(true);
         ((Player) event.getDamager()).sendMessage(ChatColor.RED + "PvP is disabled in this area.");
-    } 
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInteract(PlayerInteractEvent event){
+        if(event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR){
+            return;
+        }
+        Player player = event.getPlayer();
+        if(player.getItemInHand().getType() != Material.EMERALD){
+            return;
+        }
+        
+        player.launchProjectile(Egg.class);
+    }
+    
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onCreatureSpawn(CreatureSpawnEvent event){
+        if(event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG && event.getEntityType() == EntityType.CHICKEN){
+            event.setCancelled(true);
+        }
+    }
 
 }
