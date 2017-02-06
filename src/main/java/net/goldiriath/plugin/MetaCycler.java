@@ -9,6 +9,7 @@ import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.Art;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Biome;
@@ -69,11 +70,17 @@ public class MetaCycler extends AbstractService {
             return false;
         }
 
-        if (event.getPlayer().isSneaking() != sneak) {
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() != GameMode.CREATIVE) {
             return false;
         }
 
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) { // TODO: Better perms
+        if (player.isSneaking() != sneak) {
+            return false;
+        }
+
+        if (!player.hasPermission("goldiriath.meta")) { // TODO: Better perms
             return false;
         }
 
@@ -112,7 +119,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleRight(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, metaTool)) {
+        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
@@ -127,7 +134,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleLeft(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, metaTool)) {
+        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
@@ -143,7 +150,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCycleCopy(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, metaTool)) {
+        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
@@ -158,7 +165,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     @SuppressWarnings("deprecation")
     public void onDataCyclePaste(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, metaTool)) {
+        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, metaTool)) {
             return;
         }
 
@@ -339,7 +346,11 @@ public class MetaCycler extends AbstractService {
             return;
         }
 
-        if (!event.getPlayer().hasPermission("goldiriath.meta")) {
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            return;
+        }
+
+        if (!player.hasPermission("goldiriath.meta")) {
             return;
         }
 
@@ -364,22 +375,4 @@ public class MetaCycler extends AbstractService {
         biomeMap.remove(event.getPlayer().getUniqueId());
     }
 
-    // https://github.com/Goldiriath/Goldiriath/issues/13
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void pressurePlateFix(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.PHYSICAL)) {
-            return;
-        }
-
-        Block block = event.getClickedBlock();
-        Material type = block.getType();
-        if (type != Material.STONE_PLATE
-                && type != Material.WOOD_PLATE) {
-            return;
-        }
-
-        if (block.getState().getData().getData() != 0x00) {
-            event.setCancelled(true);
-        }
-    }
 }

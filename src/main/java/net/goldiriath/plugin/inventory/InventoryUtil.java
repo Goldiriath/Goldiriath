@@ -13,13 +13,19 @@ public class InventoryUtil {
     }
 
     public static boolean isWeapon(Material mat) {
-        return mat == Material.WOOD_SWORD
-                || mat == Material.IRON_SWORD
-                || mat == Material.GOLD_SWORD
-                || mat == Material.IRON_SWORD
-                || mat == Material.DIAMOND_SWORD
-                || mat == Material.BOW
-                || mat == Material.BLAZE_ROD;
+        switch (mat) {
+            case WOOD_SWORD:
+            case GOLD_SWORD:
+            case IRON_SWORD:
+            case DIAMOND_SWORD:
+            case BOW:
+            case BLAZE_ROD:
+            case SHEARS:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     public static boolean isSkill(ItemStack stack) {

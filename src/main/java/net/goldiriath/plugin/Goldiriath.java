@@ -53,6 +53,7 @@ public class Goldiriath extends BukkitPlugin {
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
+    public PressurePlateFixer pf;
     //
     public BukkitCommandHandler<Goldiriath> ch;
 
@@ -86,6 +87,7 @@ public class Goldiriath extends BukkitPlugin {
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);
+        pf = services.registerService(PressurePlateFixer.class);
 
         // Commands
         ch = new BukkitCommandHandler<>(plugin);

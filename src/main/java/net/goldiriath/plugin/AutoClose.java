@@ -9,6 +9,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -102,6 +103,10 @@ public class AutoClose extends AbstractService {
         final MaterialData data = block.getState().getData();
 
         if (!(data instanceof Openable)) {
+            return null;
+        }
+
+        if (block.getType() == Material.IRON_DOOR_BLOCK) {
             return null;
         }
 
