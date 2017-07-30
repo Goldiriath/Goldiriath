@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.game.inventory;
 
 import lombok.Getter;
+import net.goldiriath.plugin.game.item.StaticItem;
 import org.bukkit.inventory.ItemStack;
 
 @SuppressWarnings("deprecation")
@@ -22,7 +23,7 @@ public enum SlotType implements ItemStackValidatable {
         }
 
     },
-    SPELLBOOK(1) {
+    SKILL_BOOK(5) {
 
         @Override
         public boolean validate(ItemStack stack) {
@@ -30,7 +31,7 @@ public enum SlotType implements ItemStackValidatable {
         }
 
     },
-    SKILL(2, 3, 4, 5, 6) {
+    SKILL(1, 2, 3, 4) {
 
         @Override
         public boolean validate(ItemStack stack

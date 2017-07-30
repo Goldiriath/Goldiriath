@@ -16,7 +16,9 @@ public enum StaticItem {
     SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 0, ChatColor.GOLD + "Blessing"),
     SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 1, ChatColor.GOLD + "Divine Light"),
     SKILL_BOW_QUICKSHOT(Material.STAINED_GLASS_PANE, 2, ChatColor.GOLD + "Quickshot"),
-    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 3, ChatColor.GOLD + "Powershot");
+    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 3, ChatColor.GOLD + "Powershot"),
+    //
+    SKILL_BOOK(Material.BOOK, 0, ChatColor.GOLD + "Skill Book");
     //
     private final ItemStack stack;
 

@@ -2,6 +2,7 @@ package net.goldiriath.plugin.game.skill;
 
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.inventory.InventoryManager;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.skill.menu.WeaponMenu;
 import net.goldiriath.plugin.game.skill.type.ActiveSkill;
 import net.goldiriath.plugin.game.skill.type.Skill;
@@ -53,7 +54,7 @@ public class SkillManager extends AbstractService {
         }
 
         // Spell book
-        if (stack.equals(InventoryManager.SPELL_BOOK)) {
+        if (InventoryUtil.isSkillBook(stack)) {
             new WeaponMenu(plugin).openMenu(player);
             return;
         }
@@ -82,7 +83,6 @@ public class SkillManager extends AbstractService {
 
         ActiveSkill active = (ActiveSkill) skill;
         active.use();
-        player.sendMessage(ChatColor.GREEN + "You used " + active.getType().getName());
     }
 
 }

@@ -1,8 +1,10 @@
 package net.goldiriath.plugin.game.inventory;
 
+import net.goldiriath.plugin.game.item.StaticItem;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
@@ -15,6 +17,7 @@ public class InventoryUtil {
     public static boolean isWeapon(Material mat) {
         switch (mat) {
             case WOOD_SWORD:
+            case STONE_SWORD:
             case GOLD_SWORD:
             case IRON_SWORD:
             case DIAMOND_SWORD:
@@ -37,7 +40,7 @@ public class InventoryUtil {
     }
 
     public static boolean isSkillBook(ItemStack stack) {
-        return stack.equals(InventoryManager.SPELL_BOOK);
+        return stack.equals(StaticItem.SKILL_BOOK.getStack());
     }
 
     public static int getStoreIndex(PlayerInventory inv, ItemStack stack) {
@@ -81,6 +84,11 @@ public class InventoryUtil {
         loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
         return false;
 
+    }
+
+    public static ItemStack getWeapon(Player player) {
+        // Returns the first item in the players hotbar
+        return player.getInventory().getItem(0);
     }
 
 }

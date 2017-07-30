@@ -2,6 +2,7 @@ package net.goldiriath.plugin.game.skill.type;
 
 import net.goldiriath.plugin.game.damage.modifier.Modifier;
 import net.goldiriath.plugin.game.damage.modifier.ModifierType;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.skill.SkillMeta;
 import net.goldiriath.plugin.util.Callback;
 import org.bukkit.entity.Arrow;
@@ -23,8 +24,7 @@ public class BowPowerShot extends ActiveSkill {
 
             @Override
             public void call(Entity hit) {
-                // TODO: Fix player switching items
-                plugin.bm.attack(player, player.getItemInHand(), hit,
+                plugin.bm.attack(player, InventoryUtil.getWeapon(player), hit,
                         new Modifier(ModifierType.DAMAGE_MULTIPLIER, 1.7),
                         new Modifier(ModifierType.ARMOR_MULTIPLIER, 0.7));
             }
