@@ -110,6 +110,9 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         // Load config
         config.load();
 
+        // Create data folder
+        dataLoadFolder.mkdirs();
+
         // Start services
         services.start();
 

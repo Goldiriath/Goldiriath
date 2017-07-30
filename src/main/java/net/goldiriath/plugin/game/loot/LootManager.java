@@ -1,14 +1,12 @@
 package net.goldiriath.plugin.game.loot;
 
-import com.google.common.collect.Maps;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
 import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
@@ -42,9 +40,7 @@ public class LootManager extends AbstractService {
     private final YamlConfig spawnConfig;
     private BukkitTask spawnTask;
     //
-    private final Random rn = new Random();
     private final Set<ChestSpawn> spawns;
-    private boolean enabled;
     private boolean devMode;
     @Getter
     private final Map<String, Group> groupMap = Maps.newHashMap();
@@ -55,7 +51,7 @@ public class LootManager extends AbstractService {
         super(plugin);
         this.config = new YamlConfig(plugin, "loot.yml", true);
         this.spawns = new HashSet<>();
-        this.spawnConfig = new YamlConfig(plugin, "chestspawns.yml", false);
+        this.spawnConfig = new YamlConfig(plugin, "data/chestspawns.yml", false);
     }
 
     @Override
@@ -311,10 +307,6 @@ public class LootManager extends AbstractService {
 
     private void loadConfig() {
         spawns.clear();
-
-        // Load vars
-        enabled = plugin.config.getBoolean(ConfigPaths.CHESTSPAWNER_ENABLED);
-        devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
 
         // Load spawns
         if (spawnConfig.exists()) {
