@@ -1,5 +1,7 @@
 package net.goldiriath.plugin.game;
 
+import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -10,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 public class InfiDispenser extends AbstractService {

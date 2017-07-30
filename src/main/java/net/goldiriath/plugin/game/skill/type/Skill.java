@@ -17,7 +17,6 @@ public abstract class Skill {
     @Getter
     protected final Player player;
 
-
     public Skill(SkillMeta meta, Player player) {
         this.plugin = Goldiriath.instance();
         this.type = meta.type;

@@ -5,6 +5,7 @@ import net.goldiriath.plugin.util.ConfigSavable;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillMeta implements ConfigLoadable, ConfigSavable {
+
     public final SkillType type;
     //
     public int level;

@@ -107,7 +107,7 @@ public enum SkillType {
         }
         return null;
     }
-    
+
     public static SkillType fromDisplay(ItemStack stack) {
         for (SkillType type : SkillType.values()) {
             if (type.getDisplay().getStack().equals(stack)) {

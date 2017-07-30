@@ -33,7 +33,7 @@ public class Command_gskill extends SimpleCommand<Goldiriath> {
             }
             return true;
         }
-        
+
         if (args.length < 2) {
             return showUsage();
         }
@@ -50,7 +50,7 @@ public class Command_gskill extends SimpleCommand<Goldiriath> {
                 msg(ChatColor.GOLD + "That player has no skills (He's a scrub).");
                 return true;
             }
-            
+
             for (Skill skill : data.getSkills().values()) {
                 msg(
                         ChatColor.DARK_AQUA + "-> "
@@ -65,7 +65,7 @@ public class Command_gskill extends SimpleCommand<Goldiriath> {
         if (args.length != 4) {
             return showUsage();
         }
-        
+
         if (!args[1].equals("set")) {
             return showUsage();
         }

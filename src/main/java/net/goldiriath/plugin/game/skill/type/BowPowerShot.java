@@ -18,7 +18,7 @@ public class BowPowerShot extends ActiveSkill {
     public void use() {
         Arrow arrow = player.launchProjectile(Arrow.class);
         arrow.setCritical(true); // Skill arrows are critical
-        
+
         plugin.at.track(arrow, new Callback<Entity>() {
 
             @Override

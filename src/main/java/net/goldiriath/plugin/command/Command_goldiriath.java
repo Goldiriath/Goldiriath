@@ -24,7 +24,7 @@ public class Command_goldiriath extends SimpleCommand<Goldiriath> {
             if (!sender.hasPermission("goldiriath.reload")) {
                 return noPerms();
             }
-            
+
             plugin.disable();
             plugin.enable();
 

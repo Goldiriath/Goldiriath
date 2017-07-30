@@ -7,7 +7,7 @@ public abstract class OverTimeEffect extends Effect {
 
     protected final int interval;
     protected final int value;
-    
+
     public OverTimeEffect(int duration, int interval, int value) {
         super(duration);
         this.interval = interval;
@@ -21,7 +21,7 @@ public abstract class OverTimeEffect extends Effect {
     public int getValue() {
         return value;
     }
-    
+
     @Override
     public final void tick(Player player) {
         // The interval is 1 here because modifiers only start ticking
@@ -30,7 +30,7 @@ public abstract class OverTimeEffect extends Effect {
             act(player);
         }
     }
-    
+
     protected abstract void act(Player player);
-    
+
 }

@@ -49,7 +49,7 @@ public class AttackManager extends AbstractService {
         // TODO: Armor
         effective(attacker, defender, attackDamage);
     }
-    
+
     public void effective(Entity attacker, Entity defender, double effectiveDamage) {
         /// TODO: Inflict the damage
     }

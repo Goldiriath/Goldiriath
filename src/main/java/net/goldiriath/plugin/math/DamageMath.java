@@ -85,13 +85,13 @@ public class DamageMath {
 
     public static double skillMod(Modifier[] modifiers) {
         double mod = 1.0;
-        
+
         for (Modifier m : modifiers) {
             if (m.getType() == ModifierType.DAMAGE_MULTIPLIER) {
                 mod *= m.getValue();
             }
         }
-        
+
         return mod;
     }
 

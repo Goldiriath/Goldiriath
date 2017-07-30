@@ -20,5 +20,4 @@ public class HealthOverTimeEffect extends OverTimeEffect {
         Util.effect(player, Effect.BOW_FIRE);
     }
 
-
 }

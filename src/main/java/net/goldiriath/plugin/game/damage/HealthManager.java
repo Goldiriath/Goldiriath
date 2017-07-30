@@ -4,7 +4,6 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +37,6 @@ public class HealthManager extends AbstractService {
     //
     // TODO: Most of this is wrong
     //
-    
     public void setMaxHealth(Player player, int maxHealth) {
         // Update the health player
         player.setMaxHealth(maxHealth);
@@ -75,7 +73,7 @@ public class HealthManager extends AbstractService {
 
             case FALL: {
                 Player player = (Player) event.getEntity();
-                
+
                 // De-scale the health
                 // Falling damage does the same amount of hearts damage in
                 // Goldiriath as in vanilla.
@@ -97,7 +95,7 @@ public class HealthManager extends AbstractService {
         final PlayerData data = plugin.pm.getData(event.getEntity());
         data.setHealth(data.getMaxHealth());
     }
-    
+
     public void damage(Player player, int amount) {
         PlayerData data = plugin.pm.getData(player);
         int newHealth = data.getHealth() - amount;

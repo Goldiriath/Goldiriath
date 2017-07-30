@@ -13,10 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SkillManager extends AbstractService {
@@ -54,7 +51,7 @@ public class SkillManager extends AbstractService {
         if (stack == null) {
             return;
         }
-        
+
         // Spell book
         if (stack.equals(InventoryManager.SPELL_BOOK)) {
             new WeaponMenu(plugin).openMenu(player);
@@ -67,12 +64,12 @@ public class SkillManager extends AbstractService {
         if (type == null) {
             return;
         }
-        
+
         if (!data.getSkills().containsKey(type)) {
             player.sendMessage(ChatColor.RED + "You haven't learnt that spell, so you cannot use it.");
             return;
         }
-        
+
         event.setCancelled(true);
         useSkill(player, data.getSkills().get(type));
     }

@@ -3,11 +3,11 @@ package net.amoebaman.util;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.apache.commons.lang.Validate;
 
 /**
- * Represents a wrapper around an array class of an arbitrary reference type, which properly implements "value" hash code and equality functions.
+ * Represents a wrapper around an array class of an arbitrary reference type,
+ * which properly implements "value" hash code and equality functions.
  * <p>
  * This class is intended for use as a key to a map.
  * </p>
@@ -74,7 +74,9 @@ public final class ArrayWrapper<E> {
     }
 
     /**
-     * Converts an iterable element collection to an array of elements. The iteration order of the specified object will be used as the array element order.
+     * Converts an iterable element collection to an array of elements. The
+     * iteration order of the specified object will be used as the array element
+     * order.
      *
      * @param list The iterable of objects which will be converted to an array.
      * @param c The type of the elements of the array.

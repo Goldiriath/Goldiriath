@@ -3,12 +3,13 @@ package me.mkremlins.fanciful;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.stream.JsonWriter;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 /**
- * Represents a JSON string value. Writes by this object will not write name values nor begin/end objects in the JSON stream. All writes merely write the represented string value.
+ * Represents a JSON string value. Writes by this object will not write name
+ * values nor begin/end objects in the JSON stream. All writes merely write the
+ * represented string value.
  */
 final class JsonString implements JsonRepresentedObject, ConfigurationSerializable {
 

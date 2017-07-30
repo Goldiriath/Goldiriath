@@ -53,7 +53,7 @@ public class InventoryManager extends AbstractService {
     public void onPlayerJoin(PlayerJoinEvent event) {
         validateInventory(event.getPlayer().getInventory());
     }
-    
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerSwapHands(PlayerSwapHandItemsEvent event) {
         // No off hand stuff
@@ -196,7 +196,7 @@ public class InventoryManager extends AbstractService {
             InventoryUtil.storeInInventory(inventory, contents[i]);
             inventory.setItem(i, null);
         }
-        
+
         // Ensure a skillbook is present
         inventory.setItem(SlotType.SPELLBOOK.getIndices()[0], SPELL_BOOK);
     }

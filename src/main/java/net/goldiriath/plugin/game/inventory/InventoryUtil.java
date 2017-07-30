@@ -35,7 +35,7 @@ public class InventoryUtil {
     public static boolean isEmpty(ItemStack stack) {
         return stack == null || stack.getType() == Material.AIR;
     }
-    
+
     public static boolean isSkillBook(ItemStack stack) {
         return stack.equals(InventoryManager.SPELL_BOOK);
     }

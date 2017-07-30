@@ -129,7 +129,7 @@ public class IconMenu implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryDrag(InventoryDragEvent event) {
         handler.onOptionDrag(event);
@@ -138,9 +138,9 @@ public class IconMenu implements Listener {
     public interface OptionClickEventHandler {
 
         public void onOptionClick(OptionClickEvent event);
-        
+
         public void onOptionDrag(InventoryDragEvent event);
-        
+
     }
 
     public class OptionClickEvent {

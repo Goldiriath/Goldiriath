@@ -16,10 +16,10 @@ public abstract class Effect {
     public int getDuration() {
         return duration;
     }
-    
+
     public boolean isOver() {
         return Util.getServerTick() > start + duration;
     }
-    
+
     public abstract void tick(Player player);
 }

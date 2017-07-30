@@ -89,7 +89,7 @@ public class Util {
 
         return ChatColor.translateAlternateColorCodes('&', line);
     }
-    
+
     public static void sound(Player player, Sound sound, float pitch) {
         player.playSound(player.getLocation(), sound, 1.0f, pitch);
     }
@@ -110,7 +110,7 @@ public class Util {
 
             return (Player) e;
         }
-        
+
         return null;
     }
 

@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 
 @CommandOptions(
         description = "Not for manual use! Selects a dialog option",
-        usage ="/<command> <dialog> <optionset> <option>",
+        usage = "/<command> <dialog> <optionset> <option>",
         source = SourceType.PLAYER,
         aliases = "gopt")
 public class Command_goption extends SimpleCommand<Goldiriath> {
