@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.game.inventory;
 
 import net.goldiriath.plugin.game.item.StaticItem;
+import net.goldiriath.plugin.game.skill.SkillType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -32,7 +33,14 @@ public class InventoryUtil {
     }
 
     public static boolean isSkill(ItemStack stack) {
-        return stack.getType() == Material.STAINED_GLASS_PANE;
+
+        // Loops through all Skills defined in SkillType and checks if stack is that skill.
+        for(int i = 0; i < SkillType.values().length; i++) {
+            if(SkillType.values()[i].getDisplay().getStack().equals(stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isEmpty(ItemStack stack) {

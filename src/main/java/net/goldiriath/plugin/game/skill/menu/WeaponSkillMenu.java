@@ -1,18 +1,25 @@
 package net.goldiriath.plugin.game.skill.menu;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.inventory.SlotType;
 import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.game.skill.SkillType;
 import net.goldiriath.plugin.game.skill.type.WeaponType;
+import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.util.IconMenu;
 import net.pravian.aero.component.PluginComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements IconMenu.OptionClickEventHandler {
 
@@ -25,10 +32,24 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
         menu.setOption(26, StaticItem.MENU_DONE.getStack(), "done");
 
+        DataSkills data = plugin.pm.getData(player).getSkills();
+
         int i = 0;
         for (SkillType s : SkillType.findForWeapon(weapon)) {
+            if (!data.getSkills().containsKey(s)) {
+                ItemStack unlearnedSkill = StaticItem.MENU_SKILL_UNLEARNED.getStack().clone();
 
-            menu.setOption(i, s.getDisplay().getStack(), s.getName());
+                ItemMeta meta = unlearnedSkill.getItemMeta();
+                List<String> lore = new ArrayList<>();
+                lore.add(s.getName());
+
+                meta.setLore(lore);
+                unlearnedSkill.setItemMeta(meta);
+
+                menu.setOption(i, unlearnedSkill, s.getName());
+            } else {
+                menu.setOption(i, s.getDisplay().getStack(), s.getName());
+            }
             i++;
         }
 
@@ -74,6 +95,11 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
                 // Allow picking up skills
                 if (clickSkillBook) {
+                    if(!InventoryUtil.isSkill(event.getEvent().getCurrentItem())) {
+                        // TODO: implement a menu that allows the player to level skills.
+                        event.getPlayer().sendRawMessage("You have not learned that skill!");
+                        break;
+                    }
                     iClick.setCancelled(false);
                     resetInventoryLater(iClick.getView().getTopInventory(), event.getMenu().getContents());
                     break;
@@ -84,6 +110,14 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case SWAP_WITH_CURSOR: {
                 // Allow dropping a skill into the skills bar
                 if (clickSkillSlot) {
+                    Inventory playerInventory = event.getPlayer().getInventory();
+                    for(int i = 0; i < playerInventory.getSize(); i++) {
+                        if(event.getEvent().getCursor().equals(playerInventory.getItem(i))) {
+                            int pos = event.getPlayer().getInventory().first(event.getEvent().getCursor());
+                            resetItemLater(event.getPlayer().getInventory(), pos);
+                            break;
+                        }
+                    }
                     iClick.setCancelled(false);
                     break;
                 }
@@ -109,6 +143,18 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             @Override
             public void run() {
                 inventory.setContents(contents);
+            }
+
+        }.runTaskLater(plugin, 1);
+    }
+
+    private void resetItemLater(final Inventory inventory, final int pos) {
+        // Reset A specific slot in a players inventory.
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                inventory.setItem(pos, null);
             }
 
         }.runTaskLater(plugin, 1);
