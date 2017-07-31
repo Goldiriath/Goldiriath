@@ -1,16 +1,16 @@
 package net.goldiriath.plugin.player;
 
-import net.goldiriath.plugin.player.info.InfoSidebar;
-import net.goldiriath.plugin.player.data.DataQuests;
 import lombok.Getter;
 import lombok.Setter;
 import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataFlags;
+import net.goldiriath.plugin.player.data.DataQuests;
 import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.player.info.InfoBattle;
 import net.goldiriath.plugin.player.info.InfoDialogs;
-import net.goldiriath.plugin.player.info.InfoShop;
+import net.goldiriath.plugin.player.info.InfoSidebar;
+import net.goldiriath.plugin.player.info.modifier.InfoEffects;
 import net.goldiriath.plugin.util.persist.Persist;
 import net.goldiriath.plugin.util.persist.PersistentStorage;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,9 +30,9 @@ public class PlayerData extends PersistentStorage {
     @Getter
     private final InfoDialogs dialogs;
     @Getter
-    private final InfoShop shop;
-    @Getter
     private final InfoSidebar sidebar;
+    @Getter
+    private final InfoEffects modifiers;
     //
     @Getter
     private final DataQuests quests;
@@ -40,6 +40,10 @@ public class PlayerData extends PersistentStorage {
     private final DataFlags flags;
     @Getter
     private final DataSkills skills;
+
+    @Persist
+    @Getter
+    private final String username;
 
     @Persist
     @Getter
@@ -80,11 +84,12 @@ public class PlayerData extends PersistentStorage {
         this.plugin = manager.getPlugin();
         this.manager = manager;
         this.player = player;
+        this.username = player.getName();
         //
         this.battle = new InfoBattle(this);
         this.dialogs = new InfoDialogs(this);
-        this.shop = new InfoShop(this);
         this.sidebar = new InfoSidebar(this);
+        this.modifiers = new InfoEffects(this);
         //
         this.flags = new DataFlags(this);
         this.quests = new DataQuests(this);

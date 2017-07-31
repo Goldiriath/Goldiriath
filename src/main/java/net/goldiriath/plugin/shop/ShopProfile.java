@@ -1,13 +1,15 @@
 package net.goldiriath.plugin.shop;
 
-import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.logging.Logger;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.shop.menu.BuyMenu;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Validatable;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public class ShopProfile implements ConfigLoadable, Validatable {
 
@@ -17,8 +19,6 @@ public class ShopProfile implements ConfigLoadable, Validatable {
     private final Logger logger;
     @Getter
     private final String id;
-    @Getter
-    private final ProfileMenuManager menuManager;
     //
     @Getter
     private double exchange = 0.8;
@@ -31,7 +31,11 @@ public class ShopProfile implements ConfigLoadable, Validatable {
         this.plugin = plugin;
         this.logger = plugin.getLogger();
         this.id = id;
-        this.menuManager = new ProfileMenuManager(this);
+    }
+
+    public void openMenu(Player player) {
+        // TODO: record somewhere, and destroy when shutting down
+        new BuyMenu(plugin, this).openMenu(player);
     }
 
     @Override
@@ -41,9 +45,6 @@ public class ShopProfile implements ConfigLoadable, Validatable {
 
     @Override
     public void loadFrom(ConfigurationSection config) {
-
-        menuManager.stop();
-
         exchange = config.getDouble("exchange", exchange);
 
         String typeString = config.getString("type");
@@ -62,9 +63,6 @@ public class ShopProfile implements ConfigLoadable, Validatable {
                 products.add(product);
             }
         }
-
-        // Rebake menus for updated products list
-        menuManager.start();
     }
 
 }

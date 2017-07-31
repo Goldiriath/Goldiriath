@@ -1,37 +1,44 @@
 package net.goldiriath.plugin;
 
-import net.goldiriath.plugin.inventory.InventoryManager;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.command.Command_goldiriath;
-import net.goldiriath.plugin.questing.dialog.DialogManager;
-import net.goldiriath.plugin.item.ItemManager;
-import net.goldiriath.plugin.util.logging.GLogger;
-import net.goldiriath.plugin.util.logging.PlayerListLogSink;
-import net.goldiriath.plugin.loot.LootManager;
-import net.goldiriath.plugin.mobspawn.MobSpawnManager;
+import net.goldiriath.plugin.game.AutoClose;
+import net.goldiriath.plugin.game.EffectsTicker;
+import net.goldiriath.plugin.game.InfiDispenser;
+import net.goldiriath.plugin.game.MetaCycler;
+import net.goldiriath.plugin.game.XPManager;
+import net.goldiriath.plugin.game.damage.ArrowHitTracker;
+import net.goldiriath.plugin.game.damage.AttackManager;
+import net.goldiriath.plugin.game.damage.DeathManager;
+import net.goldiriath.plugin.game.damage.HealthManager;
+import net.goldiriath.plugin.game.inventory.InventoryManager;
+import net.goldiriath.plugin.game.item.ItemManager;
+import net.goldiriath.plugin.game.loot.LootManager;
+import net.goldiriath.plugin.game.mobspawn.MobSpawnManager;
+import net.goldiriath.plugin.game.questing.dialog.DialogManager;
+import net.goldiriath.plugin.game.questing.quest.QuestManager;
+import net.goldiriath.plugin.game.skill.SkillManager;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.shop.ShopManager;
-import net.goldiriath.plugin.questing.quest.QuestManager;
 import net.goldiriath.plugin.util.PlayerList;
-import net.pravian.bukkitlib.BukkitLib;
-import net.pravian.bukkitlib.command.BukkitCommandHandler;
-import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.implementation.BukkitPlugin;
+import net.goldiriath.plugin.util.logging.GLogger;
+import net.goldiriath.plugin.util.logging.PlayerListLogSink;
+import net.pravian.aero.command.handler.AeroCommandHandler;
+import net.pravian.aero.command.handler.SimpleCommandHandler;
+import net.pravian.aero.config.YamlConfig;
+import net.pravian.aero.plugin.AeroPlugin;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.Plugin;
 
-public class Goldiriath extends BukkitPlugin {
+public class Goldiriath extends AeroPlugin<Goldiriath> {
 
     public static String name = "";
     public static String buildVersion = "";
     public static String buildDate = "";
-    //
-    private Goldiriath plugin;
     //
     public GLogger logger;
     public final PlayerList loggerPlayers = new PlayerList();
@@ -47,20 +54,23 @@ public class Goldiriath extends BukkitPlugin {
     public LootManager lm;
     public MobSpawnManager msm;
     public HealthManager hm;
-    public BattleManager bm;
+    public AttackManager bm;
     public DeathManager dm;
     public SidebarManager sb;
+    public SkillManager sm;
+    public EffectsTicker et;
+    public ArrowHitTracker at;
     public InventoryManager iv;
-    public ShopManager sm;
+    public ShopManager sh;
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
+    public PressurePlateFixer pf;
     //
-    public BukkitCommandHandler<Goldiriath> ch;
+    public AeroCommandHandler<Goldiriath> ch;
 
     @Override
-    public void onLoad() {
-        plugin = this;
+    public void load() {
 
         // Setup logger
         logger = new GLogger(getPluginLogger());
@@ -81,54 +91,53 @@ public class Goldiriath extends BukkitPlugin {
         lm = services.registerService(LootManager.class);
         msm = services.registerService(MobSpawnManager.class);
         hm = services.registerService(HealthManager.class);
-        bm = services.registerService(BattleManager.class);
+        bm = services.registerService(AttackManager.class);
         dm = services.registerService(DeathManager.class);
         sb = services.registerService(SidebarManager.class);
+        sm = services.registerService(SkillManager.class);
+        et = services.registerService(EffectsTicker.class);
+        at = services.registerService(ArrowHitTracker.class);
         iv = services.registerService(InventoryManager.class);
-        sm = services.registerService(ShopManager.class);
+        sh = services.registerService(ShopManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);
+        pf = services.registerService(PressurePlateFixer.class);
 
         // Commands
-        ch = new BukkitCommandHandler<>(plugin);
+        ch = new SimpleCommandHandler<>(plugin);
     }
 
     @Override
-    public void onEnable() {
-        plugin = this;
-        BukkitLib.init(plugin);
-
+    public void enable() {
         // Load config
         config.load();
+
+        // Create data folder
+        dataLoadFolder.mkdirs();
 
         // Start services
         services.start();
 
         // Setup command handler
-        ch.setCommandLocation(Command_goldiriath.class.getPackage());
+        ch.setCommandClassPrefix("Command_");
+        ch.loadFrom(Command_goldiriath.class.getPackage());
+        ch.registerAll();
 
         logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by Prozza and derpfacedirk is enabled");
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
 
         // Stop services
         services.stop();
 
         // Unregister events
-        HandlerList.unregisterAll(plugin);
+        HandlerList.unregisterAll((Plugin) plugin);
 
         // Cancel running tasks
         plugin.getServer().getScheduler().cancelTasks(plugin);
-
-        plugin = null;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        return ch.handleCommand(sender, cmd, commandLabel, args);
     }
 
     private void loadBuildProperties() {

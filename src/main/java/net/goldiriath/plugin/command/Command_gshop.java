@@ -1,26 +1,25 @@
-
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.shop.Product;
 import net.goldiriath.plugin.shop.ShopProfile;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(permission = "goldiriath.gshop", source = SourceType.PLAYER)
-public class Command_gshop extends BukkitCommand<Goldiriath> {
+@CommandOptions(permission = "goldiriath.gshop", source = SourceType.PLAYER)
+public class Command_gshop extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender cs, Command cmnd, String string, String[] strings) {
         if (args.length != 2) {
             return false;
         }
 
-        ShopProfile profile = plugin.sm.getProfiles().get(args[0]);
+        ShopProfile profile = plugin.sh.getProfiles().get(args[0]);
         if (profile == null) {
             msg(ChatColor.RED + "Could not find shop profile: " + args[0]);
             return true;

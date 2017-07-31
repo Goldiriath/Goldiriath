@@ -2,10 +2,10 @@ package net.goldiriath.plugin.player.info;
 
 import lombok.Getter;
 import net.goldiriath.plugin.ConfigPath;
-import net.goldiriath.plugin.questing.dialog.Dialog;
-import net.goldiriath.plugin.questing.dialog.OptionSet;
+import net.goldiriath.plugin.game.questing.dialog.Dialog;
+import net.goldiriath.plugin.game.questing.dialog.OptionSet;
+import net.goldiriath.plugin.game.questing.script.Script;
 import net.goldiriath.plugin.player.PlayerData;
-import net.goldiriath.plugin.questing.script.Script;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

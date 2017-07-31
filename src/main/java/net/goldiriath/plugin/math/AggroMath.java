@@ -2,15 +2,13 @@ package net.goldiriath.plugin.math;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.player.PlayerData;
-import org.bukkit.entity.Player;
 
 public class AggroMath {
 
     /**
-     * Calculates a player
+     * Calculates a player's exposure.
      *
      * @param x Distance between the mob and the player
      * @param m Amount of mobs targeting the player

@@ -17,10 +17,6 @@ public class Product implements Comparable<Product> {
     @Getter
     private final ProductAction action;
 
-    public Product(ItemStack stack, int value) {
-        this(stack, value, ProductAction.BOTH);
-    }
-
     public Product(ItemStack stack, int value, ProductAction action) {
         this.stack = stack;
         this.price = value;

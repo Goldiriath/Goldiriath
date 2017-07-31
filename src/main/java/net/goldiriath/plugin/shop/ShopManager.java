@@ -1,18 +1,14 @@
-
 package net.goldiriath.plugin.shop;
 
-import com.google.common.collect.Maps;
 import java.io.File;
 import java.util.Map;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.PrefixFileFilter;
 import net.goldiriath.plugin.util.service.AbstractService;
-import net.pravian.bukkitlib.config.YamlConfig;
+import net.pravian.aero.config.YamlConfig;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import thirdparty.nisovin.iconmenu.OptionClickEvent;
-import thirdparty.nisovin.iconmenu.OptionClickEventHandler;
-import thirdparty.nisovin.iconmenu.OptionMenu;
 
 public class ShopManager extends AbstractService {
 
@@ -38,11 +34,6 @@ public class ShopManager extends AbstractService {
 
         if (!shopContainer.exists()) {
             shopContainer.mkdirs();
-        }
-
-        // Close all open inventories
-        for (ShopProfile profile : profiles.values()) {
-            profile.getMenuManager().stop();
         }
 
         // Load profiles
