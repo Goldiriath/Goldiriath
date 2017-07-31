@@ -1,15 +1,15 @@
 package net.goldiriath.plugin;
 
-import net.goldiriath.plugin.game.DevMode;
-import net.goldiriath.plugin.game.PressurePlateFixer;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.game.AutoClose;
+import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.EffectsTicker;
 import net.goldiriath.plugin.game.InfiDispenser;
 import net.goldiriath.plugin.game.MetaCycler;
+import net.goldiriath.plugin.game.PressurePlateFixer;
 import net.goldiriath.plugin.game.XPManager;
 import net.goldiriath.plugin.game.damage.ArrowHitTracker;
 import net.goldiriath.plugin.game.damage.AttackManager;
