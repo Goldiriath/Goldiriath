@@ -5,9 +5,11 @@ import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.game.AutoClose;
+import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.EffectsTicker;
 import net.goldiriath.plugin.game.InfiDispenser;
 import net.goldiriath.plugin.game.MetaCycler;
+import net.goldiriath.plugin.game.PressurePlateFixer;
 import net.goldiriath.plugin.game.XPManager;
 import net.goldiriath.plugin.game.damage.ArrowHitTracker;
 import net.goldiriath.plugin.game.damage.AttackManager;
@@ -48,6 +50,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public ItemManager im;
     public PlayerManager pm;
     public XPManager xm;
+    public DevMode dev;
     public QuestManager qm;
     public DialogManager dlm;
     public LootManager lm;
@@ -84,6 +87,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         im = services.registerService(ItemManager.class);
         pm = services.registerService(PlayerManager.class);
         xm = services.registerService(XPManager.class);
+        dev = services.registerService(DevMode.class);
         qm = services.registerService(QuestManager.class);
         dlm = services.registerService(DialogManager.class);
         lm = services.registerService(LootManager.class);
