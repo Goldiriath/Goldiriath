@@ -36,7 +36,7 @@ public class Command_gshop extends SimpleCommand<Goldiriath> {
         }
 
         if (args[1].equals("open")) {
-            profile.getTracker().open(playerSender);
+            profile.openMenu(playerSender);
             msg(ChatColor.GREEN + "Opened!");
             return true;
         }

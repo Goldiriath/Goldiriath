@@ -1,10 +1,11 @@
 package net.goldiriath.plugin.game.mobspawn;
 
-import com.google.common.collect.Sets;
 import java.util.Set;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.mobspawn.citizens.CitizensBridge;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.util.service.AbstractService;
@@ -44,8 +45,6 @@ public class MobSpawnManager extends AbstractService {
     //
     private boolean enabled = false;
     @Getter
-    private boolean devMode = false;
-    @Getter
     private int maxMobs;
     @Getter
     private int timeThreshold;
@@ -58,7 +57,6 @@ public class MobSpawnManager extends AbstractService {
         this.profileConfig = new YamlConfig(plugin, "profiles.yml", true);
         this.spawnConfig = new YamlConfig(plugin, "mobspawns.yml", false);
         this.bridge = new CitizensBridge(plugin);
-        this.devMode = false;
     }
 
     public int killAll() {
@@ -101,9 +99,6 @@ public class MobSpawnManager extends AbstractService {
 
         loadConfig();
 
-        // Update sign visibility
-        setDevMode(devMode);
-
         if (!enabled) {
             return;
         }
@@ -115,7 +110,7 @@ public class MobSpawnManager extends AbstractService {
 
             @Override
             public void run() {
-                if (devMode) {
+                if (plugin.dev.isDevMode()) {
                     return;
                 }
 
@@ -306,7 +301,7 @@ public class MobSpawnManager extends AbstractService {
             return;
         }
 
-        if (!devMode) {
+        if (!plugin.dev.isDevMode()) {
             spawn.getLocation().getBlock().setType(Material.AIR);
             return;
         }
@@ -332,7 +327,6 @@ public class MobSpawnManager extends AbstractService {
 
         // Load vars
         enabled = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_ENABLED);
-        devMode = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_DEV_MODE);
         maxMobs = plugin.config.getInt(ConfigPath.MOBSPAWNER_MAX_MOBS);
         timeThreshold = plugin.config.getInt(ConfigPath.MOBSPAWNER_TIME_THRESHOLD);
         radiusSquaredThreshold = plugin.config.getInt(ConfigPath.MOBSPAWNER_RADIUS_THRESHOLD);
@@ -392,9 +386,9 @@ public class MobSpawnManager extends AbstractService {
         spawnConfig.save();
     }
 
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
-        if (devMode) {
+    @EventHandler
+    public void onDevModeChange(DevMode.DevModeChangeEvent event) {
+        if (event.isDevMode()) {
             killAll();
         }
 

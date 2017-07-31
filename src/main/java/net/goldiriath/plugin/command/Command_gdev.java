@@ -1,14 +1,17 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.player.PlayerData;
 import net.pravian.aero.command.CommandOptions;
 import net.pravian.aero.command.SimpleCommand;
 import net.pravian.aero.command.SourceType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandOptions(description = "Development command", subPermission = "gdev", usage = "/<command> <values...>", source = SourceType.PLAYER)
+@CommandOptions(
+        description = "Enable and disable development mode",
+        subPermission = "gdev",
+        usage = "/<command> <on | off>",
+        source = SourceType.ANY)
 public class Command_gdev extends SimpleCommand<Goldiriath> {
 
     @Override
@@ -18,18 +21,14 @@ public class Command_gdev extends SimpleCommand<Goldiriath> {
             return false;
         }
 
-        try {
-            final PlayerData data = plugin.pm.getData(playerSender);
-            int newMoney = Integer.parseInt(args[0]);
-            msg("Prev: " + data.getMoney());
-            data.setMoney(newMoney);
-            msg("New: " + data.getMoney());
-            plugin.pm.saveAll();
-        } catch (NumberFormatException nex) {
-            msg("Can't parse number!");
+        if (args[0].equals("on")) {
+            msg("Turning development mode on.");
+            plugin.dev.setDevMode(true);
             return true;
         }
 
+        msg("Turning development mode off.");
+        plugin.dev.setDevMode(false);
         return true;
 
     }

@@ -1,5 +1,6 @@
-package net.goldiriath.plugin;
+package net.goldiriath.plugin.game;
 
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

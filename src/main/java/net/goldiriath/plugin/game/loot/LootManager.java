@@ -7,8 +7,8 @@ import java.util.Set;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
 import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.Util;
@@ -42,7 +42,6 @@ public class LootManager extends AbstractService {
     private BukkitTask spawnTask;
     //
     private final Set<ChestSpawn> spawns;
-    private boolean devMode;
     @Getter
     private final Map<String, Group> groupMap = Maps.newHashMap();
     @Getter
@@ -87,7 +86,7 @@ public class LootManager extends AbstractService {
 
             @Override
             public void run() {
-                if (devMode) {
+                if (plugin.dev.isDevMode()) {
                     return;
                 }
 
@@ -206,7 +205,7 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        //validate delay
+        // Validate delay
         int updatedelay = -1;
         if (event.getLine(3) != null && !event.getLine(3).isEmpty()) {
             try {
@@ -285,7 +284,7 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        if (!devMode) {
+        if (!plugin.dev.isDevMode()) {
             spawn.getLocation().getBlock().setType(Material.AIR);
             return;
         }
@@ -308,9 +307,6 @@ public class LootManager extends AbstractService {
 
     private void loadConfig() {
         spawns.clear();
-
-        // Load vars
-        devMode = plugin.config.getBoolean(ConfigPath.MOBSPAWNER_DEV_MODE);
 
         // Load spawns
         if (spawnConfig.exists()) {
@@ -343,21 +339,12 @@ public class LootManager extends AbstractService {
         spawnConfig.save();
     }
 
-    // Getters, Setters
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
+    // Update sign visibility
+    @EventHandler
+    public void onDevModeChange(DevMode.DevModeChangeEvent event) {
         for (ChestSpawn spawn : spawns) {
             updateSign(spawn);
         }
-    }
-
-    @Override
-    public Goldiriath getPlugin() {
-        return plugin;
-    }
-
-    public boolean isDevMode() {
-        return devMode;
     }
 
     public LootProfile getProfile(String id) {
