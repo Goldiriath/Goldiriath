@@ -2,7 +2,7 @@ package net.goldiriath.plugin.math;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.GItemMeta;
+import net.goldiriath.plugin.game.item.meta.GItemMeta;
 import org.bukkit.inventory.ItemStack;
 
 public class ArmorMath {
@@ -29,12 +29,12 @@ public class ArmorMath {
 
         //level determination
         l = meta.getLevel();
-        
+
         // tier determination
         t = meta.getTier().getArmorMulti();
-        
+
         // Heavyness determination
-        h = meta.getArmorType().getMulti();
+        h = meta.getArmorType().getMultiplier();
         return b(l, t, h);
 
     }

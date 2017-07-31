@@ -1,23 +1,27 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.questing.dialog.NPCDialogHandler;
-import net.goldiriath.plugin.questing.dialog.OptionSet;
-import net.goldiriath.plugin.questing.dialog.OptionSet.Option;
+import net.goldiriath.plugin.game.questing.dialog.NPCDialogHandler;
+import net.goldiriath.plugin.game.questing.dialog.OptionSet;
+import net.goldiriath.plugin.game.questing.dialog.OptionSet.Option;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.info.InfoDialogs;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(source = SourceType.PLAYER)
-public class Command_goption extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "Not for manual use! Selects a dialog option",
+        usage = "/<command> <dialog> <optionset> <option>",
+        source = SourceType.PLAYER,
+        aliases = "gopt")
+public class Command_goption extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         if (args.length != 3) {
             return false;
         }

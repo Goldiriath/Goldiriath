@@ -1,82 +1,156 @@
 package net.goldiriath.plugin.math;
 
 import com.google.common.annotations.VisibleForTesting;
-import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.GItemMeta;
+import net.goldiriath.plugin.game.damage.modifier.Modifier;
+import net.goldiriath.plugin.game.damage.modifier.ModifierType;
+import net.goldiriath.plugin.game.item.meta.GItemMeta;
+import net.goldiriath.plugin.game.item.meta.ItemTier;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class DamageMath {
-    
-    @VisibleForTesting
-    static double b(double m, double t, double l){
-        return 10+m*t*Math.pow(1.1, l) ;
-    }
-    
-    @VisibleForTesting
-    static double a(double b, double s, double i, double e){
-        return b*s*i*e;
-    }
-    
-    @VisibleForTesting
-    static double e(double a, double d, double i){
-        return Math.max(a*d*i, 1);
-    }
-    
 
-    public static double baseDamage(ItemStack item){
-        GItemMeta meta = Goldiriath.instance().im.getMeta(item, false);
-        double m = 1;
-        double t = 1;
-        int l = 0;
-        
-        // material determination
-        switch(item.getType()){
+    private DamageMath() {
+    }
+
+    public static double baseDamage(GItemMeta meta) {
+        return b(materialMod(meta.getStack().getType()), tierMod(meta.getTier()), meta.getLevel());
+    }
+
+    /**
+     * Calculates an item's base damage.
+     *
+     * @param m The weapon's material modifier.
+     * @param t The weapon's tier modifier.
+     * @param l The level of the item.
+     *
+     * @return The base damage.
+     */
+    @VisibleForTesting
+    static double b(double m, double t, int l) {
+        return 10 + m * t * Math.pow(1.1, l);
+    }
+
+    public static double materialMod(Material mat) {
+        switch (mat) {
             case BOW:
-                m = 1.1;
-                break;
+                return 1.1;
             case SHEARS:
-                m = 0.8;
-                break;
-            case BLAZE_ROD:
-                m = 1.025;
-                break;
+                return 0.8;
+            case STICK:
+                return 1.025;
+            default:
+                return 1.0;
         }
-        
-        if(meta == null){
-            return b(m, t, t);
+    }
+
+    public static double tierMod(ItemTier tier) {
+        switch (tier) {
+            case BATTERED:
+                return 0.8;
+            case NORMAL:
+                return 1;
+            case CRAFTED:
+                return 1.1;
+            case RARE:
+                return 1.21;
+            case LEGENDARY:
+                return 1.33;
+            default:
+                throw new IllegalArgumentException("Unknown tier: " + tier);
         }
-        
-        // tier determination
-        t = meta.getTier().getWeaponMulti();
-        
-        
-        //level determination
-        l = meta.getLevel();
-        
-        
-        return b(m, t, t);
     }
-    
-    public static double attackDamage(ItemStack item){
-        double b = baseDamage(item);
-        double s = 1;
-        double i = 1;
-        double e = 1;
-        
-        //TODO: implement skill modifiers
-        //TODO: implement inventory modifiers
-        //TODO: implement enviromental modifiers
-        
-        return a(b, s, i, e);
+
+    public static double attackDamage(double baseDamage, Player player, Modifier[] modifiers) {
+        return a(baseDamage, skillMod(modifiers), inventoryMod(player.getInventory()), environmentMod(player));
     }
-    
-    public static double effectiveDamage(ItemStack weapon, ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots){
-        double a = attackDamage(weapon);
+
+    /**
+     * Calculates attack damage.
+     *
+     * @param b The base damage of the item
+     * @param s The skill modifier
+     * @param i The inventory modifier
+     * @param e The environmental modifier
+     *
+     * @return The attack damage.
+     */
+    @VisibleForTesting
+    static double a(double b, double s, double i, double e) {
+        return b * s * i * i;
+    }
+
+    public static double skillMod(Modifier[] modifiers) {
+        double mod = 1.0;
+
+        for (Modifier m : modifiers) {
+            if (m.getType() == ModifierType.DAMAGE_MULTIPLIER) {
+                mod *= m.getValue();
+            }
+        }
+
+        return mod;
+    }
+
+    public static double inventoryMod(Inventory inventory) {
+        return 1.0;
+    }
+
+    public static double environmentMod(Player player) {
+        Location loc = player.getLocation();
+
+        // TODO: Check if Y=90 appropriate
+        if (loc.getBlockY() > 90) {
+            return 0.6;
+        }
+
+        Biome biome = loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
+
+        switch (biome) {
+            case COLD_BEACH:
+            case ICE_MOUNTAINS:
+            case ICE_FLATS:
+            case FROZEN_RIVER:
+            case FROZEN_OCEAN:
+                return 0.7;
+        }
+
+        long time = loc.getWorld().getTime();
+
+        // Nighttime
+        // http://minecraft.gamepedia.com/Day-night_cycle
+        if (time > 12500 && time < 22500) {
+            return 0.9;
+        }
+
+        // TODO: daytime in friendly grounds (see wiki)
+        return 1.0;
+    }
+
+    /**
+     * Calculates an attack's effective damage.
+     *
+     * @param a The attack damage
+     * @param d The defense's armor modifier
+     * @param i The defense's inventory modifier
+     *
+     * @return The effective damage.
+     */
+    @VisibleForTesting
+    static double e(double a, double d, double i) {
+        return Math.max(a * d * i, 1);
+    }
+
+    public static double effectiveDamage(ItemStack weapon, ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots) {
+        double a = 1; // TODO
         double d = ArmorMath.armorModifier(helmet, chestplate, pants, boots);
-        double i = 1;
-        
-        //TODO: implement inventory modifiers
-        
+        double i = 1; // TODO
+
         return e(a, d, i);
     }
+
 }

@@ -1,42 +1,21 @@
 package net.goldiriath.plugin.player.data;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.collect.Maps;
+import java.util.Map;
+import lombok.Getter;
+import net.goldiriath.plugin.game.skill.SkillMeta;
+import net.goldiriath.plugin.game.skill.SkillType;
+import net.goldiriath.plugin.game.skill.type.Skill;
 import net.goldiriath.plugin.player.PlayerData;
-import net.goldiriath.plugin.skill.Skill;
-import net.goldiriath.plugin.skill.SkillType;
-import net.pravian.bukkitlib.util.LoggerUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class DataSkills extends Data {
 
-    final Set<Skill> skills = new HashSet<>();
+    @Getter
+    private final Map<SkillType, Skill> skills = Maps.newHashMap();
 
     public DataSkills(PlayerData data) {
         super(data, "skills");
-    }
-
-    public Set<Skill> getSkills() {
-        return Collections.unmodifiableSet(skills);
-    }
-
-    public void add(Skill skill) {
-        skills.add(skill);
-    }
-
-    public void remove(Skill skill) {
-        skills.remove(skill);
-    }
-
-    public boolean has(SkillType type) {
-        for (Skill loopSkill : skills) {
-            if (loopSkill.getType() == type) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
@@ -51,34 +30,27 @@ public class DataSkills extends Data {
             try {
                 type = SkillType.valueOf(skillName);
             } catch (IllegalArgumentException ex) {
-                LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + data.getPlayer().getName() + ". Skill type not found!");
+                logger.warning("Could not load skill '" + skillName + "' for player " + data.getPlayer().getName() + ". Skill type not found!");
                 continue;
             }
 
             if (type == null) {
-                LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + data.getPlayer().getName() + ". Skill type not found!");
-                continue;
-            }
-
-            int lvl = config.getInt(skillName + ".lvl", -1);
-
-            if (lvl == -1) {
-                LoggerUtils.warning("Could not load skill '" + skillName + "' for player " + data.getPlayer().getName() + ". Skill level could not be parsed!");
+                logger.warning("Could not load skill '" + skillName + "' for player " + data.getPlayer().getName() + ". Skill type not found!");
                 continue;
             }
 
             // Create and the skill
-            final Skill skill = type.create(data.getPlayer(), lvl);
-            skills.add(skill);
+            final SkillMeta meta = new SkillMeta(type);
+            meta.loadFrom(config.getConfigurationSection(skillName));
+            skills.put(type, type.create(data.getPlayer(), meta));
         }
 
     }
 
     @Override
     protected void save(ConfigurationSection config) {
-        for (Skill skill : skills) {
-            String basePath = "skills." + skill.getType().name();
-            config.set(basePath + ".lvl", skill.getLvl());
+        for (Skill skill : skills.values()) {
+            skill.getMeta().saveTo(config.createSection(skill.getType().name()));
         }
     }
 

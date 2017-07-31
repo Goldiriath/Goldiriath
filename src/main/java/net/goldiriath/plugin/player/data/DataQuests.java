@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.goldiriath.plugin.player.PlayerData;
-import net.goldiriath.plugin.questing.quest.Quest;
-import net.goldiriath.plugin.questing.quest.Stage;
+import net.goldiriath.plugin.game.questing.quest.Quest;
+import net.goldiriath.plugin.game.questing.quest.Stage;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class DataQuests extends Data {

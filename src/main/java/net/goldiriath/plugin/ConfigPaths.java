@@ -1,6 +1,6 @@
 package net.goldiriath.plugin;
 
-import net.pravian.bukkitlib.config.PathContainer;
+import net.pravian.aero.config.PathContainer;
 
 public enum ConfigPaths implements PathContainer {
 
