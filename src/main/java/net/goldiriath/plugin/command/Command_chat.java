@@ -2,19 +2,20 @@ package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.chat.ChatChannel;
-import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.info.InfoChat;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandPermissions(source = SourceType.PLAYER)
-public class Command_chat extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        usage = "/<command> <send <local | party> | ignore <player> | unignore <player>>",
+        source = SourceType.PLAYER)
+public class Command_chat extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (args.length <= 1) {
             return false;

@@ -1,8 +1,6 @@
 package net.goldiriath.plugin.math;
 
-import static com.google.common.truth.Truth.*;
-import java.math.BigDecimal;
-
+import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 
 public class HealthMathTest {

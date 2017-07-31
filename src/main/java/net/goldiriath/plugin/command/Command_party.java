@@ -4,18 +4,21 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.chat.Party;
 import net.goldiriath.plugin.chat.PartyOptionSet;
 import net.goldiriath.plugin.player.info.InfoChat;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandPermissions(source = SourceType.PLAYER)
-public class Command_party extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        usage = "/<command> <leave | disband | <kick | invite | accept> <player>>",
+        source = SourceType.PLAYER
+)
+public class Command_party extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         InfoChat chat = plugin.pm.getData(playerSender).getChat();
         Party party = chat.getParty();
@@ -38,7 +41,7 @@ public class Command_party extends BukkitCommand<Goldiriath> {
             }
             return false;
         }
-        
+
         if (args.length == 2) {
             if (args[0].equals("invite")) {
                 PartyOptionSet optionSet = new PartyOptionSet(playerSender);
@@ -76,7 +79,7 @@ public class Command_party extends BukkitCommand<Goldiriath> {
                 Player player = getPlayer(args[1]);
                 Party invitedParty = plugin.pm.getData(player).getChat().getParty();
                 if (player == null) {
-                    playerSender.sendMessage("Player " + player.getName() +  " is not online right now");
+                    playerSender.sendMessage("Player " + player.getName() + " is not online right now");
                     return true;
                 }
 
@@ -84,12 +87,12 @@ public class Command_party extends BukkitCommand<Goldiriath> {
                     playerSender.sendMessage("Player doesnt have a party");
                     return true;
                 }
-                
+
                 if (!(invitedParty.getInvited().contains(playerSender.getUniqueId()))) {
                     playerSender.sendMessage("You were not invited to this party");
                     return true;
                 }
-                
+
                 if (party != null) {
                     playerSender.sendMessage("Please leave your current party before joining a new one");
                     return true;
@@ -97,7 +100,7 @@ public class Command_party extends BukkitCommand<Goldiriath> {
                 invitedParty.acceptInvite(playerSender);
                 return true;
             }
-            
+
             if (args[0].equals("deny")) {
                 Player player = getPlayer(args[1]);
                 InfoChat ic = plugin.pm.getData(player).getChat();

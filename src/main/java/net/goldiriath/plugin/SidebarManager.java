@@ -8,7 +8,7 @@ import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.info.InfoSidebar;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
-import net.pravian.bukkitlib.util.TimeUtils;
+import net.pravian.aero.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

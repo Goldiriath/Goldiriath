@@ -1,9 +1,9 @@
 package net.goldiriath.plugin;
 
-import net.pravian.bukkitlib.command.BukkitMessage;
+import net.pravian.aero.base.PluginMessage;
 import org.bukkit.ChatColor;
 
-public enum Message implements BukkitMessage {
+public enum Message implements PluginMessage {
 
     NO_MESSAGE(""),
     QUEST_GENERIC_REQUIREMENT("You don't have everything ready to start this quest yet."),
@@ -16,7 +16,8 @@ public enum Message implements BukkitMessage {
     QUEST_LEVEL_TO_LOW("Your level is not high enough to atempt this quest"),
     QUEST_NEED_ITEMS("You don't have the required items"),
     //
-    COMMAND_PLAYER_NOT_FOUND(ChatColor.RED + "Player not found!");
+    COMMAND_PLAYER_NOT_FOUND(ChatColor.RED + "Player not found!"),
+    COMMAND_SKILL_NOT_FOUND(ChatColor.RED + "Skill not found");
     //
     private final String message;
 

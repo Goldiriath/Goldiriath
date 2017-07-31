@@ -3,9 +3,15 @@ package net.goldiriath.plugin.util;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
 
 public class Util {
@@ -81,7 +87,31 @@ public class Util {
                     .replace("<mana>", "" + data.getMaxHealth());
         }
 
-        return line;
+        return ChatColor.translateAlternateColorCodes('&', line);
+    }
+
+    public static void sound(Player player, Sound sound, float pitch) {
+        player.playSound(player.getLocation(), sound, 1.0f, pitch);
+    }
+
+    public static void effect(Player player, Effect effect) {
+        player.playEffect(player.getLocation(), effect, null);
+    }
+
+    public static Player nearby(Projectile p, ProjectileSource ignored) {
+        for (Entity e : p.getNearbyEntities(1, 1, 1)) {
+            if (!(e instanceof Player)) {
+                continue;
+            }
+
+            if (ignored != null && p.getShooter().equals(ignored)) {
+                continue;
+            }
+
+            return (Player) e;
+        }
+
+        return null;
     }
 
 }

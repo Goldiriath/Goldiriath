@@ -3,11 +3,11 @@ package net.goldiriath.plugin.command;
 import java.util.Arrays;
 import java.util.UUID;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.item.meta.GItemMeta;
-import net.goldiriath.plugin.item.meta.ItemTier;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.goldiriath.plugin.game.item.meta.GItemMeta;
+import net.goldiriath.plugin.game.item.meta.ItemTier;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,11 +16,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.ChatPaginator;
 
-@CommandPermissions(permission = "goldiriath.gitem", source = SourceType.PLAYER)
-public class Command_gitemmeta extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "Shows information about or creates the item meta for an item",
+        usage = "/<command> <info | create | delete | set <key> <value...>",
+        subPermission = "gitem",
+        source = SourceType.PLAYER,
+        aliases = "gim,gmeta")
+public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
         if (args.length < 1) {
             return false;
@@ -77,7 +82,7 @@ public class Command_gitemmeta extends BukkitCommand<Goldiriath> {
                 if (args.length < 3) {
                     return false;
                 }
-                GItemMeta meta = plugin.im.getMeta(stack);
+                GItemMeta meta = plugin.im.getMeta(stack, true);
 
                 // 0: "set"
                 // 1: key

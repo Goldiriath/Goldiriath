@@ -1,12 +1,12 @@
 package net.goldiriath.plugin.chat;
 
-import com.google.common.collect.Lists;
 import java.util.List;
+import com.google.common.collect.Lists;
 import lombok.Getter;
+import me.mkremlins.fanciful.FancyMessage;
 import net.goldiriath.plugin.util.Validatable;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import thirdparty.mkremlins.fanciful.FancyMessage;
 
 public class PartyOptionSet {
 

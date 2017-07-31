@@ -1,21 +1,25 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.Message;
 import net.goldiriath.plugin.player.data.DataFlags;
-import net.pravian.bukkitlib.command.BukkitCommand;
-import net.pravian.bukkitlib.command.CommandPermissions;
-import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.aero.command.CommandOptions;
+import net.pravian.aero.command.SimpleCommand;
+import net.pravian.aero.command.SourceType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandPermissions(permission = "goldiriath.gflag", source = SourceType.PLAYER)
-public class Command_gflag extends BukkitCommand<Goldiriath> {
+@CommandOptions(
+        description = "Manage player flags",
+        usage = "/<command> <player> <list | <set | add | remove> <flag> <amount>>",
+        subPermission = "gflag",
+        aliases = "gf,gfl",
+        source = SourceType.PLAYER)
+public class Command_gflag extends SimpleCommand<Goldiriath> {
 
     @Override
-    protected boolean run(CommandSender sender, Command command, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
         if (args.length < 2) {
             return false;

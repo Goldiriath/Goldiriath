@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
-import net.pravian.bukkitlib.config.YamlConfig;
-import net.pravian.bukkitlib.util.LoggerUtils;
+import net.pravian.aero.config.YamlConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,7 +28,7 @@ public class PlayerManager extends AbstractService {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             getData(player, true); // Preload player
         }
-        if (players.size() > 1) {
+        if (players.size() > 0) {
             logger.info("Precached playerdata for " + players.size() + " players");
         }
     }
@@ -79,16 +78,16 @@ public class PlayerManager extends AbstractService {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         getData(event.getPlayer(), true); // Preload
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerLeaveEvent(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         savePlayer(event.getPlayer());
 
         if (players.remove(event.getPlayer().getUniqueId()) == null) {
-            LoggerUtils.warning("Could not remove playerdata for player " + event.getPlayer().getName() + ". No playerdata present!");
+            logger.warning("Could not remove playerdata for player " + event.getPlayer().getName() + ". No playerdata present!");
         }
     }
 
@@ -102,7 +101,7 @@ public class PlayerManager extends AbstractService {
         final PlayerData data = getData(player, false);
 
         if (data == null) {
-            LoggerUtils.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");
+            logger.warning("Not saving playerdata for player " + player.getName() + ". No playerdata present!");
             return;
         }
 
@@ -113,7 +112,7 @@ public class PlayerManager extends AbstractService {
     }
 
     private YamlConfig createPlayerConfig(Player player) {
-        return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
+        return new YamlConfig(plugin, "data/players/" + player.getUniqueId() + ".yml", false);
     }
 
 }
