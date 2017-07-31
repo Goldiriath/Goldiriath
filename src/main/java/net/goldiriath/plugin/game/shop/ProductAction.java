@@ -1,5 +1,5 @@
 
-package net.goldiriath.plugin.shop;
+package net.goldiriath.plugin.game.shop;
 
 public enum ProductAction {
     BUY,

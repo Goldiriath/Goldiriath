@@ -1,8 +1,8 @@
 package net.goldiriath.plugin.command;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.shop.Product;
-import net.goldiriath.plugin.shop.ShopProfile;
+import net.goldiriath.plugin.game.shop.Product;
+import net.goldiriath.plugin.game.shop.ShopProfile;
 import net.pravian.aero.command.CommandOptions;
 import net.pravian.aero.command.SimpleCommand;
 import net.pravian.aero.command.SourceType;
@@ -10,7 +10,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandOptions(permission = "goldiriath.gshop", source = SourceType.PLAYER)
+@CommandOptions(
+        permission = "goldiriath.gshop",
+        usage = "/<command> <shop> <info | open>",
+        source = SourceType.PLAYER)
 public class Command_gshop extends SimpleCommand<Goldiriath> {
 
     @Override
@@ -30,7 +33,11 @@ public class Command_gshop extends SimpleCommand<Goldiriath> {
             msg(ChatColor.GREEN + "Exchange rate: " + ChatColor.GOLD + profile.getExchange());
             msg(ChatColor.GREEN + "Products:");
             for (Product product : profile.getProducts()) {
-                msg(ChatColor.GRAY + " - " + ChatColor.GOLD + product.getDescription() + " for " + product.getPrice() + " Pm");
+                msg(ChatColor.GRAY + " - "
+                        + ChatColor.GOLD + product.getAction().name()
+                        + " " + product.getDescription()
+                        + " for " + product.getPrice() + " Pm"
+                );
             }
             return true;
         }

@@ -1,12 +1,12 @@
-package net.goldiriath.plugin.shop.old;
+package net.goldiriath.plugin.game.shop.old;
 
 import java.util.List;
 import lombok.Getter;
 import net.goldiriath.plugin.game.item.StaticItem;
-import net.goldiriath.plugin.shop.Product;
-import net.goldiriath.plugin.shop.ProductAction;
-import net.goldiriath.plugin.shop.ShopProfile;
-import net.goldiriath.plugin.shop.menu.BuyMenu;
+import net.goldiriath.plugin.game.shop.Product;
+import net.goldiriath.plugin.game.shop.ProductAction;
+import net.goldiriath.plugin.game.shop.ShopProfile;
+import net.goldiriath.plugin.game.shop.menu.BuyMenu;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -48,8 +48,7 @@ public class ProfileMenu extends AbstractService implements OptionClickEventHand
         //
         // Bake buy menu
         //
-        buyMenu = new BuyMenu(plugin, profile);
-
+        //buyMenu = new BuyMenu(plugin, profile);
         //
         // Bake sell menu
         //

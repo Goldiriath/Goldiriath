@@ -23,7 +23,7 @@ import net.goldiriath.plugin.game.questing.dialog.DialogManager;
 import net.goldiriath.plugin.game.questing.quest.QuestManager;
 import net.goldiriath.plugin.game.skill.SkillManager;
 import net.goldiriath.plugin.player.PlayerManager;
-import net.goldiriath.plugin.shop.ShopManager;
+import net.goldiriath.plugin.game.shop.ShopManager;
 import net.goldiriath.plugin.util.PlayerList;
 import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.logging.PlayerListLogSink;

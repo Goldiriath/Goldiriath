@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.shop;
+package net.goldiriath.plugin.game.shop;
 
 import java.io.File;
 import java.util.Map;

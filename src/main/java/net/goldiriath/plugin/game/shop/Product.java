@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.shop;
+package net.goldiriath.plugin.game.shop;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -57,7 +57,7 @@ public class Product implements Comparable<Product> {
         final Logger logger = profile.getLogger();
         final String[] parts = productString.split(" ");
 
-        if (parts.length != 3 && parts.length != 4) {
+        if (parts.length != 2 && parts.length != 3) {
             logger.warning("Not loading shop product " + id + " - " + productString + ". Invalid format!");
             return null;
         }
@@ -80,7 +80,7 @@ public class Product implements Comparable<Product> {
 
         ProductAction action = ProductAction.BOTH;
         if (parts.length == 3 && parts[2] != null) {
-            switch (parts[3]) {
+            switch (parts[2]) {
                 case "buy":
                     action = ProductAction.BUY;
                     break;
