@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.game.skill.type;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.skill.SkillMeta;
 import net.goldiriath.plugin.game.skill.SkillType;
@@ -16,6 +17,9 @@ public abstract class Skill {
     protected final SkillMeta meta;
     @Getter
     protected final Player player;
+    @Setter
+    @Getter
+    protected long lastUse;
 
     public Skill(SkillMeta meta, Player player) {
         this.plugin = Goldiriath.instance();

@@ -6,6 +6,7 @@ import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.skill.menu.WeaponMenu;
 import net.goldiriath.plugin.game.skill.type.ActiveSkill;
 import net.goldiriath.plugin.game.skill.type.Skill;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
@@ -81,8 +82,48 @@ public class SkillManager extends AbstractService {
             return;
         }
 
+        // Checks if the player has enough mana, and updates the players mana.
+        PlayerData data = plugin.pm.getData(player);
+        if(data.getMana() < skill.getType().getManaCost()) {
+            player.sendMessage(ChatColor.RED + "You do not have enough mana to use this skill!");
+            return;
+        }
+        // TODO: fix this when mana is implemented.
+        data.setMana(100);
+
+        // Checks if the skill is on cooldown.
+        if(System.nanoTime() - skill.getLastUse() < (long) skill.getType().getDelayTicks() * 50000000 ) {
+            // TODO: Implement a better way to show that a skill is on cooldown!
+            player.sendMessage(ChatColor.GOLD + "This Skill is still on cooldown!");
+            return;
+        }
+
         ActiveSkill active = (ActiveSkill) skill;
         active.use();
+        active.setLastUse(System.nanoTime());
+    }
+
+    public void setSkillLevel(Player player, SkillType type, int level) {
+        DataSkills data = plugin.pm.getData(player).getSkills();
+
+        if (level <= 0) {
+            data.getSkills().remove(type);
+            plugin.logger.info("Removed " + player.getName() + "'s " + type.getName() + " skill");
+            //player.sendMessage(ChatColor.DARK_GREEN + "Removed " + player.getName() + "'s " + type.getName() + " skill");
+            return;
+        }
+
+        Skill skill;
+        if (data.getSkills().containsKey(type)) {
+            skill = data.getSkills().get(type);
+        } else {
+            skill = type.create(player, new SkillMeta(type));
+            data.getSkills().put(type, skill);
+        }
+
+        skill.getMeta().level = level;
+       // player.sendMessage(ChatColor.DARK_GREEN + "Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
+        plugin.logger.info("Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
     }
 
 }

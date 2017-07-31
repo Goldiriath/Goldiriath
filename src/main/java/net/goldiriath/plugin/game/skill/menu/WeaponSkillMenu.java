@@ -97,7 +97,9 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
                 if (clickSkillBook) {
                     if(!InventoryUtil.isSkill(event.getEvent().getCurrentItem())) {
                         // TODO: implement a menu that allows the player to level skills.
-                        event.getPlayer().sendRawMessage("You have not learned that skill!");
+                        //event.getPlayer().sendRawMessage("You have not learned that skill!");
+                        SkillType type = SkillType.fromName(event.getName());
+                        new SkillLevelingMenu(plugin, type).openMenu(event.getPlayer());
                         break;
                     }
                     iClick.setCancelled(false);
