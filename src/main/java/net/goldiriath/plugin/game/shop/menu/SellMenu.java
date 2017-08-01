@@ -1,7 +1,6 @@
 package net.goldiriath.plugin.game.shop.menu;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import net.goldiriath.plugin.Goldiriath;
@@ -12,33 +11,31 @@ import net.goldiriath.plugin.game.shop.ShopProfile;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.IconMenu;
 import net.pravian.aero.component.PluginComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
-public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.OptionClickEventHandler {
+public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.OptionClickEventHandler {
 
-    private static final int SIZE = 3 * 9; // 3 rows
+    private static final int SIZE = 6 * 9; // 6 rows
     //
     private final ShopProfile profile;
     private final SortedMap<Product, Integer> transaction = new TreeMap<>();
 
-    private BuyMenu(Goldiriath plugin, ShopProfile profile) {
+    private SellMenu(Goldiriath plugin, ShopProfile profile) {
         super(plugin);
         this.profile = profile;
     }
 
     public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player) {
         int money = plugin.pm.getData(player).getMoney();
-        BuyMenu handler = new BuyMenu(plugin, profile);
-        IconMenu menu = new IconMenu("Buy items - Wallet: " + money + "Pm", SIZE, handler, plugin);
+        SellMenu handler = new SellMenu(plugin, profile);
+        IconMenu menu = new IconMenu("Sell items - Wallet: " + money + "Pm", SIZE, handler, plugin);
 
         int slot = 0;
-        for (Product product : profile.getBuyProducts()) {
+        for (Product product : profile.getSellProducts()) {
             menu.setOption(slot, product.getDisplayStack(), product.toString());
             slot++;
         }
@@ -56,21 +53,13 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
         if (event.getName().equals("done")) {
             event.setWillClose(true);
             event.setWillDestroy(true);
-            PlayerInventory inv = player.getInventory();
 
-            // Subtract money, we assume the player has enough money
-            // since adding an item to the transaction performs this check
+            // Add money
             PlayerData data = plugin.pm.getData(player);
-            data.setMoney(data.getMoney() - TransactionUtil.transactionWorth(transaction));
+            int amt = (int) (TransactionUtil.transactionWorth(transaction) * profile.getExchange());
+            data.setMoney(data.getMoney() + amt);
 
-            // Add items
-            for (Map.Entry<Product, Integer> entry : transaction.entrySet()) {
-                ItemStack stack = entry.getKey().getStack().clone();
-                stack.setAmount(entry.getValue());
-                InventoryUtil.storeItem(inv, stack, true);
-            }
-
-            player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 1.2f);
+            player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 0.9f);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1f, 1.3f);
             return;
         }
@@ -82,7 +71,6 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
             // Clicked on the transaction bar, remove one of that item
 
             int transIndex = slot - (SIZE - 9);
-
             Product product = new ArrayList<>(transaction.keySet()).get(transIndex);
             int amt = transaction.get(product);
             amt--;
@@ -93,47 +81,53 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
                 transaction.put(product, amt);
             }
             TransactionUtil.updateTransaction(iClick.getInventory(), SIZE - 9, transaction);
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1.2f);
 
             // Give the player the item back
             InventoryUtil.storeItem(player.getInventory(), product.getStack(), true);
+
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 0.8f);
             return;
         }
 
         // Check if we clicked the player inventory
-        if (iClick.getSlot() != iClick.getRawSlot()) {
-            // Raw slot != slot: we must be in the bottom inventory, return
+        if (iClick.getSlot() == iClick.getRawSlot()) {
+            // Raw slot == slot: we must be in the top inventory, return
             return;
         }
 
-        // Clicked on a product (maybe?), add one of that item
+        ItemStack clickStack = iClick.getCurrentItem();
+        if (clickStack == null) {
+            // Clicked on an empty spot
+            return;
+        }
+
+        // Find the matching product
         Product product = null;
-        for (Product buyProduct : profile.getBuyProducts()) {
-            if (buyProduct.toString().equals(event.getName())) {
-                product = buyProduct;
+        for (Product sellProduct : profile.getSellProducts()) {
+            if (sellProduct.getStack().isSimilar(clickStack)) {
+                product = sellProduct;
                 break;
             }
         }
-
         if (product == null) {
-            return;
-        }
-
-        // Check if we have enough money
-        int money = plugin.pm.getData(player).getMoney();
-        if (TransactionUtil.transactionWorth(transaction) + product.getPrice() > money) {
-            player.sendMessage(ChatColor.RED + "The shopkeeper looks at you angrily and says: "
-                    + "\"Do you have enough money for that?\"");
+            // Can't sell this product
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, 1f, 1f);
             return;
         }
 
-        // Add one
+        // Remove one item
+        if (clickStack.getAmount() == 0) {
+            iClick.getInventory().setItem(iClick.getRawSlot(), null);
+        } else {
+            clickStack.setAmount(clickStack.getAmount() - 1);
+        }
+
+        // Add one to the cart
         int amt = transaction.getOrDefault(product, 0);
         amt++;
         transaction.put(product, amt);
-        TransactionUtil.updateTransaction(iClick.getInventory(), SIZE - 9, transaction);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 0.8f);
+        TransactionUtil.updateTransaction(event.getEvent().getInventory(), SIZE - 9, transaction);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1.2f);
     }
 
     @Override

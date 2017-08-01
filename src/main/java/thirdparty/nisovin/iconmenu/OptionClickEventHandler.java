@@ -1,4 +1,3 @@
-
 package thirdparty.nisovin.iconmenu;
 
 public interface OptionClickEventHandler {

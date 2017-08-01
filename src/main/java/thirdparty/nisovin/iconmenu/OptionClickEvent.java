@@ -1,4 +1,3 @@
-
 package thirdparty.nisovin.iconmenu;
 
 import lombok.Getter;
@@ -7,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class OptionClickEvent {
+
     @Getter
     private final InventoryClickEvent event;
     @Getter
@@ -24,6 +24,7 @@ public class OptionClickEvent {
     @Getter
     @Setter
     private boolean destroy = false;
+
     public OptionClickEvent(InventoryClickEvent event, Player player, int rawSlot, OptionMenu menu, Option option) {
         this.event = event;
         this.player = player;
@@ -35,7 +36,5 @@ public class OptionClickEvent {
     public boolean hasOption() {
         return option != null;
     }
-
-
 
 }

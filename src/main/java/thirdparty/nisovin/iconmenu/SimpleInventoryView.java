@@ -56,7 +56,9 @@ public class SimpleInventoryView extends InventoryView {
     }
 
     private void checkSlot(int slot) {
-        if (slot == OUTSIDE) return;
+        if (slot == OUTSIDE) {
+            return;
+        }
 
         int size = countSlots() + 4; // armor slots
         if (slot < 0 || slot >= size) {

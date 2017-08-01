@@ -32,7 +32,7 @@ public class Command_gshop extends SimpleCommand<Goldiriath> {
             msg(ChatColor.GREEN + "Shop: " + ChatColor.GOLD + profile.getId());
             msg(ChatColor.GREEN + "Exchange rate: " + ChatColor.GOLD + profile.getExchange());
             msg(ChatColor.GREEN + "Products:");
-            for (Product product : profile.getProducts()) {
+            for (Product product : profile.getAllProducts()) {
                 msg(ChatColor.GRAY + " - "
                         + ChatColor.GOLD + product.getAction().name()
                         + " " + product.getDescription()
