@@ -14,6 +14,25 @@ import org.bukkit.inventory.ItemStack;
 
 public enum SkillType {
 
+    //sword skills:
+    SWORD_PROTECTIVE_FORMATION(
+            SwordProtectiveFormation.class,
+            "Protective Formation",
+            WeaponType.SWORD,
+            50,
+            60 * 20,
+            1,
+            StaticItem.SKILL_SWORD_PROTECTIVE_FORMATION
+    ),
+    SWORD_HOLY_SLAM(
+            SwordHolySlam.class,
+            "Holy Slam",
+            WeaponType.SWORD,
+            50,
+            10 * 20,
+            0,
+            StaticItem.SKILL_SWORD_HOLY_SLAM
+    ),
     SWORD_BLESSING(
             SwordBlessing.class,
             "Blessing",
@@ -21,7 +40,8 @@ public enum SkillType {
             10,
             20 * 20,
             0,
-            StaticItem.SKILL_SWORD_BLESSING),
+            StaticItem.SKILL_SWORD_BLESSING
+    ),
     SWORD_DEVINE_LIGHT(
             SwordDevineLight.class,
             "Devine Light",
@@ -29,15 +49,47 @@ public enum SkillType {
             20,
             25 * 20,
             1,
-            StaticItem.SKILL_SWORD_DIVINE_LIGHT),
+            StaticItem.SKILL_SWORD_DIVINE_LIGHT
+    ),
+
+    //bow skills:
+    BOW_SPREAD_SHOT(
+            BowSpreadShot.class,
+            "Spread shot",
+            WeaponType.BOW,
+            25,
+            20 * 20,
+            1,
+            StaticItem.SKILL_BOW_SPREADSHOT
+    ),
+    BOW_PUNCH_SHOT(
+            BowPunchShot.class,
+            "Punch shot",
+            WeaponType.BOW,
+            20,
+            25 * 20,
+            2,
+            StaticItem.SKILL_BOW_PUNCHSHOT
+    ),
+    BOW_BLEEDING_ARROWS(
+            BowBleedingArrows.class,
+            "Bleeding Arrows",
+            WeaponType.BOW,
+            30,
+            20 * 20,
+            3,
+            StaticItem.SKILL_BOW_BLEEDING_ARROWS
+    ),
     BOW_POWERSHOT(
             BowPowerShot.class,
             "Powershot",
             WeaponType.BOW,
             50,
             15 * 20,
-            1,
-            StaticItem.SKILL_BOW_POWERSHOT);
+            0,
+            StaticItem.SKILL_BOW_POWERSHOT
+    );
+
     //
     @Getter
     private final Class<? extends Skill> skillClass;

@@ -17,10 +17,16 @@ public enum StaticItem {
     MENU_SKILL_WAND(Material.THIN_GLASS, 5, ChatColor.GOLD + "Wand Skills"),
     MENU_SKILL_KNIFE(Material.THIN_GLASS, 6, ChatColor.GOLD + "Knife Skills"),
     //
-    SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 0, ChatColor.GOLD + "Blessing"),
-    SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 1, ChatColor.GOLD + "Divine Light"),
-    SKILL_BOW_QUICKSHOT(Material.STAINED_GLASS_PANE, 2, ChatColor.GOLD + "Quickshot"),
-    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 3, ChatColor.GOLD + "Powershot"),
+    SKILL_BOW_QUICKSHOT(Material.STAINED_GLASS_PANE, 2, ChatColor.GOLD + "Quick shot"),
+    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 3, ChatColor.GOLD + "Power shot"),
+    SKILL_BOW_SPREADSHOT(Material.STAINED_GLASS_PANE, 4, ChatColor.GOLD + "Spread shot"),
+    SKILL_BOW_PUNCHSHOT(Material.STAINED_GLASS_PANE, 5, ChatColor.GOLD + "Punch shot"),
+    SKILL_BOW_BLEEDING_ARROWS(Material.STAINED_GLASS_PANE, 6, ChatColor.GOLD + "Bleeding Arrows"),
+    //
+    SKILL_SWORD_HOLY_SLAM(Material.STAINED_GLASS_PANE, 2, ChatColor.GOLD + "Holy Slam"),
+    SKILL_SWORD_PROTECTIVE_FORMATION(Material.STAINED_GLASS_PANE, 3, ChatColor.GOLD + "Protective Formation"),
+    SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 4, ChatColor.GOLD + "Blessing"),
+    SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 5, ChatColor.GOLD + "Divine Light"),
     //
     SKILL_BOOK(Material.BOOK, 0, ChatColor.GOLD + "Skill Book");
     //
