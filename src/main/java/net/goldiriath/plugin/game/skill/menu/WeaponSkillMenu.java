@@ -114,6 +114,10 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case PICKUP_ALL: {
                 // Allow picking up skills from the hotbar
                 if (clickSkillSlot) {
+                    // stops the player from picking up a skill that is on cooldown.
+                    if(InventoryUtil.skillOnCooldown(event.getEvent().getCurrentItem())) {
+                        break;
+                    }
                     iClick.setCancelled(false);
                     break;
                 }
@@ -137,14 +141,28 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case SWAP_WITH_CURSOR: {
                 // Allow dropping a skill into the skills bar
                 if (clickSkillSlot) {
+                    ItemStack stack = event.getEvent().getCurrentItem();
+                    // stops the player from swapping a skill that is on cooldown.
+                    if(InventoryUtil.skillOnCooldown(stack) && InventoryUtil.isSkill(stack)) {
+                        break;
+                    }
+
                     Inventory playerInventory = event.getPlayer().getInventory();
-                    for(int i = 0; i < playerInventory.getSize(); i++) {
-                        if(event.getEvent().getCursor().equals(playerInventory.getItem(i))) {
-                            int pos = event.getPlayer().getInventory().first(event.getEvent().getCursor());
-                            resetItemLater(event.getPlayer().getInventory(), pos);
+                    ItemStack item = event.getEvent().getCursor();
+                    int pos = InventoryUtil.firstSimilar(event.getPlayer().getInventory(), item);
+
+                    if (pos >= 0) {
+
+                        if (!playerInventory.getItem(pos).equals(item) && playerInventory.getItem(pos).isSimilar(item)) {
+                            pos = event.getEvent().getRawSlot();
+                            //resetItemLater(event.getPlayer().getInventory(), pos);
                             break;
                         }
+                        iClick.setCancelled(false);
+                        resetItemLater(event.getPlayer().getInventory(), pos);
+                        break;
                     }
+
                     iClick.setCancelled(false);
                     break;
                 }
