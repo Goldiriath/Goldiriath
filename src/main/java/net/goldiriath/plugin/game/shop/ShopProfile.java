@@ -5,7 +5,9 @@ import java.util.logging.Logger;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.shop.menu.BuyMenu;
 import net.goldiriath.plugin.game.shop.menu.ChooseMenu;
+import net.goldiriath.plugin.game.shop.menu.SellMenu;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Validatable;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,7 +45,13 @@ public class ShopProfile implements ConfigLoadable, Validatable {
 
     public void openMenu(Player player, Runnable callback) {
         // TODO: record somewhere, and destroy when shutting down
-        ChooseMenu.openMenu(plugin, this, player, callback);
+        if (sellProducts.isEmpty()) {
+            BuyMenu.openMenu(plugin, this, player, callback);
+        } else if (buyProducts.isEmpty()) {
+            SellMenu.openMenu(plugin, this, player, callback);
+        } else {
+            ChooseMenu.openMenu(plugin, this, player, callback);
+        }
     }
 
     @Override
