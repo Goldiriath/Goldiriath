@@ -30,7 +30,7 @@ public enum SkillType {
             WeaponType.SWORD,
             50,
             10 * 20,
-            0,
+            1,
             StaticItem.SKILL_SWORD_HOLY_SLAM
     ),
     SWORD_BLESSING(
