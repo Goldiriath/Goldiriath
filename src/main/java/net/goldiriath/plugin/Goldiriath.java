@@ -21,9 +21,9 @@ import net.goldiriath.plugin.game.loot.LootManager;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.game.questing.dialog.DialogManager;
 import net.goldiriath.plugin.game.questing.quest.QuestManager;
+import net.goldiriath.plugin.game.shop.ShopManager;
 import net.goldiriath.plugin.game.skill.SkillManager;
 import net.goldiriath.plugin.player.PlayerManager;
-import net.goldiriath.plugin.game.shop.ShopManager;
 import net.goldiriath.plugin.util.PlayerList;
 import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.logging.PlayerListLogSink;
@@ -52,6 +52,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public PlayerManager pm;
     public XPManager xm;
     public DevMode dev;
+    public ShopManager sh;
     public QuestManager qm;
     public DialogManager dlm;
     public LootManager lm;
@@ -64,7 +65,6 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public EffectsTicker et;
     public ArrowHitTracker at;
     public InventoryManager iv;
-    public ShopManager sh;
     public MetaCycler ms;
     public AutoClose ac;
     public InfiDispenser id;
@@ -90,6 +90,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         pm = services.registerService(PlayerManager.class);
         xm = services.registerService(XPManager.class);
         dev = services.registerService(DevMode.class);
+        sh = services.registerService(ShopManager.class);
         qm = services.registerService(QuestManager.class);
         dlm = services.registerService(DialogManager.class);
         lm = services.registerService(LootManager.class);
@@ -102,7 +103,6 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         et = services.registerService(EffectsTicker.class);
         at = services.registerService(ArrowHitTracker.class);
         iv = services.registerService(InventoryManager.class);
-        sh = services.registerService(ShopManager.class);
         ms = services.registerService(MetaCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);
@@ -126,7 +126,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         // Setup command handler
         ch.setCommandClassPrefix("Command_");
         ch.loadFrom(Command_goldiriath.class.getPackage());
-        ch.registerAll();
+        ch.registerAll("goldiriath", true);
 
         logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by Prozza and derpfacedirk is enabled");
     }

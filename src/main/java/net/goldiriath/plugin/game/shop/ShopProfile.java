@@ -38,8 +38,12 @@ public class ShopProfile implements ConfigLoadable, Validatable {
     }
 
     public void openMenu(Player player) {
+        openMenu(player, null);
+    }
+
+    public void openMenu(Player player, Runnable callback) {
         // TODO: record somewhere, and destroy when shutting down
-        ChooseMenu.openMenu(plugin, this, player);
+        ChooseMenu.openMenu(plugin, this, player, callback);
     }
 
     @Override

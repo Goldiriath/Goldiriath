@@ -25,16 +25,18 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
     private static final int SIZE = 3 * 9; // 3 rows
     //
     private final ShopProfile profile;
+    private final Runnable callback;
     private final SortedMap<Product, Integer> transaction = new TreeMap<>();
 
-    private BuyMenu(Goldiriath plugin, ShopProfile profile) {
+    private BuyMenu(Goldiriath plugin, ShopProfile profile, Runnable callback) {
         super(plugin);
         this.profile = profile;
+        this.callback = callback;
     }
 
-    public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player) {
+    public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player, Runnable callback) {
         int money = plugin.pm.getData(player).getMoney();
-        BuyMenu handler = new BuyMenu(plugin, profile);
+        BuyMenu handler = new BuyMenu(plugin, profile, callback);
         IconMenu menu = new IconMenu("Buy items - Wallet: " + money + "Pm", SIZE, handler, plugin);
 
         int slot = 0;
@@ -72,6 +74,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
 
             player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 1.2f);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1f, 1.3f);
+            callback.run();
             return;
         }
 

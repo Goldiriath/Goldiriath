@@ -11,15 +11,17 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 public class ChooseMenu extends PluginComponent<Goldiriath> implements IconMenu.OptionClickEventHandler {
 
     private final ShopProfile profile;
+    private final Runnable callback;
 
-    public ChooseMenu(Goldiriath plugin, ShopProfile profile) {
+    public ChooseMenu(Goldiriath plugin, ShopProfile profile, Runnable callback) {
         super(plugin);
         this.profile = profile;
+        this.callback = callback;
     }
 
-    public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player) {
+    public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player, Runnable callback) {
         int money = plugin.pm.getData(player).getMoney();
-        ChooseMenu handler = new ChooseMenu(plugin, profile);
+        ChooseMenu handler = new ChooseMenu(plugin, profile, callback);
         IconMenu menu = new IconMenu(profile.getName() + " - Wallet: " + money + "Pm", 9, handler, plugin);
 
         menu.setOption(0, StaticItem.MENU_BUY_ITEMS.getStack(), "buy");
@@ -31,9 +33,9 @@ public class ChooseMenu extends PluginComponent<Goldiriath> implements IconMenu.
     @Override
     public void onOptionClick(IconMenu.OptionClickEvent event) {
         if ("buy".equals(event.getName())) {
-            BuyMenu.openMenu(plugin, profile, event.getPlayer());
+            BuyMenu.openMenu(plugin, profile, event.getPlayer(), callback);
         } else if ("sell".equals(event.getName())) {
-            SellMenu.openMenu(plugin, profile, event.getPlayer());
+            SellMenu.openMenu(plugin, profile, event.getPlayer(), callback);
         }
     }
 

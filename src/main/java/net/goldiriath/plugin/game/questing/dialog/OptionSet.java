@@ -1,15 +1,15 @@
 package net.goldiriath.plugin.game.questing.dialog;
 
-import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import com.google.common.collect.Lists;
+import mkremins.fanciful.FancyMessage;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Validatable;
 import net.pravian.aero.util.ChatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import me.mkremlins.fanciful.FancyMessage;
 
 public class OptionSet implements ConfigLoadable {
 
