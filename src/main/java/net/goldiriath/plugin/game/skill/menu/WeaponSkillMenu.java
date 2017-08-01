@@ -6,6 +6,7 @@ import net.goldiriath.plugin.game.inventory.SlotType;
 import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.game.skill.SkillType;
 import net.goldiriath.plugin.game.skill.type.WeaponType;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.data.DataSkills;
 import net.goldiriath.plugin.util.IconMenu;
 import net.pravian.aero.component.PluginComponent;
@@ -41,7 +42,31 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
                 ItemMeta meta = unlearnedSkill.getItemMeta();
                 List<String> lore = new ArrayList<>();
-                lore.add(s.getName());
+                lore.add(ChatColor.AQUA.toString() + ChatColor.ITALIC + s.getName());
+                lore.add(ChatColor.GOLD + "Requires:");
+
+                PlayerData dataPlayer = plugin.pm.getData(player);
+
+                List<SkillType> weaponSkills = SkillType.findForWeapon(s.getWeapon());
+                List<SkillType> unlockedSkills = new ArrayList<>();
+
+                for(int index = 0; index < weaponSkills.size(); index++) {
+                    if(dataPlayer.getSkills().getSkills().containsKey(weaponSkills.get(index))) {
+                        unlockedSkills.add(weaponSkills.get(index));
+                    }
+                }
+
+                if(unlockedSkills.size() < s.getReqSkills()) {
+                    lore.add(ChatColor.GRAY + "* " + ChatColor.RED + "" + s.getReqSkills() + " unlocked " + s.getWeapon() + " skills");
+                } else {
+                    lore.add(ChatColor.GRAY + "* " + ChatColor.GREEN + "" + s.getReqSkills() + " unlocked " + s.getWeapon() + " skills");
+                }
+
+                if(dataPlayer.getSkillPoints() < 1) {
+                    lore.add(ChatColor.GRAY + "* " +ChatColor.RED + "" + 1 + " skillpoint");
+                } else {
+                    lore.add(ChatColor.GRAY + "* " +ChatColor.GREEN + "" + 1 + " skillpoint");
+                }
 
                 meta.setLore(lore);
                 unlearnedSkill.setItemMeta(meta);
@@ -89,6 +114,10 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case PICKUP_ALL: {
                 // Allow picking up skills from the hotbar
                 if (clickSkillSlot) {
+                    // stops the player from picking up a skill that is on cooldown.
+                    if(InventoryUtil.skillOnCooldown(event.getEvent().getCurrentItem())) {
+                        break;
+                    }
                     iClick.setCancelled(false);
                     break;
                 }
@@ -112,14 +141,28 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case SWAP_WITH_CURSOR: {
                 // Allow dropping a skill into the skills bar
                 if (clickSkillSlot) {
+                    ItemStack stack = event.getEvent().getCurrentItem();
+                    // stops the player from swapping a skill that is on cooldown.
+                    if(InventoryUtil.skillOnCooldown(stack) && InventoryUtil.isSkill(stack)) {
+                        break;
+                    }
+
                     Inventory playerInventory = event.getPlayer().getInventory();
-                    for(int i = 0; i < playerInventory.getSize(); i++) {
-                        if(event.getEvent().getCursor().equals(playerInventory.getItem(i))) {
-                            int pos = event.getPlayer().getInventory().first(event.getEvent().getCursor());
-                            resetItemLater(event.getPlayer().getInventory(), pos);
+                    ItemStack item = event.getEvent().getCursor();
+                    int pos = InventoryUtil.firstSimilar(event.getPlayer().getInventory(), item);
+
+                    if (pos >= 0) {
+
+                        if (!playerInventory.getItem(pos).equals(item) && playerInventory.getItem(pos).isSimilar(item)) {
+                            pos = event.getEvent().getRawSlot();
+                            //resetItemLater(event.getPlayer().getInventory(), pos);
                             break;
                         }
+                        iClick.setCancelled(false);
+                        resetItemLater(event.getPlayer().getInventory(), pos);
+                        break;
                     }
+
                     iClick.setCancelled(false);
                     break;
                 }
