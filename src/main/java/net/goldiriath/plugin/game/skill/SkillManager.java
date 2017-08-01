@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -68,21 +69,6 @@ public class SkillManager extends AbstractService {
             new WeaponMenu(plugin).openMenu(player);
             return;
         }
-
-        DataSkills data = plugin.pm.getData(player).getSkills();
-
-        SkillType type = SkillType.fromDisplay(stack);
-        if (type == null) {
-            return;
-        }
-
-        if (!data.getSkills().containsKey(type)) {
-            player.sendMessage(ChatColor.RED + "You haven't learnt that spell, so you cannot use it.");
-            return;
-        }
-
-        event.setCancelled(true);
-        useSkill(player, data.getSkills().get(type));
     }
 
     public void useSkill(Player player, Skill skill) {
@@ -93,14 +79,14 @@ public class SkillManager extends AbstractService {
 
         // stops the player from using skills in its hotbar that do no correspond to its weapon
         SkillType type = skill.getType();
-        if(!type.getWeapon().equals(InventoryUtil.getWeaponType(player))) {
+        if (!type.getWeapon().equals(InventoryUtil.getWeaponType(player))) {
             player.sendMessage(ChatColor.RED + "You cannot use this skill with your equiped weapon!");
             return;
         }
 
         // Checks if the player has enough mana, and updates the players mana.
         PlayerData data = plugin.pm.getData(player);
-        if(data.getMana() < skill.getType().getManaCost()) {
+        if (data.getMana() < skill.getType().getManaCost()) {
             player.sendMessage(ChatColor.RED + "You do not have enough mana to use this skill!");
             return;
         }
@@ -108,15 +94,16 @@ public class SkillManager extends AbstractService {
         data.setMana(100);
 
         // Checks if the skill is on cooldown.
-        if(System.nanoTime() - skill.getLastUse() < (long) skill.getType().getDelayTicks() * 50000000 ) {
+        if (System.nanoTime() - skill.getLastUse() < (long) skill.getType().getDelayTicks() * 50000000 ) {
             player.sendMessage(ChatColor.GOLD + "This Skill is still on cooldown!");
             return;
         }
 
-        ItemStack usedSkill = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
+        PlayerInventory inventory = player.getInventory();
+        ItemStack usedSkill = inventory.getItem(inventory.first(skill.getType().getDisplay().getStack()));
         usedSkill.setAmount(skill.getType().getDelayTicks()/20);
 
-        skillOnCooldown(player, player.getInventory(), player.getInventory().getHeldItemSlot(), skill.getType());
+        skillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
 
         ActiveSkill active = (ActiveSkill) skill;
         active.use();
@@ -191,6 +178,22 @@ public class SkillManager extends AbstractService {
 
         // Ensure a skillbook is present
         inventory.setItem(SlotType.SKILL_BOOK.getIndices()[0], StaticItem.SKILL_BOOK.getStack());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void activateSkill(PlayerItemHeldEvent event) {
+        if(event.getPreviousSlot() == 0 && event.getNewSlot() > 0 && event.getNewSlot() < 5) {
+            event.setCancelled(true);
+
+            PlayerInventory inventory = event.getPlayer().getInventory();
+            PlayerData data = plugin.pm.getData(event.getPlayer());
+            ItemStack stack = inventory.getItem(event.getNewSlot());
+
+            if(stack != null) {
+                Skill usedSkill = data.getSkills().getSkills().get(InventoryUtil.getSkill(stack));
+                useSkill(event.getPlayer(), usedSkill);
+            }
+        }
     }
 
 }
