@@ -42,8 +42,10 @@ public class SkillManager extends AbstractService {
     // ignoreCancelled = false: see documentation
     @EventHandler(ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR
-                && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+
+        // TODO: look at being able to use skillbook on blocks.
+
+        if (event.getAction() != Action.RIGHT_CLICK_AIR) {
             return;
         }
 

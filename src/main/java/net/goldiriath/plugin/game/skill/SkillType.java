@@ -36,7 +36,7 @@ public enum SkillType {
             WeaponType.BOW,
             50,
             15 * 20,
-            1,
+            0,
             StaticItem.SKILL_BOW_POWERSHOT);
     //
     @Getter
