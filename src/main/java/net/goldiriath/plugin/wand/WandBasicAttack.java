@@ -3,10 +3,12 @@ package net.goldiriath.plugin.wand;
 import java.util.Collection;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.inventory.InventoryUtil;
+import net.goldiriath.plugin.player.info.InfoBattle;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +23,7 @@ public class WandBasicAttack extends AbstractService {
 
     public static double Y_OFFSET = -0.3;
     public static double HIT_RADIUS = 0.4;
+    public static double ATTACK_SPEED = 0.8; // hits/second
 
     public WandBasicAttack(Goldiriath plugin) {
         super(plugin);
@@ -46,7 +49,20 @@ public class WandBasicAttack extends AbstractService {
             return;
         }
 
-        basicAttack(event.getPlayer(), event.getItem());
+        Player player = event.getPlayer();
+        InfoBattle info = plugin.pm.getData(player).getBattle();
+
+        // Limit fire rate
+        long time = System.nanoTime();
+        if (time - info.getLastWandUse() < (1 / ATTACK_SPEED) * 1_000_000_000) {
+            return;
+        }
+        info.setLastWandUse(time);
+
+        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(ATTACK_SPEED);
+        basicAttack(player, event.getItem());
+
+        event.setCancelled(true);
     }
 
     public void basicAttack(Player player, ItemStack wand) {
@@ -97,7 +113,7 @@ public class WandBasicAttack extends AbstractService {
             effect.start();
 
             // Play sound
-            player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.8f);
+            player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 1.8f);
 
             // TODO: Hit ground effect
             return true;
