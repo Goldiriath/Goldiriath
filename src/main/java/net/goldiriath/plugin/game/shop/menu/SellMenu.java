@@ -63,7 +63,10 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
 
             player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 0.9f);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1f, 1.3f);
-            callback.run();
+
+            if (callback != null) {
+                callback.run();
+            }
             return;
         }
 
