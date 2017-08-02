@@ -5,6 +5,7 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -58,9 +59,13 @@ public class WandBasicAttack extends AbstractService {
         origin.setDirection(direction);
         origin.add(0, Y_OFFSET, 0);
 
+        // Play the visual
         Effect effect = new RayEffect(plugin.elb.getManager(), new AttackDamager(player, wand));
         effect.setDynamicOrigin(new DynamicLocation(origin));
         effect.start();
+
+        // Play sound
+        player.getWorld().playSound(origin, Sound.ENTITY_TNT_PRIMED, 1.0f, 1.4f);
     }
 
     public class AttackDamager implements RayEffect.LocationCallback {
@@ -90,6 +95,9 @@ public class WandBasicAttack extends AbstractService {
             SplashEffect effect = new SplashEffect(plugin.elb.getManager());
             effect.setDynamicOrigin(new DynamicLocation(location));
             effect.start();
+
+            // Play sound
+            player.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.8f);
 
             // TODO: Hit ground effect
             return true;
