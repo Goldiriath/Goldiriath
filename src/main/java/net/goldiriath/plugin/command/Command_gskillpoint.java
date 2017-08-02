@@ -19,7 +19,7 @@ public class Command_gskillpoint extends SimpleCommand<Goldiriath> {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         PlayerData data = plugin.pm.getData(playerSender);
-        if (args.length < 2) {
+        if (args.length < 2 || args.length > 2) {
             return showUsage();
         }
 
@@ -27,7 +27,12 @@ public class Command_gskillpoint extends SimpleCommand<Goldiriath> {
         try {
             amount = Integer.parseInt(args[1]);
         } catch (Exception NumberFormatException) {
-            msg("Invalid level!");
+            msg("Invalid amount!");
+            return true;
+        }
+
+        if(amount < 0) {
+            msg("Skillpoints cannot be lower than 0");
             return true;
         }
 

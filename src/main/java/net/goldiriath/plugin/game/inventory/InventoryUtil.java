@@ -44,7 +44,7 @@ public class InventoryUtil {
         return false;
     }
 
-    public static boolean skillOnCooldown(ItemStack stack) {
+    public static boolean isSkillOnCooldown(ItemStack stack) {
 
         // Loops through all Skills defined in SkillType and checks if stack is that skill.
         for(int i = 0; i < SkillType.values().length; i++) {
@@ -117,9 +117,8 @@ public class InventoryUtil {
 
     }
 
-    public static WeaponType getWeaponType(Player player) {
+    public static WeaponType getWeaponType(ItemStack stack) {
         // Returns the WeaponType that is in the first slot of the players hotbar
-        ItemStack stack = getWeapon(player);
         if(stack == null) {
             return null;
         }
@@ -147,10 +146,14 @@ public class InventoryUtil {
     }
 
     /**
-     * method returns the position of the first similar item found in the PlayerInventory.
+     * Returns an integer that is the first position where an item is found
+     * that is similar to the search object. The inventory argument is the
+     * inventory to search in, and the Itemstack argument is the Itemstack
+     * to find.
+     *
      * @param inventory the PlayerInventory to search.
      * @param stack the ItemStack to search for.
-     * @return int position of stack, or -1 if it was not found.
+     * @return the position of the found item or -1 if nothing was found
      */
     public static int firstSimilar(final PlayerInventory inventory, ItemStack stack) {
         for (int i = 0; i < inventory.getSize(); i++) {

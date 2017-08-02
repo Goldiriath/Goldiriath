@@ -50,22 +50,22 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
                 List<SkillType> weaponSkills = SkillType.findForWeapon(s.getWeapon());
                 List<SkillType> unlockedSkills = new ArrayList<>();
 
-                for(int index = 0; index < weaponSkills.size(); index++) {
-                    if(dataPlayer.getSkills().getSkills().containsKey(weaponSkills.get(index))) {
+                for (int index = 0; index < weaponSkills.size(); index++) {
+                    if (dataPlayer.getSkills().getSkills().containsKey(weaponSkills.get(index))) {
                         unlockedSkills.add(weaponSkills.get(index));
                     }
                 }
 
-                if(unlockedSkills.size() < s.getReqSkills()) {
+                if (unlockedSkills.size() < s.getReqSkills()) {
                     lore.add(ChatColor.GRAY + "* " + ChatColor.RED + "" + s.getReqSkills() + " unlocked " + s.getWeapon() + " skills");
                 } else {
                     lore.add(ChatColor.GRAY + "* " + ChatColor.GREEN + "" + s.getReqSkills() + " unlocked " + s.getWeapon() + " skills");
                 }
 
-                if(dataPlayer.getSkillPoints() < 1) {
-                    lore.add(ChatColor.GRAY + "* " +ChatColor.RED + "" + 1 + " skillpoint");
+                if (dataPlayer.getSkillPoints() < 1) {
+                    lore.add(ChatColor.GRAY + "* " + ChatColor.RED + "" + 1 + " skillpoint");
                 } else {
-                    lore.add(ChatColor.GRAY + "* " +ChatColor.GREEN + "" + 1 + " skillpoint");
+                    lore.add(ChatColor.GRAY + "* " + ChatColor.GREEN + "" + 1 + " skillpoint");
                 }
 
                 meta.setLore(lore);
@@ -114,8 +114,8 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
             case PICKUP_ALL: {
                 // Allow picking up skills from the hotbar
                 if (clickSkillSlot) {
-                    // stops the player from picking up a skill that is on cooldown.
-                    if(InventoryUtil.skillOnCooldown(event.getEvent().getCurrentItem())) {
+                    // Stops the player from picking up a skill that is on cooldown.
+                    if (InventoryUtil.isSkillOnCooldown(event.getEvent().getCurrentItem())) {
                         break;
                     }
                     iClick.setCancelled(false);
@@ -124,9 +124,9 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
                 // Allow picking up skills
                 if (clickSkillBook) {
-                    if(!InventoryUtil.isSkill(event.getEvent().getCurrentItem())) {
+                    if (!InventoryUtil.isSkill(event.getEvent().getCurrentItem())) {
+
                         // TODO: implement a menu that allows the player to level skills.
-                        //event.getPlayer().sendRawMessage("You have not learned that skill!");
                         SkillType type = SkillType.fromName(event.getName());
                         new SkillLevelingMenu(plugin, type).openMenu(event.getPlayer());
                         break;
@@ -142,8 +142,8 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
                 // Allow dropping a skill into the skills bar
                 if (clickSkillSlot) {
                     ItemStack stack = event.getEvent().getCurrentItem();
-                    // stops the player from swapping a skill that is on cooldown.
-                    if(InventoryUtil.skillOnCooldown(stack) && InventoryUtil.isSkill(stack)) {
+                    // Stops the player from swapping a skill that is on cooldown.
+                    if (InventoryUtil.isSkillOnCooldown(stack) && InventoryUtil.isSkill(stack)) {
                         break;
                     }
 
@@ -155,7 +155,6 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
                         if (!playerInventory.getItem(pos).equals(item) && playerInventory.getItem(pos).isSimilar(item)) {
                             pos = event.getEvent().getRawSlot();
-                            //resetItemLater(event.getPlayer().getInventory(), pos);
                             break;
                         }
                         iClick.setCancelled(false);
@@ -194,7 +193,7 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
     }
 
     private void resetItemLater(final Inventory inventory, final int pos) {
-        // Reset A specific slot in a players inventory.
+        // Reset a specific slot in a players inventory.
         new BukkitRunnable() {
 
             @Override

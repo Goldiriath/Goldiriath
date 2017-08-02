@@ -77,9 +77,9 @@ public class SkillManager extends AbstractService {
             return;
         }
 
-        // stops the player from using skills in its hotbar that do no correspond to its weapon
+        // Stops the player from using skills in its hotbar that do no correspond to its weapon
         SkillType type = skill.getType();
-        if (!type.getWeapon().equals(InventoryUtil.getWeaponType(player))) {
+        if (!type.getWeapon().equals(InventoryUtil.getWeaponType(InventoryUtil.getWeapon(player)))) {
             player.sendMessage(ChatColor.RED + "You cannot use this skill with your equiped weapon!");
             return;
         }
@@ -90,7 +90,8 @@ public class SkillManager extends AbstractService {
             player.sendMessage(ChatColor.RED + "You do not have enough mana to use this skill!");
             return;
         }
-        // TODO: fix this when mana is implemented.
+
+        // TODO: Fix this when mana is implemented.
         data.setMana(100);
 
         // Checks if the skill is on cooldown.
@@ -103,7 +104,7 @@ public class SkillManager extends AbstractService {
         ItemStack usedSkill = inventory.getItem(inventory.first(skill.getType().getDisplay().getStack()));
         usedSkill.setAmount(skill.getType().getDelayTicks()/20);
 
-        skillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
+        putSkillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
 
         ActiveSkill active = (ActiveSkill) skill;
         active.use();
@@ -116,7 +117,6 @@ public class SkillManager extends AbstractService {
         if (level <= 0) {
             data.getSkills().remove(type);
             plugin.logger.info("Removed " + player.getName() + "'s " + type.getName() + " skill");
-            //player.sendMessage(ChatColor.DARK_GREEN + "Removed " + player.getName() + "'s " + type.getName() + " skill");
             return;
         }
 
@@ -129,12 +129,11 @@ public class SkillManager extends AbstractService {
         }
 
         skill.getMeta().level = level;
-       // player.sendMessage(ChatColor.DARK_GREEN + "Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
         plugin.logger.info("Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
     }
 
-    private BukkitTask skillOnCooldown(final Player player, final Inventory inventory, final int pos, SkillType type) {
-        // Reset A specific slot in a players inventory.
+    private BukkitTask putSkillOnCooldown(final Player player, final Inventory inventory, final int pos, SkillType type) {
+        // Reset a specific slot in a players inventory.
 
         return new BukkitRunnable() {
 
