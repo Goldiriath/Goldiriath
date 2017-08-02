@@ -98,11 +98,10 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
             } else {
                 transaction.put(product, amt);
             }
+
             TransactionUtil.updateTransaction(iClick.getInventory(), SIZE - 9, transaction);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1.2f);
 
-            // Give the player the item back
-            InventoryUtil.storeItem(player.getInventory(), product.getStack(), true);
             return;
         }
 

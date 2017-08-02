@@ -65,6 +65,15 @@ public class InventoryUtil {
             if (isEmpty(contents[i])) {
                 return i;
             }
+
+            // If we can stack the slot, put it here
+            if (stack.isSimilar(contents[i])) {
+                int amt = stack.getAmount() + contents[i].getAmount();
+
+                if (amt <= stack.getMaxStackSize()) {
+                    return i;
+                }
+            }
         }
 
         return -1;
@@ -74,7 +83,12 @@ public class InventoryUtil {
         int index = getStoreIndex(inv, stack);
 
         if (index >= 0) {
-            inv.setItem(index, stack);
+            ItemStack content = inv.getContents()[index];
+            if (isEmpty(content)) {
+                inv.setItem(index, stack);
+            } else {
+                content.setAmount(content.getAmount() + stack.getAmount());
+            }
             return true;
         }
 
