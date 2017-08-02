@@ -181,7 +181,8 @@ public class SkillManager extends AbstractService {
 
     @EventHandler(ignoreCancelled = true)
     public void activateSkill(PlayerItemHeldEvent event) {
-        if(event.getPreviousSlot() == 0 && event.getNewSlot() > 0 && event.getNewSlot() < 5) {
+        int[] skillSlots = SlotType.SKILL.getIndices();
+        if(event.getPreviousSlot() == 0 && event.getNewSlot() >= skillSlots[0] && event.getNewSlot() <= skillSlots[skillSlots.length-1]) {
             event.setCancelled(true);
 
             PlayerInventory inventory = event.getPlayer().getInventory();
