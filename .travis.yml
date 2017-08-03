@@ -2,7 +2,7 @@
 language: java
 
 jdk:
-- openjdk8
+- oraclejdk8
 
 before_install:
 - wget "https://github.com/Pravian/Aero/archive/master.zip" -O aero.zip
