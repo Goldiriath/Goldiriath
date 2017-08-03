@@ -11,6 +11,7 @@ import net.goldiriath.plugin.game.questing.quest.requirement.RequirementParser;
 import net.goldiriath.plugin.game.questing.script.Script;
 import net.goldiriath.plugin.game.questing.script.ScriptContext;
 import net.goldiriath.plugin.game.questing.script.ScriptParser;
+import net.goldiriath.plugin.util.PrefixFileFilter;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
 import net.pravian.aero.util.Plugins;
@@ -48,7 +49,7 @@ public class QuestManager extends AbstractService {
 
         // Preload quests
         questMap.clear();
-        for (File file : questContainer.listFiles(new QuestFileFilter(plugin))) {
+        for (File file : questContainer.listFiles(new PrefixFileFilter(plugin, "quest"))) {
             String id = parseQuestId(file);
 
             if (id.isEmpty() || questMap.containsKey(id)) {
@@ -96,7 +97,7 @@ public class QuestManager extends AbstractService {
         }
 
         // Load questMap
-        for (File file : questContainer.listFiles(new QuestFileFilter(plugin))) {
+        for (File file : questContainer.listFiles(new PrefixFileFilter(plugin, "quest"))) {
             final String id = parseQuestId(file);
             final Quest quest = questMap.get(id);
             if (quest == null) {

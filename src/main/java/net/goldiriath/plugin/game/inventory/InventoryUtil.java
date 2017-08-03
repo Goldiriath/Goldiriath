@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.game.inventory;
 
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.game.skill.SkillType;
 import net.goldiriath.plugin.game.skill.type.WeaponType;
@@ -36,8 +37,8 @@ public class InventoryUtil {
     public static boolean isSkill(ItemStack stack) {
 
         // Loops through all Skills defined in SkillType and checks if stack is that skill.
-        for(int i = 0; i < SkillType.values().length; i++) {
-            if(SkillType.values()[i].getDisplay().getStack().isSimilar(stack)) {
+        for (int i = 0; i < SkillType.values().length; i++) {
+            if (SkillType.values()[i].getDisplay().getStack().isSimilar(stack)) {
                 return true;
             }
         }
@@ -47,8 +48,8 @@ public class InventoryUtil {
     public static boolean isSkillOnCooldown(ItemStack stack) {
 
         // Loops through all Skills defined in SkillType and checks if stack is that skill.
-        for(int i = 0; i < SkillType.values().length; i++) {
-            if(SkillType.values()[i].getDisplay().getStack().equals(stack)) {
+        for (int i = 0; i < SkillType.values().length; i++) {
+            if (SkillType.values()[i].getDisplay().getStack().equals(stack)) {
                 return false;
             }
         }
@@ -56,8 +57,8 @@ public class InventoryUtil {
     }
 
     public static SkillType getSkill(ItemStack stack) {
-        if(isSkill(stack)) {
-            for(int i = 0; i < SkillType.values().length; i++) {
+        if (isSkill(stack)) {
+            for (int i = 0; i < SkillType.values().length; i++) {
                 if (SkillType.values()[i].getDisplay().getStack().isSimilar(stack)) {
                     return SkillType.values()[i];
                 }
@@ -76,6 +77,10 @@ public class InventoryUtil {
 
     public static boolean isWand(ItemStack stack) {
         return stack.getType() == Material.EMERALD;
+    }
+
+    public static boolean canStore(PlayerInventory inv, ItemStack stack) {
+        return getStoreIndex(inv, stack) != -1;
     }
 
     public static int getStoreIndex(PlayerInventory inv, ItemStack stack) {
@@ -98,32 +103,78 @@ public class InventoryUtil {
             if (isEmpty(contents[i])) {
                 return i;
             }
+
+            // If we can stack the slot, put it here
+            if (stack.isSimilar(contents[i])) {
+                int amt = stack.getAmount() + contents[i].getAmount();
+
+                if (amt <= stack.getMaxStackSize()) {
+                    return i;
+                }
+            }
         }
 
         return -1;
     }
 
-    public static boolean storeInInventory(PlayerInventory inv, ItemStack stack) {
+    public static boolean storeItem(PlayerInventory inv, ItemStack stack, boolean drop) {
         int index = getStoreIndex(inv, stack);
 
         if (index >= 0) {
-            inv.setItem(index, stack);
+            ItemStack content = inv.getContents()[index];
+            if (isEmpty(content)) {
+                inv.setItem(index, stack);
+            } else {
+                content.setAmount(content.getAmount() + stack.getAmount());
+            }
             return true;
         }
 
         // Drop on the floor
-        final HumanEntity hEntity = inv.getHolder();
-        final Location loc = hEntity.getEyeLocation();
-        final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.5);
+        if (drop) {
+            final HumanEntity hEntity = inv.getHolder();
+            final Location loc = hEntity.getEyeLocation();
+            final Vector velocity = hEntity.getLocation().getDirection().normalize().multiply(0.5);
 
-        loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
+            loc.getWorld().dropItem(loc, stack).setVelocity(velocity);
+        }
+
         return false;
+    }
 
+    public static boolean removeItem(PlayerInventory inv, ItemStack remove) {
+        int amount = remove.getAmount();
+
+        if (!inv.containsAtLeast(remove, amount)) {
+            return false;
+        }
+
+        ItemStack[] contents = inv.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack stack = contents[i];
+            if (isEmpty(stack) || !stack.isSimilar(remove)) {
+                continue;
+            }
+
+            if (stack.getAmount() > amount) { // Enough items in the stack
+                stack.setAmount(stack.getAmount() - amount);
+                inv.setItem(i, stack);
+                return true;
+            } else { // Too few items
+                amount -= stack.getAmount();
+                inv.setItem(i, null);
+            }
+
+        }
+
+        Goldiriath.instance().logger.warning("Could not remove enough " + remove.toString() + " from inventory!");
+        storeItem(inv, remove, true);
+        return false;
     }
 
     public static WeaponType getWeaponType(ItemStack stack) {
         // Returns the WeaponType that is in the first slot of the players hotbar
-        if(stack == null) {
+        if (stack == null) {
             return null;
         }
 
@@ -150,10 +201,9 @@ public class InventoryUtil {
     }
 
     /**
-     * Returns an integer that is the first position where an item is found
-     * that is similar to the search object. The inventory argument is the
-     * inventory to search in, and the Itemstack argument is the Itemstack
-     * to find.
+     * Returns an integer that is the first position where an item is found that
+     * is similar to the search object. The inventory argument is the inventory
+     * to search in, and the Itemstack argument is the Itemstack to find.
      *
      * @param inventory the PlayerInventory to search.
      * @param stack the ItemStack to search for.

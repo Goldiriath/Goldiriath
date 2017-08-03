@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.util.PrefixFileFilter;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
 import net.pravian.aero.util.Plugins;
@@ -36,7 +37,7 @@ public class DialogManager extends AbstractService {
 
         // Preload dialogs
         handlers.clear();
-        for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
+        for (File file : dialogContainer.listFiles(new PrefixFileFilter(plugin, "dialog"))) {
             String id = parseDialogId(file);
 
             if (id.isEmpty() || handlers.containsKey(id)) {
@@ -55,7 +56,7 @@ public class DialogManager extends AbstractService {
         }
 
         // Load handlers
-        for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
+        for (File file : dialogContainer.listFiles(new PrefixFileFilter(plugin, "dialog"))) {
             final String id = parseDialogId(file);
             final NPCDialogHandler handler = handlers.get(id);
             if (handler == null) {

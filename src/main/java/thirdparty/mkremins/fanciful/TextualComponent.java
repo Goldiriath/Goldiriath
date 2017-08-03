@@ -1,4 +1,4 @@
-package me.mkremlins.fanciful;
+package mkremins.fanciful;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -61,9 +61,7 @@ public abstract class TextualComponent implements Cloneable {
         if (map.containsKey("key") && map.size() == 2 && map.containsKey("value")) {
             // Arbitrary text component
             return ArbitraryTextTypeComponent.deserialize(map);
-        } else if (map.size() >= 2 && map.containsKey("key") && !map.containsKey("value") /*
-                 * It contains keys that START WITH value
-                 */) {
+        } else if (map.size() >= 2 && map.containsKey("key") && !map.containsKey("value") /* It contains keys that START WITH value */) {
             // Complex JSON object
             return ComplexTextTypeComponent.deserialize(map);
         }
@@ -211,9 +209,7 @@ public abstract class TextualComponent implements Cloneable {
                 if (valEntry.getKey().equals("key")) {
                     key = (String) valEntry.getValue();
                 } else if (valEntry.getKey().startsWith("value.")) {
-                    value.put(((String) valEntry.getKey()).substring(6) /*
-                             * Strips out the value prefix
-                             */, valEntry.getValue().toString());
+                    value.put(((String) valEntry.getKey()).substring(6) /* Strips out the value prefix */, valEntry.getValue().toString());
                 }
             }
             return new ComplexTextTypeComponent(key, value);
@@ -288,7 +284,7 @@ public abstract class TextualComponent implements Cloneable {
      * clients.</b>
      * </p>
      *
-     * @param playerName The name of the player whos score will be shown. If
+     * @param playerName	The name of the player whos score will be shown. If
      * this string represents the single-character sequence "*", the viewing
      * player's score will be displayed. Standard minecraft selectors (@a, @p,
      * etc) are <em>not</em> supported.
