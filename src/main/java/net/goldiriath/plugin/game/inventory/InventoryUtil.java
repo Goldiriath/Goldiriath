@@ -74,6 +74,10 @@ public class InventoryUtil {
         return stack.equals(StaticItem.SKILL_BOOK.getStack());
     }
 
+    public static boolean isWand(ItemStack stack) {
+        return stack.getType() == Material.EMERALD;
+    }
+
     public static int getStoreIndex(PlayerInventory inv, ItemStack stack) {
         if (isEmpty(stack)) {
             return -1;
