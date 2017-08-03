@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.game.skill.type;
 
 import net.goldiriath.plugin.game.skill.SkillMeta;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.info.modifier.HealthOverTimeEffect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -39,7 +40,10 @@ public class SwordDevineLight extends ActiveSkill {
                     cancel();
 
                     // Add a healing effect
-                    plugin.pm.getData((Player) e).getModifiers().addModifier(new HealthOverTimeEffect(3 * 20, 1 * 20, 10));
+                    PlayerData playerData = plugin.pm.getData(player);
+                    double healing = 0.08*playerData.getMaxHealth()+0.16*(playerData.getMaxHealth()-playerData.getHealth());
+                    int amount = (int) healing/8;
+                    plugin.pm.getData((Player) e).getModifiers().addModifier(new HealthOverTimeEffect(8 * 20, 1 * 20, amount));
                     return;
                 }
             }

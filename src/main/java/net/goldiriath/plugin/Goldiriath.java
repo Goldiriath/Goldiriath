@@ -1,5 +1,6 @@
 package net.goldiriath.plugin;
 
+import net.goldiriath.plugin.wand.WandBasicAttack;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -61,6 +62,8 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public SidebarManager sb;
     public SkillManager sm;
     public EffectsTicker et;
+    public EffectLibBridge elb;
+    public WandBasicAttack wba;
     public ArrowHitTracker at;
     public InventoryManager iv;
     public MetaCycler ms;
@@ -98,6 +101,8 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         sb = services.registerService(SidebarManager.class);
         sm = services.registerService(SkillManager.class);
         et = services.registerService(EffectsTicker.class);
+        elb = services.registerService(EffectLibBridge.class);
+        wba = services.registerService(WandBasicAttack.class);
         at = services.registerService(ArrowHitTracker.class);
         iv = services.registerService(InventoryManager.class);
         ms = services.registerService(MetaCycler.class);
