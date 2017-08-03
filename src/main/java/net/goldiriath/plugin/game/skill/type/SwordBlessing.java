@@ -1,6 +1,7 @@
 package net.goldiriath.plugin.game.skill.type;
 
 import net.goldiriath.plugin.game.skill.SkillMeta;
+import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.Util;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,7 +15,10 @@ public class SwordBlessing extends ActiveSkill {
     @Override
     public void use() {
         // Heal player
-        plugin.hm.heal(player, 5);
+        PlayerData playerData = plugin.pm.getData(player);
+        double healing = 0.05*playerData.getMaxHealth()+0.1*(playerData.getMaxHealth()-playerData.getHealth());
+        int amount = (int) healing;
+        plugin.hm.heal(player, amount);
         Util.sound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.5f);
     }
 

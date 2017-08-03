@@ -60,9 +60,9 @@ public class InfiDispenser extends AbstractService {
 
         Player player = (Player) entity;
 
+        // TODO: Prevent opening non-lootchests.
         switch (event.getInventory().getType()) {
             case DISPENSER:
-            case CHEST:
             case FURNACE:
             case ENCHANTING:
             case ENDER_CHEST:
@@ -73,6 +73,7 @@ public class InfiDispenser extends AbstractService {
             case DROPPER:
             case BREWING:
                 player.sendMessage(ChatColor.RED + "You cannot open this.");
+                event.setCancelled(true);
                 break;
         }
     }
