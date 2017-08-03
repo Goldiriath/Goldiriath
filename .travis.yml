@@ -6,8 +6,8 @@ jdk:
 
 before_install:
 - wget "https://github.com/Pravian/Aero/archive/master.zip" -O aero.zip
-- unzip aero.zip -d aero
-- cd aero
+- unzip aero.zip -d .
+- cd Aero-master
 - mvn install
 - cd ..
 
