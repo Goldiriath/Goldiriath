@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.game.mobspawn.citizens.CitizensBridge;
 import net.goldiriath.plugin.player.PlayerData;
@@ -16,6 +18,9 @@ public class InfoBattle extends Info {
     //
     private final Set<UUID> assailants = new HashSet<>();
     private long lastAutoHeal = 0;
+    @Getter
+    @Setter
+    private long lastWandUse = 0;
 
     public InfoBattle(PlayerData data) {
         super(data);
