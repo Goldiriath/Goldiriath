@@ -17,9 +17,9 @@ public enum StaticItem {
     MENU_SKILL_WAND(Material.THIN_GLASS, 5, ChatColor.GOLD + "Wand Skills"),
     MENU_SKILL_KNIFE(Material.THIN_GLASS, 6, ChatColor.GOLD + "Knife Skills"),
     //
-    SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 0, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Blessing"),
-    SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 1, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Divine Light"),
-    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 3, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Powershot"),
+    SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Blessing"),
+    SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 3, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Divine Light"),
+    SKILL_BOW_POWERSHOT(Material.STAINED_GLASS_PANE, 4, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Powershot"),
     //
     SKILL_BOOK(Material.BOOK, 0, ChatColor.GOLD + "Skill Book");
     //
