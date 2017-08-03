@@ -22,7 +22,7 @@ public class DialogManager extends AbstractService {
     }
 
     @Override
-    protected void onStart() {
+    protected void onInit() {
         // Ensure folder is present
         if (dialogContainer.isFile()) {
             if (!dialogContainer.delete()) {
@@ -34,34 +34,51 @@ public class DialogManager extends AbstractService {
             dialogContainer.mkdirs();
         }
 
-        // Load handlers
+        // Preload dialogs
         handlers.clear();
         for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
-            final String id = file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
+            String id = parseDialogId(file);
 
             if (id.isEmpty() || handlers.containsKey(id)) {
                 logger.warning("Skipping dialog handler file: " + file.getName() + ". Invalid dialog ID!");
                 continue;
             }
 
+            handlers.put(id, new NPCDialogHandler(this, id));
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        if (dialogContainer.isFile()) {
+            return;
+        }
+
+        // Load handlers
+        for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
+            final String id = parseDialogId(file);
+            final NPCDialogHandler handler = handlers.get(id);
+            if (handler == null) {
+                // Assume onInit() already printed an error
+                continue;
+            }
+
             final YamlConfig config = new YamlConfig(plugin, file, false);
             config.load();
 
-            final NPCDialogHandler dialog = new NPCDialogHandler(this, id);
-
             try {
-                dialog.loadFrom(config);
+                handler.loadFrom(config);
             } catch (Exception ex) {
                 logger.warning("Skipping dialog handler: " + id + ". Exception loading dialog!");
                 logger.severe(ExceptionUtils.getFullStackTrace(ex));
             }
 
-            if (!dialog.isValid()) {
+            if (!handler.isValid()) {
                 logger.warning("Skipping dialog handler: " + id + ". Invalid dialog handler! (Are there missing entries?)");
                 continue;
             }
 
-            handlers.put(id, dialog);
+            handlers.put(id, handler);
         }
 
         int dialogs = 0;
@@ -69,6 +86,10 @@ public class DialogManager extends AbstractService {
             dialogs += handler.getDialogs().size();
         }
         logger.info("Loaded " + handlers.size() + " NPC dialog handlers for " + dialogs + " dialogs");
+    }
+
+    private String parseDialogId(File file) {
+        return file.getName().replace("dialog_", "").replace(".yml", "").trim().toLowerCase();
     }
 
     @Override
