@@ -4,11 +4,12 @@ language: java
 jdk:
 - openjdk7
 
-# Don't test certain branches
-branches:
-  except:
-  - master
-  - release
+before_install:
+- wget "https://github.com/Pravian/Aero/archive/master.zip" -O aero.zip
+- upzip aero.zip -d aero
+- cd aero
+- mvn install
+- cd ..
 
 # get us on the new container based builds, we're not using any fancyness
 sudo: false
