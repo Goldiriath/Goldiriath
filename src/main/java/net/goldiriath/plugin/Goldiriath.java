@@ -58,6 +58,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public HealthManager hm;
     public AttackManager bm;
     public DeathManager dm;
+    public GUIManager gm;
     public SidebarManager sb;
     public SkillManager sm;
     public EffectsTicker et;
@@ -95,6 +96,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         hm = services.registerService(HealthManager.class);
         bm = services.registerService(AttackManager.class);
         dm = services.registerService(DeathManager.class);
+        gm = services.registerService(GUIManager.class);
         sb = services.registerService(SidebarManager.class);
         sm = services.registerService(SkillManager.class);
         et = services.registerService(EffectsTicker.class);
