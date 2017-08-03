@@ -1,12 +1,12 @@
 package net.goldiriath.plugin.game.questing.dialog;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import com.google.common.collect.Lists;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.goldiriath.plugin.game.questing.quest.triggering.Triggerable;
 import net.goldiriath.plugin.game.questing.script.ParseException;
@@ -27,7 +27,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
     private final String id;
     private final Logger logger;
     //
-    private int npcId;
+    private int npcId = -1;
     private String npcName;
     private final Map<String, Dialog> dialogs = new HashMap<>();
     private final List<Dialog> clickDialogs = Lists.newArrayList();
@@ -90,7 +90,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
         }
 
         // Parse dialogs
-        for (Dialog dialog : dialogs.values()) {
+        for (Dialog dialog : Lists.newArrayList(dialogs.values())) {
             final ConfigurationSection loopDialogSection = config.getConfigurationSection("dialogs." + dialog.getId());
 
             if (loopDialogSection == null) { // prob capatalisation
@@ -114,7 +114,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
         }
 
         // Parse options
-        for (OptionSet option : options.values()) {
+        for (OptionSet option : Lists.newArrayList(options.values())) {
             final ConfigurationSection loopOptionSection = config.getConfigurationSection("options." + option.getId());
 
             if (loopOptionSection == null) { // prob capatalisation
@@ -215,7 +215,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
     public boolean isValid() {
         return dm != null
                 && id != null
-                && npcId != 0
+                && npcId != -1
                 && npcName != null
                 && !npcName.isEmpty();
     }

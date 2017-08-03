@@ -1,4 +1,4 @@
-package me.mkremlins.fanciful;
+package mkremins.fanciful;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +21,7 @@ final class MessagePart implements JsonRepresentedObject, ConfigurationSerializa
 
     ChatColor color = ChatColor.WHITE;
     ArrayList<ChatColor> styles = new ArrayList<ChatColor>();
-    String clickActionName = null, clickActionData = null,
-            hoverActionName = null;
+    String clickActionName = null, clickActionData = null, hoverActionName = null;
     JsonRepresentedObject hoverActionData = null;
     TextualComponent text = null;
     String insertionData = null;

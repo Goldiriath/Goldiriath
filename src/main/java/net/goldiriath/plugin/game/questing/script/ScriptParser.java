@@ -6,14 +6,15 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.questing.script.item.DialogScript;
 import net.goldiriath.plugin.game.questing.script.item.FlagScript;
 import net.goldiriath.plugin.game.questing.script.item.ItemScript;
+import net.goldiriath.plugin.game.questing.script.item.MeScript;
 import net.goldiriath.plugin.game.questing.script.item.MoneyScript;
 import net.goldiriath.plugin.game.questing.script.item.NoteScript;
 import net.goldiriath.plugin.game.questing.script.item.OptionScript;
 import net.goldiriath.plugin.game.questing.script.item.OutScript;
-import net.goldiriath.plugin.game.questing.script.item.MeScript;
 import net.goldiriath.plugin.game.questing.script.item.PotionScript;
 import net.goldiriath.plugin.game.questing.script.item.QuestScript;
 import net.goldiriath.plugin.game.questing.script.item.ScriptItem;
+import net.goldiriath.plugin.game.questing.script.item.ShopScript;
 import net.goldiriath.plugin.game.questing.script.item.SkillpointScript;
 import net.goldiriath.plugin.game.questing.script.item.XpScript;
 import net.goldiriath.plugin.game.questing.script.item.ZapScript;
@@ -94,6 +95,10 @@ public class ScriptParser {
 
                     case "quest":
                         si = new QuestScript(script, args);
+                        break;
+
+                    case "shop":
+                        si = new ShopScript(script, args);
                         break;
 
                     case "skillpoint":

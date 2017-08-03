@@ -1,4 +1,4 @@
-package me.mkremlins.fanciful;
+package mkremins.fanciful;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,4 +42,5 @@ final class JsonString implements JsonRepresentedObject, ConfigurationSerializab
     public String toString() {
         return _value;
     }
+
 }

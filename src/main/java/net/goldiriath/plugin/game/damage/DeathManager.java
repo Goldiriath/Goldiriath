@@ -1,9 +1,6 @@
 package net.goldiriath.plugin.game.damage;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
@@ -25,8 +22,8 @@ public class DeathManager extends AbstractService {
 
     @Override
     protected void onStart() {
-        this.deathCost = plugin.config.getInt(ConfigPaths.DEATH_MONEY_COST);
-        this.multiplier = plugin.config.getDouble(ConfigPaths.DEATH_MONEY_MULTIPLIER);
+        this.deathCost = plugin.config.getInt(ConfigPath.DEATH_MONEY_COST);
+        this.multiplier = plugin.config.getDouble(ConfigPath.DEATH_MONEY_MULTIPLIER);
     }
 
     @Override

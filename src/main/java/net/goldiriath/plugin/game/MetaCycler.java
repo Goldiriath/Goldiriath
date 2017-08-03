@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
@@ -47,18 +47,18 @@ public class MetaCycler extends AbstractService {
 
     @Override
     public void onStart() {
-        if (!plugin.config.getBoolean(ConfigPaths.METACYCLER_ENABLED)) {
+        if (!plugin.config.getBoolean(ConfigPath.METACYCLER_ENABLED)) {
             return;
         }
 
-        metaTool = Util.parseMaterial(plugin.config.getString(ConfigPaths.METACYCLER_META_TOOL));
-        biomeTool = Util.parseMaterial(plugin.config.getString(ConfigPaths.METACYCLER_BIOME_TOOL));
+        metaTool = Util.parseMaterial(plugin.config.getString(ConfigPath.METACYCLER_META_TOOL));
+        biomeTool = Util.parseMaterial(plugin.config.getString(ConfigPath.METACYCLER_BIOME_TOOL));
 
         if (metaTool == null) {
-            plugin.logger.warning("Could not parse MetaCycler meta tool: " + plugin.config.getString(ConfigPaths.METACYCLER_META_TOOL));
+            plugin.logger.warning("Could not parse MetaCycler meta tool: " + plugin.config.getString(ConfigPath.METACYCLER_META_TOOL));
         }
         if (biomeTool == null) {
-            plugin.logger.warning("Could not parse MetaCycler biome tool: " + plugin.config.getString(ConfigPaths.METACYCLER_BIOME_TOOL));
+            plugin.logger.warning("Could not parse MetaCycler biome tool: " + plugin.config.getString(ConfigPath.METACYCLER_BIOME_TOOL));
         }
     }
 
