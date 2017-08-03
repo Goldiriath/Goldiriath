@@ -88,6 +88,17 @@ public enum SkillType {
             15 * 20,
             0,
             StaticItem.SKILL_BOW_POWERSHOT
+    ),
+
+    //knife skills:
+    KNIFE_STEALTH(
+            KnifeStealth.class,
+            "Stealth",
+            WeaponType.SWORD, //todo: change to knife when we actually have a knife
+            20,
+            10 * 20,
+            1,
+            StaticItem.SKILL_KNIFE_STEALTH
     );
 
     //

@@ -28,6 +28,8 @@ public enum StaticItem {
     SKILL_SWORD_BLESSING(Material.STAINED_GLASS_PANE, 0, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Blessing"),
     SKILL_SWORD_DIVINE_LIGHT(Material.STAINED_GLASS_PANE, 1, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Divine Light"),
     //
+    SKILL_KNIFE_STEALTH(Material.STAINED_GLASS_PANE, 1, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Stealth"),
+    //
     SKILL_BOOK(Material.BOOK, 0, ChatColor.GOLD + "Skill Book");
     //
     private final ItemStack stack;
