@@ -1,24 +1,32 @@
 package net.goldiriath.plugin.game.questing.script.item;
 
 import net.goldiriath.plugin.game.questing.quest.Quest;
+import net.goldiriath.plugin.game.questing.quest.Stage;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.game.questing.script.Script;
-import net.goldiriath.plugin.game.questing.quest.Stage;
 import org.bukkit.entity.Player;
 
 public class QuestScript extends ScriptItem {
 
-    private final Stage stage;
+    private final Quest quest;
+    private final String stageId;
 
     public QuestScript(Script script, String[] args) {
         super(script);
 
-        Quest quest = plugin.qm.getQuest(args[1]);
+        quest = plugin.qm.getQuest(args[1]);
         if (quest == null) {
             throw new ParseException("Could not find quest: " + args[1]);
         }
 
-        switch (args[2]) {
+        // Quests may be lazily loaded due to quest/dialog cyclic dependency
+        stageId = args[2];
+    }
+
+    @Override
+    public void execute(Player player) {
+        Stage stage;
+        switch (stageId) {
             case "entry":
                 stage = quest.getEntryStage();
                 break;
@@ -29,16 +37,13 @@ public class QuestScript extends ScriptItem {
                 stage = quest.getCancelStage();
                 break;
             default:
-                stage = quest.getStageMap().get(args[2]);
+                stage = quest.getStageMap().get(stageId);
                 if (stage == null) {
-                    throw new ParseException("Unknown quest stage: " + args[2]);
+                    throw new ParseException("Unknown quest stage for quest '" + quest.getId() + "': " + stageId);
                 }
                 break;
         }
-    }
 
-    @Override
-    public void execute(Player player) {
         stage.onTrigger(player);
     }
 

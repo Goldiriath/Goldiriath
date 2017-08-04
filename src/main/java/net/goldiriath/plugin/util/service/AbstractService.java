@@ -25,6 +25,20 @@ public abstract class AbstractService extends RegistrableListener implements Ser
     }
 
     @Override
+    public final void init() {
+        if (started) {
+            logger.warning("Tried to init service '" + serviceId + "' whilst already started!");
+            return;
+        }
+
+        try {
+            onInit();
+        } catch (Exception ex) {
+            logger.severe("Unhandled exception whilst initializing service '" + serviceId + "'!", ex);
+        }
+    }
+
+    @Override
     public final void start() {
         if (started) {
             logger.warning("Tried to start service '" + serviceId + "' whilst already started!");
@@ -58,6 +72,9 @@ public abstract class AbstractService extends RegistrableListener implements Ser
     @Override
     public final boolean isStarted() {
         return started;
+    }
+
+    protected void onInit() {
     }
 
     protected abstract void onStart();

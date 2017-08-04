@@ -1,7 +1,6 @@
 package net.goldiriath.plugin.game.questing.script;
 
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.game.questing.script.Script;
 import net.goldiriath.plugin.game.questing.script.item.ScriptItem;
 import net.goldiriath.plugin.util.service.Service;
 import org.bukkit.entity.Player;
@@ -27,6 +26,10 @@ public class ScriptRunner extends BukkitRunnable implements Service {
     @Override
     public String getServiceId() {
         return "ScriptRunner-" + script.getContext().getId() + "-" + player.getName();
+    }
+
+    @Override
+    public void init() {
     }
 
     @Override

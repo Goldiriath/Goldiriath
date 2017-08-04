@@ -3,6 +3,7 @@ package net.goldiriath.plugin.game.questing.script;
 import java.util.List;
 import java.util.logging.Logger;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.questing.script.item.CommandScript;
 import net.goldiriath.plugin.game.questing.script.item.DialogScript;
 import net.goldiriath.plugin.game.questing.script.item.FlagScript;
 import net.goldiriath.plugin.game.questing.script.item.ItemScript;
@@ -56,6 +57,10 @@ public class ScriptParser {
 
             try {
                 switch (parts[1]) {
+
+                    case "command":
+                        si = new CommandScript(script, args);
+                        break;
 
                     case "dialog":
                         si = new DialogScript(script, args);

@@ -11,6 +11,7 @@ import net.goldiriath.plugin.game.questing.quest.requirement.RequirementParser;
 import net.goldiriath.plugin.game.questing.script.Script;
 import net.goldiriath.plugin.game.questing.script.ScriptContext;
 import net.goldiriath.plugin.game.questing.script.ScriptParser;
+import net.goldiriath.plugin.util.PrefixFileFilter;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
 import net.pravian.aero.util.Plugins;
@@ -34,8 +35,7 @@ public class QuestManager extends AbstractService {
     }
 
     @Override
-    public void onStart() {
-
+    public void onInit() {
         // Ensure folder is present
         if (questContainer.isFile()) {
             if (!questContainer.delete()) {
@@ -45,6 +45,26 @@ public class QuestManager extends AbstractService {
         }
         if (!questContainer.exists()) {
             questContainer.mkdirs();
+        }
+
+        // Preload quests
+        questMap.clear();
+        for (File file : questContainer.listFiles(new PrefixFileFilter(plugin, "quest"))) {
+            String id = parseQuestId(file);
+
+            if (id.isEmpty() || questMap.containsKey(id)) {
+                logger.warning("Skipping quest file: " + file.getName() + ". Invalid quest ID!");
+                continue;
+            }
+
+            questMap.put(id, new Quest(this, id));
+        }
+    }
+
+    @Override
+    public void onStart() {
+        if (questContainer.isFile()) {
+            return;
         }
 
         // Load globals
@@ -77,20 +97,16 @@ public class QuestManager extends AbstractService {
         }
 
         // Load questMap
-        questMap.clear();
-        for (File file : questContainer.listFiles(new QuestFileFilter(plugin))) {
-
-            final String id = file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
-
-            if (id.isEmpty() || questMap.containsKey(id)) {
-                logger.warning("Skipping quest file: " + file.getName() + ". Invalid quest ID!");
+        for (File file : questContainer.listFiles(new PrefixFileFilter(plugin, "quest"))) {
+            final String id = parseQuestId(file);
+            final Quest quest = questMap.get(id);
+            if (quest == null) {
+                // Assume onInit() already printed an error
                 continue;
             }
 
             final YamlConfig config = new YamlConfig(plugin, file, false);
             config.load();
-
-            final Quest quest = new Quest(this, id);
 
             try {
                 quest.loadFrom(config);
@@ -116,6 +132,10 @@ public class QuestManager extends AbstractService {
 
     @Override
     public void onStop() {
+    }
+
+    private String parseQuestId(File file) {
+        return file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
     }
 
     public Map<String, Script> getGlobalScripts() {
