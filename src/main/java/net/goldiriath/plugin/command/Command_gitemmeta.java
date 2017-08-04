@@ -105,12 +105,13 @@ public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
                         meta.setLore(Arrays.asList(value));
                         break;
                     case "tier":
-                        ItemTier tier = ItemTier.fromName(value);
-                        if (tier == null) {
+                        try {
+                            ItemTier tier = ItemTier.valueOf(value);
+                            meta.setTier(tier);
+                        } catch (Exception ex) {
                             msg("Unknown tier: " + value, ChatColor.RED);
                             return true;
                         }
-                        meta.setTier(tier);
                         break;
                     default:
                         msg("Unknown property: " + args[1], ChatColor.RED);
