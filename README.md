@@ -1,5 +1,7 @@
 # Goldiriath
 
+[![Travis](https://img.shields.io/travis/Goldiriath/Goldiriath.svg)](https://travis-ci.org/Goldiriath/Goldiriath)
+
 Goldiriath is a Minecraft-based RPG plugin for Spigot servers. Goldiriath was created to push the boundaries of non-modded Minecraft, creating a unique experience for RPG fans and Minecrafters alike.
 
 ![Goldiriath](doc/img/splash.jpg)
