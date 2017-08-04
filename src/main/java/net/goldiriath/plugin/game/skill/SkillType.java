@@ -8,11 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.goldiriath.plugin.game.item.StaticItem;
-import net.goldiriath.plugin.game.skill.type.BowQuickShot;
-import net.goldiriath.plugin.game.skill.type.Skill;
-import net.goldiriath.plugin.game.skill.type.SwordBlessing;
-import net.goldiriath.plugin.game.skill.type.SwordDevineLight;
-import net.goldiriath.plugin.game.skill.type.WeaponType;
+import net.goldiriath.plugin.game.skill.type.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,20 +30,13 @@ public enum SkillType {
             25 * 20,
             1,
             StaticItem.SKILL_SWORD_DIVINE_LIGHT),
-    BOW_QUICKSHOT(
-            BowQuickShot.class,
-            "Quickshot",
-            WeaponType.BOW,
-            10,
-            5 * 20,
-            0,
-            StaticItem.SKILL_BOW_QUICKSHOT),
-    BOW_POWERSHOT(BowQuickShot.class,
+    BOW_POWERSHOT(
+            BowPowerShot.class,
             "Powershot",
             WeaponType.BOW,
             50,
             15 * 20,
-            1,
+            0,
             StaticItem.SKILL_BOW_POWERSHOT);
     //
     @Getter

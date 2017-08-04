@@ -1,5 +1,6 @@
 package net.goldiriath.plugin;
 
+import net.goldiriath.plugin.wand.WandBasicAttack;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -21,6 +22,7 @@ import net.goldiriath.plugin.game.loot.LootManager;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnManager;
 import net.goldiriath.plugin.game.questing.dialog.DialogManager;
 import net.goldiriath.plugin.game.questing.quest.QuestManager;
+import net.goldiriath.plugin.game.shop.ShopManager;
 import net.goldiriath.plugin.game.skill.SkillManager;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.util.PlayerList;
@@ -51,6 +53,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public PlayerManager pm;
     public XPManager xm;
     public DevMode dev;
+    public ShopManager sh;
     public QuestManager qm;
     public DialogManager dlm;
     public LootManager lm;
@@ -61,6 +64,8 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public SidebarManager sb;
     public SkillManager sm;
     public EffectsTicker et;
+    public EffectLibBridge elb;
+    public WandBasicAttack wba;
     public ArrowHitTracker at;
     public InventoryManager iv;
     public MetaCycler ms;
@@ -88,6 +93,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         pm = services.registerService(PlayerManager.class);
         xm = services.registerService(XPManager.class);
         dev = services.registerService(DevMode.class);
+        sh = services.registerService(ShopManager.class);
         qm = services.registerService(QuestManager.class);
         dlm = services.registerService(DialogManager.class);
         lm = services.registerService(LootManager.class);
@@ -98,6 +104,8 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         sb = services.registerService(SidebarManager.class);
         sm = services.registerService(SkillManager.class);
         et = services.registerService(EffectsTicker.class);
+        elb = services.registerService(EffectLibBridge.class);
+        wba = services.registerService(WandBasicAttack.class);
         at = services.registerService(ArrowHitTracker.class);
         iv = services.registerService(InventoryManager.class);
         ms = services.registerService(MetaCycler.class);
@@ -123,7 +131,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         // Setup command handler
         ch.setCommandClassPrefix("Command_");
         ch.loadFrom(Command_goldiriath.class.getPackage());
-        ch.registerAll();
+        ch.registerAll("goldiriath", true);
 
         logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by Prozza and derpfacedirk is enabled");
     }

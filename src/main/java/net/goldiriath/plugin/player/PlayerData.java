@@ -2,7 +2,7 @@ package net.goldiriath.plugin.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.player.data.DataFlags;
 import net.goldiriath.plugin.player.data.DataQuests;
@@ -48,32 +48,32 @@ public class PlayerData extends PersistentStorage {
     @Persist
     @Getter
     @Setter
-    private int money = plugin().config.getInt(ConfigPaths.DEFAULT_MONEY);
+    private int money = plugin().config.getInt(ConfigPath.DEFAULT_MONEY);
 
     @Persist
     @Getter
     @Setter
-    private int health = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    private int health = plugin().config.getInt(ConfigPath.DEFAULT_HEALTH);
 
     @Persist
     @Getter
     @Setter
-    private int maxHealth = plugin().config.getInt(ConfigPaths.DEFAULT_HEALTH);
+    private int maxHealth = plugin().config.getInt(ConfigPath.DEFAULT_HEALTH);
 
     @Persist
     @Getter
     @Setter
-    private int mana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
+    private int mana = plugin().config.getInt(ConfigPath.DEFAULT_MANA);
 
     @Persist
     @Getter
     @Setter
-    private int maxMana = plugin().config.getInt(ConfigPaths.DEFAULT_MANA);
+    private int maxMana = plugin().config.getInt(ConfigPath.DEFAULT_MANA);
 
     @Persist
     @Getter
     @Setter
-    private int xp = plugin().config.getInt(ConfigPaths.DEFAULT_XP);
+    private int xp = plugin().config.getInt(ConfigPath.DEFAULT_XP);
 
     @Persist
     @Getter
@@ -87,12 +87,12 @@ public class PlayerData extends PersistentStorage {
         this.username = player.getName();
         //
         this.battle = new InfoBattle(this);
-        this.sidebar = new InfoSidebar(this);
         this.dialogs = new InfoDialogs(this);
+        this.sidebar = new InfoSidebar(this);
         this.modifiers = new InfoEffects(this);
         //
-        this.quests = new DataQuests(this);
         this.flags = new DataFlags(this);
+        this.quests = new DataQuests(this);
         this.skills = new DataSkills(this);
 
     }

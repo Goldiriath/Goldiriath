@@ -1,10 +1,10 @@
 package net.goldiriath.plugin.game.inventory;
 
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,17 +19,8 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class InventoryManager extends AbstractService {
-
-    public static final ItemStack SPELL_BOOK = new ItemStack(Material.ENCHANTED_BOOK);
-
-    static {
-        ItemMeta meta = SPELL_BOOK.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Spell Book");
-        SPELL_BOOK.setItemMeta(meta);
-    }
 
     @SuppressWarnings("deprecation")
     public InventoryManager(Goldiriath plugin) {
@@ -73,10 +64,16 @@ public class InventoryManager extends AbstractService {
         // Debug
         switch (event.getAction()) {
 
+            case UNKNOWN: {
+                event.setResult(Event.Result.DENY);
+                break;
+            }
+
             case PICKUP_ALL:
             case PICKUP_HALF:
             case PICKUP_ONE:
-            case PICKUP_SOME: {
+            case PICKUP_SOME:
+            case MOVE_TO_OTHER_INVENTORY: {
                 // Don't pickup a spellbook, or spells
                 ItemStack slot = event.getCurrentItem();
                 if (InventoryUtil.isSkillBook(slot)
@@ -193,12 +190,12 @@ public class InventoryManager extends AbstractService {
                 continue;
             }
 
-            InventoryUtil.storeInInventory(inventory, contents[i]);
+            InventoryUtil.storeItem(inventory, contents[i], true);
             inventory.setItem(i, null);
         }
 
         // Ensure a skillbook is present
-        inventory.setItem(SlotType.SPELLBOOK.getIndices()[0], SPELL_BOOK);
+        inventory.setItem(SlotType.SKILL_BOOK.getIndices()[0], StaticItem.SKILL_BOOK.getStack());
     }
 
 }

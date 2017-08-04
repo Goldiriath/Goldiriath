@@ -1,6 +1,6 @@
 package net.goldiriath.plugin.game;
 
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
@@ -30,7 +30,7 @@ public class InfiDispenser extends AbstractService {
 
     @EventHandler
     public void onDispenserFire(BlockDispenseEvent event) {
-        if (!plugin.config.getBoolean(ConfigPaths.INFINITE_DISPENSER_ENABLED)) {
+        if (!plugin.config.getBoolean(ConfigPath.INFINITE_DISPENSER_ENABLED)) {
             return;
         }
 
@@ -60,9 +60,9 @@ public class InfiDispenser extends AbstractService {
 
         Player player = (Player) entity;
 
+        // TODO: Prevent opening non-lootchests.
         switch (event.getInventory().getType()) {
             case DISPENSER:
-            case CHEST:
             case FURNACE:
             case ENCHANTING:
             case ENDER_CHEST:
@@ -73,6 +73,7 @@ public class InfiDispenser extends AbstractService {
             case DROPPER:
             case BREWING:
                 player.sendMessage(ChatColor.RED + "You cannot open this.");
+                event.setCancelled(true);
                 break;
         }
     }

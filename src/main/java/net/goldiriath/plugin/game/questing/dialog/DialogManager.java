@@ -1,5 +1,6 @@
 package net.goldiriath.plugin.game.questing.dialog;
 
+import net.goldiriath.plugin.util.PrefixFileFilter;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +37,8 @@ public class DialogManager extends AbstractService {
 
         // Load handlers
         handlers.clear();
-        for (File file : dialogContainer.listFiles(new DialogFileFilter(plugin))) {
-            final String id = file.getName().replace("quest_", "").replace(".yml", "").trim().toLowerCase();
+        for (File file : dialogContainer.listFiles(new PrefixFileFilter(plugin, "dialog"))) {
+            final String id = file.getName().replace("dialog_", "").replace(".yml", "").trim().toLowerCase();
 
             if (id.isEmpty() || handlers.containsKey(id)) {
                 logger.warning("Skipping dialog handler file: " + file.getName() + ". Invalid dialog ID!");

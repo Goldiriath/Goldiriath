@@ -2,17 +2,15 @@ package net.goldiriath.plugin.util;
 
 import java.util.Arrays;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -44,38 +42,6 @@ public class IconMenu implements Listener {
         return this;
     }
 
-    public void open(final Player player, final Inventory other) {
-        final Inventory inventory = Bukkit.createInventory(player, size, title);
-        for (int i = 0; i < optionIcons.length; i++) {
-            if (optionIcons[i] != null) {
-                inventory.setItem(i, optionIcons[i]);
-            }
-        }
-
-        player.openInventory(new InventoryView() {
-
-            @Override
-            public Inventory getTopInventory() {
-                return inventory;
-            }
-
-            @Override
-            public Inventory getBottomInventory() {
-                return other;
-            }
-
-            @Override
-            public HumanEntity getPlayer() {
-                return player;
-            }
-
-            @Override
-            public InventoryType getType() {
-                return InventoryType.CHEST;
-            }
-        });
-    }
-
     public ItemStack[] getContents() {
         return optionIcons;
     }
@@ -101,6 +67,7 @@ public class IconMenu implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryClick(InventoryClickEvent event) {
+        // TODO: Fix this for multiplayer compatibility
         if (event.getInventory().getTitle().equals(title)) {
             event.setCancelled(true);
 
@@ -127,6 +94,13 @@ public class IconMenu implements Listener {
             if (e.willDestroy()) {
                 destroy();
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getTitle().equals(title)) {
+            destroy();
         }
     }
 
