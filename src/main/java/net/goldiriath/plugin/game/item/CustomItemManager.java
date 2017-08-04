@@ -8,11 +8,9 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.inventory.InventoryUtil;
-import net.goldiriath.plugin.game.item.meta.ArmorType;
 import net.goldiriath.plugin.game.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
-import net.pravian.aero.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -72,23 +70,6 @@ public class CustomItemManager extends AbstractService {
                 continue;
             }
 
-            // ArmorType
-            String weightString = section.getString("armor_type", null);
-            ArmorType armorType;
-            try {
-                armorType = ArmorType.valueOf(weightString);
-            } catch (Exception e) {
-                armorType = null;
-            }
-            if (armorType != null && !InventoryUtil.isArmor(type)) {
-                logger.warning("Skipping item: " + id + ". Armor type specified for non-armor!");
-                continue;
-            }
-            if (armorType == null && InventoryUtil.isArmor(type)) {
-                logger.warning("Skipping item: " + id + ". No armor type specified for armor!");
-                continue;
-            }
-
             // Enchantments
             final Map<Enchantment, Integer> enchantments = new HashMap<>();
             ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
@@ -105,21 +86,35 @@ public class CustomItemManager extends AbstractService {
                 }
             }
 
-            // No validation below this point
-            // Create itemstack
-            final ItemStack stack = new ItemStack(type, 1);
+            // Create UUID and itemstack
+            ItemStack stack = new ItemStack(type, 1);
+
+            // Set data loaded from this config here.
+            stack.addEnchantments(enchantments);
+            stack.getData().setData(data);
 
             // Create and load metadata, if present
             UUID stackUuid = UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8));
             final GItemMeta meta = GItemMeta.createItemMeta(stack, stackUuid);
             plugin.im.getItemMeta().getMetaCache().put(stackUuid, meta);
-            if (section.isConfigurationSection("meta")) {
-                meta.loadFrom(section.getConfigurationSection("meta"));
+
+            // Load metadata from this section
+            // Most importantly: name, level, (armor type), tier, and lore
+            meta.loadFrom(section);
+
+            // Validate armor type
+            if (meta.getArmorType() != null && !InventoryUtil.isArmor(type)) {
+                logger.warning("Skipping item: " + id + ". Armor type specified for non-armor!");
+                continue;
+            }
+            if (meta.getArmorType() == null && InventoryUtil.isArmor(type)) {
+                logger.warning("Skipping item: " + id + ". No armor type specified for armor!");
+                continue;
             }
 
+            /*
             // Set bukkit GItemMeta properties below this point
             final org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
-
             // Display name
             StringBuilder sb = new StringBuilder();
             if (meta.getName() != null) {
@@ -131,16 +126,7 @@ public class CustomItemManager extends AbstractService {
                 sb.append(type.toString().toLowerCase().replace('_', ' '));
             }
             bMeta.setDisplayName(sb.toString());
-
-            // Data value
-            stack.getData().setData(data);
-
-            // Armor Type
-            meta.setArmorType(armorType);
-
-            // Enchantments
-            stack.addEnchantments(enchantments);
-
+             */
             itemMap.put(id, stack);
         }
 

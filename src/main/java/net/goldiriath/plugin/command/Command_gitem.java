@@ -33,7 +33,7 @@ public class Command_gitem extends SimpleCommand<Goldiriath> {
             }
 
             case "get": {
-                ItemStack stack = plugin.im.getItem(args[2]);
+                ItemStack stack = plugin.im.getItem(args[1]);
                 if (stack == null) {
                     msg("That custom item does not exist!", ChatColor.RED);
                     return true;

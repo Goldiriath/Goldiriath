@@ -46,11 +46,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.6.1</version>
                 <configuration>
                     <compilerVersion>${go.compile.jv}</compilerVersion>
                     <source>${go.compile.jv}</source>
                     <target>${go.compile.jv}</target>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
 

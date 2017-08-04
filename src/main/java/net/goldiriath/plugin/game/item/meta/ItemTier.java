@@ -30,17 +30,4 @@ public enum ItemTier {
     public String getAdjective(Material material) {
         return adjective;
     }
-
-    public static ItemTier fromName(String name) {
-        name = name.toLowerCase();
-
-        for (ItemTier tier : ItemTier.values()) {
-            if (tier.toString().equalsIgnoreCase(name)
-                    || tier.getAdjective().equalsIgnoreCase(name)) {
-                return tier;
-            }
-        }
-
-        return null;
-    }
 }

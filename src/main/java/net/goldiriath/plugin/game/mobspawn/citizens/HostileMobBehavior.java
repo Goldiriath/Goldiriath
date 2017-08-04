@@ -53,8 +53,8 @@ public class HostileMobBehavior implements Behavior {
         if (currentTarget.getType() == TargetType.ENTITY) {
             final Player player = currentTarget.getPlayer();
 
-            // Player's dead/offline: We're done
-            if (!player.isOnline() && player.isDead()) {
+            // Player's dead/offline/in creative: We're done
+            if (!player.isOnline() || player.isDead() || player.getGameMode() != GameMode.SURVIVAL) {
                 return BehaviorStatus.SUCCESS;
             }
 

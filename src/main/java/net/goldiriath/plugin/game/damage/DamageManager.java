@@ -1,6 +1,5 @@
 package net.goldiriath.plugin.game.damage;
 
-import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.npc.ai.NPCHolder;
@@ -14,17 +13,20 @@ import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class DamageManager extends AbstractService {
@@ -73,20 +75,22 @@ public class DamageManager extends AbstractService {
     }
 
     public void effective(Entity attacker, double effectiveDamage, Entity defender) {
+        String dmgString = String.format("%.2f", effectiveDamage);
+
         if (attacker instanceof Player && isNPC(defender)) {
             int health = effectiveOnNPC((Player) attacker, effectiveDamage, ((NPCHolder) defender).getNPC());
             if (health > 0) {
-                attacker.sendMessage(ChatColor.GOLD + "You hit the " + defender.getName() + ", dealing " + effectiveDamage + " damage.");
+                attacker.sendMessage(ChatColor.GOLD + "You hit the " + defender.getName() + ChatColor.GOLD + ", dealing " + dmgString + " damage.");
             } else {
-                attacker.sendMessage(ChatColor.GOLD + "You killed the " + defender.getName() + ", dealing " + effectiveDamage + " damage.");
+                attacker.sendMessage(ChatColor.GOLD + "You killed the " + defender.getName() + ChatColor.GOLD + ", dealing " + dmgString + " damage.");
             }
             return;
         } else if (isNPC(attacker) && defender instanceof Player) {
             int health = effectiveOnPlayer(effectiveDamage, (Player) defender);
             if (health > 0) {
-                defender.sendMessage(ChatColor.GOLD + "The " + attacker.getName() + " hit you, dealing " + effectiveDamage + " damage.");
+                defender.sendMessage(ChatColor.GOLD + "The " + attacker.getName() + ChatColor.GOLD + " hit you, dealing " + dmgString + " damage.");
             } else {
-                defender.sendMessage(ChatColor.GOLD + "The " + attacker.getName() + " killed you, dealing " + effectiveDamage + " damage.");
+                defender.sendMessage(ChatColor.GOLD + "The " + attacker.getName() + ChatColor.GOLD + " killed you, dealing " + dmgString + " damage.");
             }
             return;
         }
@@ -94,7 +98,7 @@ public class DamageManager extends AbstractService {
         plugin.logger.warning("Unsupported attack: " + attacker.getType() + " tried to attack " + defender.getType());
     }
 
-    public int effectiveOnNPC(Player attacker, double effectiveDamage, NPC defender) {
+    public int effectiveOnNPC(Player attacker, double effectiveDamage, final NPC defender) {
 
         HostileMobTrait defendTrait = defender.getTrait(HostileMobTrait.class);
         if (defendTrait == null) {
@@ -110,23 +114,37 @@ public class DamageManager extends AbstractService {
             return defendTrait.getHealth();
         }
 
-        defender.despawn(DespawnReason.DEATH);
-        defender.destroy();
-        return 0;
+        // Kill the mob
+        Entity entity = defender.getEntity();
+        if (entity instanceof LivingEntity) {
+            LivingEntity lEntity = (LivingEntity) entity;
+            lEntity.setHealth(0);
+        }
 
+        // One less mob attacking the player
+        plugin.pm.getData(attacker).getBattle().ease(defender);
+
+        // Destroy later
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                defender.destroy();
+            }
+        }.runTaskLater(plugin, 40);
+        return 0;
     }
 
     public int effectiveOnPlayer(double effectiveDamage, Player defender) {
         PlayerData data = plugin.pm.getData(defender);
 
         int damage = Math.max(1, (int) effectiveDamage);
-        int health = Math.min(0, data.getHealth() - damage);
+        int health = Math.max(0, data.getHealth() - damage);
         data.setHealth(health);
 
         return health;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onEntityHitNpc(NPCDamageByEntityEvent event) {
         NPC npc = event.getNPC();
         if (npc.getTrait(HostileMobTrait.class) == null) {
@@ -148,7 +166,11 @@ public class DamageManager extends AbstractService {
             return;
         }
 
-        event.setCancelled(true);
+        // Make sure we do knockback
+        event.setCancelled(false);
+
+        // But we manage damage ourselves
+        event.setDamage(0);
 
         Player player = (Player) attacker;
         ItemStack weapon = InventoryUtil.getWeapon(player);
@@ -156,7 +178,7 @@ public class DamageManager extends AbstractService {
         attack(attacker, weapon, npc.getEntity());
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onNPCHitEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
@@ -175,21 +197,27 @@ public class DamageManager extends AbstractService {
             return;
         }
 
-        NPC npc = ((NPCHolder) event).getNPC();
+        NPC npc = ((NPCHolder) damager).getNPC();
 
         HostileMobTrait trait = npc.getTrait(HostileMobTrait.class);
         if (trait == null) {
             return;
         }
 
-        event.setCancelled(true);
+        // Make sure we do knockback
+        event.setCancelled(false);
 
-        ItemStack hand = trait.getProfile().getHand();
-        if (hand != null) {
-            attack(damager, hand, event.getEntity());
+        // But we manage damage ourselves
+        event.setDamage(0);
+
+        int damage = trait.getProfile().getDamage();
+        if (damage == -1) {
+            attack(damager, trait.getProfile().getHand(), event.getEntity());
         } else {
-            attack(damager, trait.getProfile().getDamage(), event.getEntity());
+            attack(damager, damage, event.getEntity());
         }
+
+        updateHealth((Player) event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -202,17 +230,9 @@ public class DamageManager extends AbstractService {
             return;
         }
 
-        // Disable PvP for now.
+        // Disable PvP for now
         event.setCancelled(true);
         ((Player) event.getDamager()).sendMessage(ChatColor.RED + "PvP is disabled in this area.");
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        SpawnReason reason = event.getSpawnReason();
-        if (reason != SpawnReason.CUSTOM && reason != SpawnReason.DEFAULT) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -221,13 +241,19 @@ public class DamageManager extends AbstractService {
             return;
         }
 
-        plugin.logger.info("Cancelling player damage for " + event.getEntity().getName() + ": " + event.getCause());
+        if (event.getCause() == DamageCause.ENTITY_ATTACK) {
+            return;
+        }
 
         event.setCancelled(true);
     }
 
-    private boolean isNPC(Entity entity) {
-        return entity.hasMetadata("NPC");
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        player.setHealthScaled(false);
+        updateHealth(player);
     }
 
     public void heal(Player player, int amount) {
@@ -237,6 +263,20 @@ public class DamageManager extends AbstractService {
         health = Math.min(data.getMaxHealth(), health);
 
         data.setHealth(health);
+    }
+
+    private void updateHealth(Player player) {
+        PlayerData data = plugin.pm.getData(player);
+
+        double health = (data.getHealth() * 20D) / data.getMaxHealth();
+        health = Math.max(0, health);
+        health = Math.min(20, health);
+
+        player.setHealth(health);
+    }
+
+    private boolean isNPC(Entity entity) {
+        return entity.hasMetadata("NPC");
     }
 
     public class AutoHealer implements Runnable {

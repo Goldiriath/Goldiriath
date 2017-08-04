@@ -14,10 +14,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class GItemMeta extends PersistentStorage {
 
     @Getter
-    private final ItemStack stack;
+    private final UUID uniqueId;
 
     @Getter
-    private final UUID uniqueId;
+    private final ItemStack stack;
 
     @Getter
     @Setter
@@ -39,7 +39,7 @@ public class GItemMeta extends PersistentStorage {
     @Setter
     @Persist
     private List<String> lore = null;
-    
+
     @Getter
     @Setter
     @Persist
