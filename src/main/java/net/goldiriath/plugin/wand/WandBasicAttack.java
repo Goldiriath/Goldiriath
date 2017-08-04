@@ -105,7 +105,7 @@ public class WandBasicAttack extends AbstractService {
 
             // Target, do damage
             Entity target = nearby.iterator().next();
-            plugin.bm.attack(player, wand, target);
+            plugin.dam.attack(player, wand, target);
 
             // Show effect
             SplashEffect effect = new SplashEffect(plugin.elb.getManager());

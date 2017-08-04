@@ -5,13 +5,14 @@ import java.util.Set;
 import java.util.logging.Logger;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.loot.LootProfile;
 import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobBehavior;
 import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
-import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
+import net.pravian.aero.component.PluginComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class MobSpawnProfile implements ConfigLoadable, Validatable {
+public class MobSpawnProfile extends PluginComponent<Goldiriath> implements ConfigLoadable, Validatable {
 
     public static final int INFINITE_POTION_DURATION = 1000000;
     public static final int WANDER_RANGE = 15;
@@ -37,20 +38,23 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     private final Logger logger;
     //
     @Getter
-    private final Set<PotionEffect> effects;
+    private String customName;
+    @Getter
+    private long timeThreshold;
     @Getter
     private EntityType type;
     @Getter
     private int level;
     @Getter
-    private String customName;
+    private int damage;
     @Getter
-    private long timeThreshold;
+    private int health;
     @Getter
-    private ItemStack item;
-    private long spawnThreshold;
+    private MobTier lootTier;
     @Getter
-    private ItemStack carryItem;
+    private LootProfile lootProfile;
+    @Getter
+    private ItemStack hand;
     @Getter
     private ItemStack helmet;
     @Getter
@@ -60,19 +64,14 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
     @Getter
     private ItemStack boots;
     @Getter
-    private MobTier tier;
-    @Getter
-    private LootProfile loot;
+    private final Set<PotionEffect> effects;
 
     public MobSpawnProfile(MobSpawnManager manager, String id) {
+        super(manager.getPlugin());
         this.id = id;
         this.manager = manager;
         this.logger = manager.getPlugin().getLogger();
         this.effects = new HashSet<>();
-    }
-
-    public boolean hasTimeThreshold() {
-        return timeThreshold > 0;
     }
 
     public NPC spawn(Location location) {
@@ -86,9 +85,8 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
 
         // Spawn
         npc.spawn(location);
-        npc.setProtected(false);
-        npc.addTrait(new MobProfileTrait(this));
-        npc.addTrait(new HostileMobTrait(60)); // TODO: Make health customisable
+        npc.setProtected(true);
+        npc.addTrait(new HostileMobTrait(this));
         npc.getDefaultGoalController().addBehavior(new HostileMobBehavior(manager.getPlugin(), npc, location, WANDER_RANGE), 1);
 
         // Setup
@@ -108,7 +106,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
             ((Ageable) mob).setAdult();
         }
 
-        // Potion Effective
+        // Potion effects
         mob.addPotionEffects(effects);
 
         // Custom name
@@ -123,8 +121,8 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         mob.setCanPickupItems(false);
 
         equipment.setItemInHandDropChance(0);
-        if (item != null) {
-            equipment.setItemInHand(item);
+        if (hand != null) {
+            equipment.setItemInHand(hand);
         }
 
         equipment.setHelmetDropChance(0);
@@ -150,30 +148,81 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         return npc;
     }
 
-    public boolean hasSpawnThreshold() {
-        return spawnThreshold >= 0;
-    }
-
     @Override
     public void loadFrom(ConfigurationSection config) {
+
+        // Meta
+        customName = config.getString("name", null);
+        if (customName != null) {
+            customName = ChatColor.translateAlternateColorCodes('&', customName);
+        }
+        timeThreshold = config.getInt("spawn_threshold", -1);
 
         final String entityTypeName = config.getString("type", null);
         if (entityTypeName == null) {
             type = null;
         } else {
-            type = EntityType.fromName(entityTypeName);
+            try {
+                type = EntityType.valueOf(entityTypeName);
+            } catch (IllegalArgumentException ex) {
+                type = null;
+                logger.warning("Could not load mobspawn profile '" + id + "'. Invalid entity type: " + entityTypeName);
+            }
         }
 
-        // Meta
-        customName = config.getString("name", null);
-        timeThreshold = config.getInt("spawn_threshold", -1);
-        level = config.getInt("level", 1);
-        tier = MobTier.valueOf(config.getString("tier", MobTier.NORMAL.name()));
-        loot = manager.getPlugin().lm.getProfileMap().get(config.getString("loot_profile", "default"));
+        // Stats
+        level = config.getInt("stats.level", -1);
+        if (level == -1) {
+            logger.warning("Could not load mobspawn profile '" + id + "'. Level field not present.");
+        }
+        damage = config.getInt("stats.damage", -1);
+        health = config.getInt("stats.health", -1);
+        if (health == -1) {
+            logger.warning("Could not load mobspawn profile '" + id + "'. Health field not present.");
+        }
+
+        // Loot
+        if (!config.contains("loot")) {
+            lootProfile = null;
+            lootTier = null;
+        } else {
+            String profileId = config.getString("loot.profile", null);
+            lootProfile = plugin.lm.getProfile(profileId);
+            if (lootProfile == null) {
+                logger.warning("Could not load mobspawn profile '" + id + "'. Invalid loot table id: " + profileId);
+            }
+            String tierName = config.getString("loot.tier", null);
+            try {
+                lootTier = MobTier.valueOf(tierName);
+            } catch (Exception ex) {
+                lootTier = null;
+                logger.warning("Could not load mobspawn profile '" + id + "'. Invalid loot table id: " + tierName);
+
+            }
+        }
+
+        // Items
+        if (!config.contains("items")) {
+            hand = null;
+            helmet = null;
+            chestplate = null;
+            leggings = null;
+            boots = null;
+        } else {
+            hand = Util.parseItem(config.getString("items.hand", null));
+            helmet = Util.parseItem(config.getString("items.helmet", null));
+            chestplate = Util.parseItem(config.getString("items.chestplate", null));
+            leggings = Util.parseItem(config.getString("items.leggings", null));
+            boots = Util.parseItem(config.getString("items.boots", null));
+        }
+
+        if (damage == -1 && hand == null) {
+            logger.warning("Could not load mobspawn profile '" + id + "'. Damage field not present and item not present. Must specify either to calculate attack damage.");
+        }
 
         // Effects
         effects.clear();
-        if (config.isConfigurationSection("potions")) {
+        if (config.contains("potions")) {
             for (String potionTypeName : config.getConfigurationSection("potions").getKeys(false)) {
                 final PotionEffectType effectType = PotionEffectType.getByName(potionTypeName);
                 if (effectType == null) {
@@ -192,17 +241,10 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
                 effects.add(effect);
             }
         }
+    }
 
-        // Equipment
-        item = Util.parseItem(config.getString("item", null));
-        helmet = Util.parseItem(config.getString("helmet", null));
-        chestplate = Util.parseItem(config.getString("chestplate", null));
-        leggings = Util.parseItem(config.getString("leggings", null));
-        boots = Util.parseItem(config.getString("boots", null));
-
-        if (customName != null) {
-            customName = ChatColor.translateAlternateColorCodes('&', customName);
-        }
+    public boolean hasTimeThreshold() {
+        return timeThreshold >= 0;
     }
 
     @Override
@@ -210,7 +252,10 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         return id != null
                 && type != null
                 && type.isAlive()
-                && type.isSpawnable();
+                && type.isSpawnable()
+                && level != -1
+                && (damage != -1 || hand != null)
+                && health != -1;
     }
 
 }

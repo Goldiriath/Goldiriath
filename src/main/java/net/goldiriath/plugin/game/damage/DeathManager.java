@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class DeathManager extends AbstractService {
 
@@ -52,6 +53,8 @@ public class DeathManager extends AbstractService {
             if (money < deathCost) {
                 player.sendMessage(ChatColor.RED + "You lost your items because you didn't have enough money.");
                 event.setKeepInventory(false);
+                // TODO: Drop items, but remove skills
+                event.getDrops().clear();
                 return;
             }
 
@@ -62,6 +65,12 @@ public class DeathManager extends AbstractService {
         // Keep the player's inventory
         event.setKeepInventory(true);
         event.getDrops().clear();
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        PlayerData data = plugin.pm.getData(event.getPlayer());
+        data.setHealth(data.getMaxHealth());
     }
 
 }

@@ -8,6 +8,7 @@ import net.goldiriath.plugin.game.item.meta.ItemTier;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -65,8 +66,14 @@ public class DamageMath {
         }
     }
 
-    public static double attackDamage(double baseDamage, Player player, Modifier[] modifiers) {
-        return a(baseDamage, skillMod(modifiers), inventoryMod(player.getInventory()), environmentMod(player));
+    public static double attackDamage(double baseDamage, Entity entity, Modifier[] modifiers) {
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+            return a(baseDamage, skillMod(modifiers), inventoryMod(player.getInventory()), environmentMod(player));
+        } else {
+            // TODO: Mobs with skill/inventory modifiers?
+            return a(baseDamage, 1, 1, environmentMod(entity));
+        }
     }
 
     /**
@@ -97,11 +104,12 @@ public class DamageMath {
     }
 
     public static double inventoryMod(Inventory inventory) {
+        // TODO: Weight system
         return 1.0;
     }
 
-    public static double environmentMod(Player player) {
-        Location loc = player.getLocation();
+    public static double environmentMod(Entity entity) {
+        Location loc = entity.getLocation();
 
         // TODO: Check if Y=90 appropriate
         if (loc.getBlockY() > 90) {

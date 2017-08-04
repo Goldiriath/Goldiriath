@@ -1,10 +1,10 @@
 package net.goldiriath.plugin.game.mobspawn;
 
-import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import net.citizensnpcs.api.npc.NPC;

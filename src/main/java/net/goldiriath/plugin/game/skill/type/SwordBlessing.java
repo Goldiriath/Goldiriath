@@ -16,9 +16,10 @@ public class SwordBlessing extends ActiveSkill {
     public void use() {
         // Heal player
         PlayerData playerData = plugin.pm.getData(player);
-        double healing = 0.05*playerData.getMaxHealth()+0.1*(playerData.getMaxHealth()-playerData.getHealth());
-        int amount = (int) healing;
-        plugin.hm.heal(player, amount);
+        double healing = 0.05 * playerData.getMaxHealth() + 0.1 * (playerData.getMaxHealth() - playerData.getHealth());
+
+        plugin.dam.heal(player, (int) healing);
+
         Util.sound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.5f);
     }
 
