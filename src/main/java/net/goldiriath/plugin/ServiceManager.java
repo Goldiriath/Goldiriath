@@ -1,9 +1,9 @@
 package net.goldiriath.plugin;
 
-import com.google.common.collect.Lists;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.google.common.collect.Lists;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.goldiriath.plugin.util.service.Service;
 import org.bukkit.plugin.Plugin;
@@ -23,6 +23,10 @@ public class ServiceManager extends AbstractService {
         Service longestService = null;
 
         long startTime = System.currentTimeMillis();
+        for (Service service : services) {
+            service.init();
+        }
+
         for (Service service : services) {
             long serviceStart = System.currentTimeMillis();
 
