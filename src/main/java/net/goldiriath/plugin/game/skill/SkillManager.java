@@ -7,10 +7,11 @@ import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.game.skill.menu.WeaponMenu;
 import net.goldiriath.plugin.game.skill.type.ActiveSkill;
 import net.goldiriath.plugin.game.skill.type.Skill;
-import net.goldiriath.plugin.game.skill.type.WeaponType;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.data.DataSkills;
+import net.goldiriath.plugin.player.info.InfoWand;
 import net.goldiriath.plugin.util.service.AbstractService;
+import net.goldiriath.plugin.wand.Element;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -77,9 +78,9 @@ public class SkillManager extends AbstractService {
             return;
         }
 
-        // stops the player from using skills in its hotbar that do no correspond to its weapon
+        // Stops the player from using skills in its hotbar that do no correspond to its weapon
         SkillType type = skill.getType();
-        if (!type.getWeapon().equals(InventoryUtil.getWeaponType(player))) {
+        if (!type.getWeapon().equals(InventoryUtil.getWeaponType(InventoryUtil.getWeapon(player)))) {
             player.sendMessage(ChatColor.RED + "You cannot use this skill with your equiped weapon!");
             return;
         }
@@ -90,7 +91,8 @@ public class SkillManager extends AbstractService {
             player.sendMessage(ChatColor.RED + "You do not have enough mana to use this skill!");
             return;
         }
-        // TODO: fix this when mana is implemented.
+
+        // TODO: Fix this when mana is implemented.
         data.setMana(100);
 
         // Checks if the skill is on cooldown.
@@ -99,15 +101,14 @@ public class SkillManager extends AbstractService {
             return;
         }
 
-        PlayerInventory inventory = player.getInventory();
-        ItemStack usedSkill = inventory.getItem(inventory.first(skill.getType().getDisplay().getStack()));
-        usedSkill.setAmount(skill.getType().getDelayTicks()/20);
-
-        skillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
+        if (!(skill.getType() == SkillType.WAND_WARD)) {
+            putSkillOnCooldown(player, skill);
+        }
 
         ActiveSkill active = (ActiveSkill) skill;
         active.use();
         active.setLastUse(System.nanoTime());
+
     }
 
     public void setSkillLevel(Player player, SkillType type, int level) {
@@ -116,7 +117,6 @@ public class SkillManager extends AbstractService {
         if (level <= 0) {
             data.getSkills().remove(type);
             plugin.logger.info("Removed " + player.getName() + "'s " + type.getName() + " skill");
-            //player.sendMessage(ChatColor.DARK_GREEN + "Removed " + player.getName() + "'s " + type.getName() + " skill");
             return;
         }
 
@@ -129,13 +129,17 @@ public class SkillManager extends AbstractService {
         }
 
         skill.getMeta().level = level;
-       // player.sendMessage(ChatColor.DARK_GREEN + "Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
         plugin.logger.info("Set " + player.getName() + "'s " + type.getName() + " skill level to " + level);
     }
 
-    private BukkitTask skillOnCooldown(final Player player, final Inventory inventory, final int pos, SkillType type) {
-        // Reset A specific slot in a players inventory.
+    private BukkitTask putSkillOnCooldown(Player player, Skill skill) {
+        PlayerInventory inventory = player.getInventory();
+        ItemStack usedSkill = inventory.getItem(inventory.first(skill.getType().getDisplay().getStack()));
+        usedSkill.setAmount(skill.getType().getDelayTicks()/20);
 
+        return putSkillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
+    }
+    private BukkitTask putSkillOnCooldown(final Player player, final Inventory inventory, final int pos, final SkillType type) {
         return new BukkitRunnable() {
 
             @Override
@@ -144,6 +148,9 @@ public class SkillManager extends AbstractService {
                     cancel();
                     return;
                 }
+
+                //don't try to find other skills when the skill buttons are replaced with element buttons
+                if (plugin.pm.getData(player).getWand().isChoosing()) return;
 
                 inventory.getItem(pos).setAmount(inventory.getItem(pos).getAmount() - 1);
                 if(inventory.getItem(pos).getAmount() == 1) {
@@ -182,7 +189,8 @@ public class SkillManager extends AbstractService {
 
     @EventHandler(ignoreCancelled = true)
     public void activateSkill(PlayerItemHeldEvent event) {
-        if(event.getPreviousSlot() == 0 && event.getNewSlot() > 0 && event.getNewSlot() < 5) {
+        int[] skillSlots = SlotType.SKILL.getIndices();
+        if(event.getPreviousSlot() == 0 && event.getNewSlot() >= skillSlots[0] && event.getNewSlot() <= skillSlots[skillSlots.length-1]) {
             event.setCancelled(true);
 
             PlayerInventory inventory = event.getPlayer().getInventory();
@@ -191,9 +199,44 @@ public class SkillManager extends AbstractService {
 
             if(stack != null) {
                 Skill usedSkill = data.getSkills().getSkills().get(InventoryUtil.getSkill(stack));
+                if (data.getWand().isChoosing()) {
+                    choosingWandElement(event.getPlayer(), data, stack);
+                    return;
+                }
                 useSkill(event.getPlayer(), usedSkill);
             }
         }
+    }
+
+    private void choosingWandElement(Player player, PlayerData data, ItemStack stack) {
+        InfoWand wand = data.getWand();
+        final int setForSeconds = 20;
+        switch (stack.getData().getData()) {
+            //fire
+            case 9:
+                wand.setWandElement(Element.Fire, setForSeconds);
+                break;
+            //water
+            case 10:
+                wand.setWandElement(Element.Water, setForSeconds);
+                break;
+            //air
+            case 11:
+                wand.setWandElement(Element.Air, setForSeconds);
+                break;
+            //earth
+            case 12:
+                wand.setWandElement(Element.Earth, setForSeconds);
+                break;
+        }
+        //set items back at the right spots
+        int ele = 0;
+        for (int i : SlotType.SKILL.getIndices()) {
+            player.getInventory().setItem(i, wand.getStoredItems()[ele++]);
+        }
+        wand.setChoosing(false);
+        putSkillOnCooldown(player, data.getSkills().getSkills().get(SkillType.WAND_WARD));
+        player.sendMessage("You chose " + wand.getWandElement().name() + " as your element!");
     }
 
 }

@@ -19,9 +19,11 @@ public class WeaponMenu extends PluginComponent<Goldiriath> implements OptionCli
     public void openMenu(Player player) {
         final IconMenu menu = new IconMenu("Skills", 9, this, plugin);
 
-        menu.setOption(0, StaticItem.MENU_SKILL_SWORD.getStack(), "sword");
-        menu.setOption(1, StaticItem.MENU_SKILL_BOW.getStack(), "bow");
-        menu.setOption(8, StaticItem.MENU_DONE.getStack(), "done");
+        menu.setOption(0, StaticItem.MENU_SKILL_SWORD.getStack(), "Sword");
+        menu.setOption(1, StaticItem.MENU_SKILL_BOW.getStack(), "Bow");
+        menu.setOption(2, StaticItem.MENU_SKILL_KNIFE.getStack(), "Knife");
+        menu.setOption(3, StaticItem.MENU_SKILL_WAND.getStack(), "Wand");
+        menu.setOption(8, StaticItem.MENU_DONE.getStack(), "Done");
         menu.open(player);
     }
 

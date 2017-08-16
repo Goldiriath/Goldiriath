@@ -1,15 +1,14 @@
 package net.goldiriath.plugin.game.loot;
 
-import com.google.common.collect.Maps;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.ConfigPaths;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
 import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.util.Util;
@@ -42,10 +41,7 @@ public class LootManager extends AbstractService {
     private final YamlConfig spawnConfig;
     private BukkitTask spawnTask;
     //
-    private final Random rn = new Random();
     private final Set<ChestSpawn> spawns;
-    private boolean enabled;
-    private boolean devMode;
     @Getter
     private final Map<String, Group> groupMap = Maps.newHashMap();
     @Getter
@@ -55,7 +51,7 @@ public class LootManager extends AbstractService {
         super(plugin);
         this.config = new YamlConfig(plugin, "loot.yml", true);
         this.spawns = new HashSet<>();
-        this.spawnConfig = new YamlConfig(plugin, "chestspawns.yml", false);
+        this.spawnConfig = new YamlConfig(plugin, "data/chestspawns.yml", false);
     }
 
     @Override
@@ -90,7 +86,7 @@ public class LootManager extends AbstractService {
 
             @Override
             public void run() {
-                if (devMode) {
+                if (plugin.dev.isDevMode()) {
                     return;
                 }
 
@@ -209,7 +205,7 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        //validate delay
+        // Validate delay
         int updatedelay = -1;
         if (event.getLine(3) != null && !event.getLine(3).isEmpty()) {
             try {
@@ -288,7 +284,7 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        if (!devMode) {
+        if (!plugin.dev.isDevMode()) {
             spawn.getLocation().getBlock().setType(Material.AIR);
             return;
         }
@@ -311,10 +307,6 @@ public class LootManager extends AbstractService {
 
     private void loadConfig() {
         spawns.clear();
-
-        // Load vars
-        enabled = plugin.config.getBoolean(ConfigPaths.CHESTSPAWNER_ENABLED);
-        devMode = plugin.config.getBoolean(ConfigPaths.MOBSPAWNER_DEV_MODE);
 
         // Load spawns
         if (spawnConfig.exists()) {
@@ -347,21 +339,12 @@ public class LootManager extends AbstractService {
         spawnConfig.save();
     }
 
-    // Getters, Setters
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
+    // Update sign visibility
+    @EventHandler
+    public void onDevModeChange(DevMode.DevModeChangeEvent event) {
         for (ChestSpawn spawn : spawns) {
             updateSign(spawn);
         }
-    }
-
-    @Override
-    public Goldiriath getPlugin() {
-        return plugin;
-    }
-
-    public boolean isDevMode() {
-        return devMode;
     }
 
     public LootProfile getProfile(String id) {

@@ -112,7 +112,7 @@ public class PlayerManager extends AbstractService {
     }
 
     private YamlConfig createPlayerConfig(Player player) {
-        return new YamlConfig(plugin, "players/" + player.getUniqueId() + ".yml", false);
+        return new YamlConfig(plugin, "data/players/" + player.getUniqueId() + ".yml", false);
     }
 
 }

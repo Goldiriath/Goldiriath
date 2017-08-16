@@ -171,7 +171,7 @@ public class MobSpawnProfile implements ConfigLoadable, Validatable {
         tier = MobTier.valueOf(config.getString("tier", MobTier.NORMAL.name()));
         loot = manager.getPlugin().lm.getProfileMap().get(config.getString("loot_profile", "default"));
 
-        // Effects
+        // effect
         effects.clear();
         if (config.isConfigurationSection("potions")) {
             for (String potionTypeName : config.getConfigurationSection("potions").getKeys(false)) {

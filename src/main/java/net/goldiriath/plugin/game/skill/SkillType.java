@@ -42,8 +42,8 @@ public enum SkillType {
             0,
             StaticItem.SKILL_SWORD_BLESSING
     ),
-    SWORD_DEVINE_LIGHT(
-            SwordDevineLight.class,
+    SWORD_DIVINE_LIGHT(
+            SwordDivineLight.class,
             "Devine Light",
             WeaponType.SWORD,
             20,
@@ -94,11 +94,49 @@ public enum SkillType {
     KNIFE_STEALTH(
             KnifeStealth.class,
             "Stealth",
-            WeaponType.SWORD, //todo: change to knife when we actually have a knife
+            WeaponType.KNIFE,
             20,
             10 * 20,
             1,
             StaticItem.SKILL_KNIFE_STEALTH
+    ),
+
+    //wand skills:
+    WAND_WARD(
+            WandWard.class,
+            "Ward",
+            WeaponType.WAND,
+            20,
+            10 * 20,
+            1,
+            StaticItem.SKILL_WAND_WARD
+    ),
+    WAND_ELEMENTAL_BLAST(
+            WandElementalBlast.class,
+            "Elemental Blast",
+            WeaponType.WAND,
+            20,
+            10 * 20,
+            1,
+            StaticItem.SKILL_WAND_ELEMENTAL_BLAST
+    ),
+    WAND_ELEMENTAL_WAVE(
+            WandElementalWave.class,
+            "Elemental Wave",
+            WeaponType.WAND,
+            50,
+            10 * 20,
+            2,
+            StaticItem.SKILL_WAND_ELEMENTAL_WAVE
+    ),
+    WAND_DRAW_POWER(
+            WandDrawPower.class,
+            "Draw Power",
+            WeaponType.WAND,
+            0,
+            10 * 20,
+            2,
+            StaticItem.SKILL_WAND_DRAW_POWER
     );
 
     //

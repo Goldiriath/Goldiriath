@@ -23,16 +23,15 @@ public enum SlotType implements ItemStackValidatable {
         }
 
     },
-    SKILL_BOOK(5) {
 
+    SKILL_BOOK(1) {
         @Override
         public boolean validate(ItemStack stack) {
             return InventoryUtil.isSkillBook(stack);
         }
 
     },
-    SKILL(1, 2, 3, 4) {
-
+    SKILL(2, 3, 4, 5) {
         @Override
         public boolean validate(ItemStack stack
         ) {

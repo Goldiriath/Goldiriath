@@ -1,7 +1,7 @@
 package net.goldiriath.plugin.player.info;
 
 import lombok.Getter;
-import net.goldiriath.plugin.ConfigPaths;
+import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.game.questing.dialog.Dialog;
 import net.goldiriath.plugin.game.questing.dialog.OptionSet;
 import net.goldiriath.plugin.game.questing.script.Script;
@@ -43,7 +43,7 @@ public class InfoDialogs extends Info {
                 player.sendMessage(ChatColor.YELLOW + "Note" + ChatColor.WHITE + ": You've stopped speaking to this character.");
                 endOption();
             }
-        }.runTaskLater(plugin, plugin.config.getInt(ConfigPaths.DIALOG_TIMEOUT));
+        }.runTaskLater(plugin, plugin.config.getInt(ConfigPath.DIALOG_TIMEOUT));
     }
 
     public void endOption() {
