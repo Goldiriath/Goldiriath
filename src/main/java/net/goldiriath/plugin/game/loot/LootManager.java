@@ -9,6 +9,7 @@ import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.DevMode;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
 import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.util.Util;
@@ -126,9 +127,18 @@ public class LootManager extends AbstractService {
             return;
         }
 
-        Player lastAttacker = plugin.getServer().getPlayer(trait.getLastAttacker());
-        List<ItemStack> drops = loot.drop(profile.getLootTier());
-        lastAttacker.getInventory().addItem(drops.toArray(new ItemStack[]{}));
+        // TODO: Beta - roll loot according to https://github.com/Goldiriath/Goldiriath/issues/71
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            int damage = trait.getInflictedDamage(player);
+            if (damage < 1) {
+                continue;
+            }
+
+            List<ItemStack> stacks = loot.drop(profile.getLootTier());
+            for (ItemStack stack : stacks) {
+                InventoryUtil.storeItem(player.getInventory(), stack, false);
+            }
+        }
     }
 
     // Chestspawns

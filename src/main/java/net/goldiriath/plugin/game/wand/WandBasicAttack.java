@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.wand;
+package net.goldiriath.plugin.game.wand;
 
 import java.util.Collection;
 import net.goldiriath.plugin.Goldiriath;

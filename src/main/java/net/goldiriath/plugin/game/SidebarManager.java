@@ -1,8 +1,9 @@
-package net.goldiriath.plugin;
+package net.goldiriath.plugin.game;
 
 import com.google.common.collect.Lists;
 import java.util.List;
 import lombok.Getter;
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.player.info.InfoSidebar;

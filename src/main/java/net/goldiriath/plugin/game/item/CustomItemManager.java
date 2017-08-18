@@ -112,21 +112,6 @@ public class CustomItemManager extends AbstractService {
                 continue;
             }
 
-            /*
-            // Set bukkit GItemMeta properties below this point
-            final org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
-            // Display name
-            StringBuilder sb = new StringBuilder();
-            if (meta.getName() != null) {
-                sb.append(ChatUtils.colorize(meta.getName()));
-            } else {
-                if (meta.getTier() != null) {
-                    sb.append(meta.getTier().getAdjective(type)).append(" ");
-                }
-                sb.append(type.toString().toLowerCase().replace('_', ' '));
-            }
-            bMeta.setDisplayName(sb.toString());
-             */
             itemMap.put(id, stack);
         }
 
@@ -140,8 +125,10 @@ public class CustomItemManager extends AbstractService {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangeGamemode(PlayerGameModeChangeEvent event) {
-        // Update inventory when switching gamemodes
-        // This is done so the inventory's itemmeta is re-sent
+        // Update inventory when switching gamemodes.
+        // This is done so the inventory's itemmeta is re-sent.
+        // This is needed to refresh the associated lore with items,
+        // since we are modifying packets before they're sent.
         event.getPlayer().updateInventory();
     }
 

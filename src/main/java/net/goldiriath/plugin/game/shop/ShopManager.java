@@ -51,6 +51,7 @@ public class ShopManager extends AbstractService {
             } catch (Exception ex) {
                 logger.warning("Skipping shop profile: " + id + ". Exception loading profile!");
                 logger.severe(ExceptionUtils.getFullStackTrace(ex));
+                continue;
             }
 
             if (!profile.isValid()) {

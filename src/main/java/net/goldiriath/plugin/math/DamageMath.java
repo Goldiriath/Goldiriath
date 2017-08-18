@@ -9,9 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class DamageMath {
 
@@ -66,13 +68,13 @@ public class DamageMath {
         }
     }
 
-    public static double attackDamage(double baseDamage, Entity entity, Modifier[] modifiers) {
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
-            return a(baseDamage, skillMod(modifiers), inventoryMod(player.getInventory()), environmentMod(player));
+    public static double attackDamage(Entity attacker, double baseDamage, Modifier[] modifiers) {
+        if (attacker instanceof Player) {
+            Player player = (Player) attacker;
+            return a(baseDamage, skillModifier(modifiers), inventoryModifier(player.getInventory()), environmentMod(player));
         } else {
             // TODO: Mobs with skill/inventory modifiers?
-            return a(baseDamage, 1, 1, environmentMod(entity));
+            return a(baseDamage, 1, 1, environmentMod(attacker));
         }
     }
 
@@ -91,7 +93,7 @@ public class DamageMath {
         return b * s * i * i;
     }
 
-    public static double skillMod(Modifier[] modifiers) {
+    public static double skillModifier(Modifier[] modifiers) {
         double mod = 1.0;
 
         for (Modifier m : modifiers) {
@@ -103,7 +105,7 @@ public class DamageMath {
         return mod;
     }
 
-    public static double inventoryMod(Inventory inventory) {
+    public static double inventoryModifier(Inventory inventory) {
         // TODO: Weight system
         return 1.0;
     }
@@ -153,12 +155,22 @@ public class DamageMath {
         return Math.max(a * d * i, 1);
     }
 
-    public static double effectiveDamage(ItemStack weapon, ItemStack helmet, ItemStack chestplate, ItemStack pants, ItemStack boots) {
-        double a = 1; // TODO
-        double d = ArmorMath.armorModifier(helmet, chestplate, pants, boots);
-        double i = 1; // TODO
+    public static double effectiveDamage(double attack, Entity defender) {
+        if (!(defender instanceof LivingEntity)) {
+            return attack;
+        }
 
-        return e(a, d, i);
+        LivingEntity living = (LivingEntity) defender;
+
+        double i = 1;
+        double d = ArmorMath.armorModifier(living.getEquipment());
+
+        if (defender instanceof HumanEntity) {
+            PlayerInventory inv = ((HumanEntity) defender).getInventory();
+            i = inventoryModifier(inv);
+        }
+
+        return e(attack, d, i);
     }
 
 }

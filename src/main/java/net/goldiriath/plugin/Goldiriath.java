@@ -1,5 +1,7 @@
 package net.goldiriath.plugin;
 
+import net.goldiriath.plugin.game.SidebarManager;
+import net.goldiriath.plugin.game.EffectLibBridge;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
@@ -26,7 +28,7 @@ import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.util.PlayerList;
 import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.logging.PlayerListLogSink;
-import net.goldiriath.plugin.wand.WandBasicAttack;
+import net.goldiriath.plugin.game.wand.WandBasicAttack;
 import net.pravian.aero.command.handler.AeroCommandHandler;
 import net.pravian.aero.command.handler.SimpleCommandHandler;
 import net.pravian.aero.config.YamlConfig;

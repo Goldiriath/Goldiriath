@@ -59,19 +59,19 @@ public class DamageManager extends AbstractService {
         }
 
         double baseDamage = DamageMath.baseDamage(m);
-        double attackDamage = DamageMath.attackDamage(baseDamage, attacker, modifiers);
+        double attackDamage = DamageMath.attackDamage(attacker, baseDamage, modifiers);
 
         attack(attacker, attackDamage, e);
     }
 
     public void attack(Entity attacker, double attackDamage, Entity defender) {
-        // TODO: Armor
-        effective(attacker, attackDamage, defender);
+        double effectiveDamage = DamageMath.effectiveDamage(attackDamage, defender);
+        effective(attacker, effectiveDamage, defender);
     }
 
-    public void attack(Player player, double attackDamage) {
-        // TODO: Armor
-        effectiveOnPlayer(attackDamage, player);
+    public void attack(double attackDamage, Player defender) {
+        double effectiveDamage = DamageMath.effectiveDamage(attackDamage, defender);
+        effectiveOnPlayer(effectiveDamage, defender);
     }
 
     public void effective(Entity attacker, double effectiveDamage, Entity defender) {
@@ -232,7 +232,7 @@ public class DamageManager extends AbstractService {
 
         // Disable PvP for now
         event.setCancelled(true);
-        ((Player) event.getDamager()).sendMessage(ChatColor.RED + "PvP is disabled in this area.");
+        ((Player) event.getDamager()).sendMessage(ChatColor.RED + "PvP is disabled during the Alpha.");
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

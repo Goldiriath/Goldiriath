@@ -32,8 +32,7 @@ public class HostileMobTrait extends Trait {
     }
 
     public int getInflictedDamage(Player player) {
-        Integer damage = inflictMap.get(player.getUniqueId());
-        return damage == null ? 0 : damage;
+        return inflictMap.getOrDefault(player.getUniqueId(), 0);
     }
 
     public boolean inflict(Player player, int effectiveDamage) {
