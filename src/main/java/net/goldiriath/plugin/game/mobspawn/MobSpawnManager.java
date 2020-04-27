@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dispenser;
@@ -138,7 +139,15 @@ public class MobSpawnManager extends AbstractService {
         killAll();
     }
 
-    // Listeners
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        // Prevent mobs from naturally spawning
+        CreatureSpawnEvent.SpawnReason reason = event.getSpawnReason();
+        if (reason != CreatureSpawnEvent.SpawnReason.CUSTOM && reason != CreatureSpawnEvent.SpawnReason.DEFAULT) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler
     public void onSignEdit(SignChangeEvent event) {
         final Player player = event.getPlayer();

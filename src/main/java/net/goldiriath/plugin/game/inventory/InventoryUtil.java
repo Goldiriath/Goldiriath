@@ -34,6 +34,29 @@ public class InventoryUtil {
         }
     }
 
+    public static boolean isArmor(Material mat) {
+        return mat == Material.LEATHER_BOOTS
+                || mat == Material.LEATHER_LEGGINGS
+                || mat == Material.LEATHER_CHESTPLATE
+                || mat == Material.LEATHER_HELMET
+                || mat == Material.IRON_BOOTS
+                || mat == Material.IRON_LEGGINGS
+                || mat == Material.IRON_CHESTPLATE
+                || mat == Material.IRON_HELMET
+                || mat == Material.GOLD_BOOTS
+                || mat == Material.GOLD_LEGGINGS
+                || mat == Material.GOLD_CHESTPLATE
+                || mat == Material.GOLD_HELMET
+                || mat == Material.DIAMOND_BOOTS
+                || mat == Material.DIAMOND_LEGGINGS
+                || mat == Material.DIAMOND_CHESTPLATE
+                || mat == Material.DIAMOND_HELMET
+                || mat == Material.CHAINMAIL_BOOTS
+                || mat == Material.CHAINMAIL_LEGGINGS
+                || mat == Material.CHAINMAIL_CHESTPLATE
+                || mat == Material.CHAINMAIL_HELMET;
+    }
+
     public static boolean isSkill(ItemStack stack) {
 
         // Loops through all Skills defined in SkillType and checks if stack is that skill.

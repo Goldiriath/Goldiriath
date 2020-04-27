@@ -25,7 +25,7 @@ public class BowPunchShot extends ActiveSkill {
 
             @Override
             public void call(Entity hit) {
-                plugin.bm.attack(player, InventoryUtil.getWeapon(player), hit,
+                plugin.dam.attack(player, InventoryUtil.getWeapon(player), hit,
                         new Modifier(ModifierType.SLOWNESS, 0, 5 * 20));
             }
         });

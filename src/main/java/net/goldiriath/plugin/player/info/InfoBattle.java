@@ -49,15 +49,19 @@ public class InfoBattle extends Info {
             return;
         }
 
+        if (data.getHealth() == 0) {
+            return;
+        }
+
         // 1% health increase
-        int healAmount = (int) 1.01 * data.getMaxHealth();
+        int healAmount = (int) 0.01 * data.getMaxHealth();
         if (healAmount < 1) {
             healAmount = 1;
         }
 
         // Heal the player
         lastAutoHeal = Util.getServerTick();
-        plugin.hm.heal(data.getPlayer(), healAmount);
+        plugin.dam.heal(data.getPlayer(), healAmount);
     }
 
     private void cleanAssailing() {

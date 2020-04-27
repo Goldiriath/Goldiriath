@@ -3,9 +3,9 @@ package net.goldiriath.plugin.game;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.math.HealthMath;
 import net.goldiriath.plugin.math.XPMath;
-import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
@@ -48,7 +48,7 @@ public class XPManager extends AbstractService {
         }
         final Player player = (Player) entityEvent.getDamager();
 
-        MobProfileTrait trait = npc.getTrait(MobProfileTrait.class);
+        HostileMobTrait trait = npc.getTrait(HostileMobTrait.class);
         if (trait == null) {
             return;
         }
@@ -70,8 +70,7 @@ public class XPManager extends AbstractService {
         if (newLevel != oldLevel) {
             // Level health and Mana
             int newMaxHealth = HealthMath.levelToMaxHealth(newLevel);
-            plugin.hm.setMaxHealth(player, newMaxHealth);
-            data.setMaxMana(newMaxHealth); // TODO: ManaManager?
+            plugin.pm.getData(player).setMaxHealth(newMaxHealth);
 
             // Play effect
             levelUpEffect(player);

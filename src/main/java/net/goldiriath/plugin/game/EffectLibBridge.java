@@ -1,6 +1,7 @@
-package net.goldiriath.plugin;
+package net.goldiriath.plugin.game;
 
 import lombok.Getter;
+import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.util.service.AbstractService;
 import thirdparty.de.slikey.effectlib.EffectManager;
 

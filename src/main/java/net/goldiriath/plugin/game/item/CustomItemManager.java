@@ -1,16 +1,16 @@
 package net.goldiriath.plugin.game.item;
 
-import com.google.common.collect.Maps;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.item.meta.GItemMeta;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
-import net.pravian.aero.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -86,38 +86,31 @@ public class CustomItemManager extends AbstractService {
                 }
             }
 
-            // No validation below this point
-            // Create itemstack
-            final ItemStack stack = new ItemStack(type, 1);
+            // Create UUID and itemstack
+            ItemStack stack = new ItemStack(type, 1);
+
+            // Set data loaded from this config here.
+            stack.addEnchantments(enchantments);
+            stack.getData().setData(data);
 
             // Create and load metadata, if present
             UUID stackUuid = UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8));
             final GItemMeta meta = GItemMeta.createItemMeta(stack, stackUuid);
             plugin.im.getItemMeta().getMetaCache().put(stackUuid, meta);
-            if (section.isConfigurationSection("meta")) {
-                meta.loadFrom(section.getConfigurationSection("meta"));
+
+            // Load metadata from this section
+            // Most importantly: name, level, (armor type), tier, and lore
+            meta.loadFrom(section);
+
+            // Validate armor type
+            if (meta.getArmorType() != null && !InventoryUtil.isArmor(type)) {
+                logger.warning("Skipping item: " + id + ". Armor type specified for non-armor!");
+                continue;
             }
-
-            // Set bukkit GItemMeta properties below this point
-            final org.bukkit.inventory.meta.ItemMeta bMeta = stack.getItemMeta();
-
-            // Display name
-            StringBuilder sb = new StringBuilder();
-            if (meta.getName() != null) {
-                sb.append(ChatUtils.colorize(meta.getName()));
-            } else {
-                if (meta.getTier() != null) {
-                    sb.append(meta.getTier().getAdjective(type)).append(" ");
-                }
-                sb.append(type.toString().toLowerCase().replace('_', ' '));
+            if (meta.getArmorType() == null && InventoryUtil.isArmor(type)) {
+                logger.warning("Skipping item: " + id + ". No armor type specified for armor!");
+                continue;
             }
-            bMeta.setDisplayName(sb.toString());
-
-            // Data value
-            stack.getData().setData(data);
-
-            // Enchantments
-            stack.addEnchantments(enchantments);
 
             itemMap.put(id, stack);
         }
@@ -132,8 +125,10 @@ public class CustomItemManager extends AbstractService {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangeGamemode(PlayerGameModeChangeEvent event) {
-        // Update inventory when switching gamemodes
-        // This is done so the inventory's itemmeta is re-sent
+        // Update inventory when switching gamemodes.
+        // This is done so the inventory's itemmeta is re-sent.
+        // This is needed to refresh the associated lore with items,
+        // since we are modifying packets before they're sent.
         event.getPlayer().updateInventory();
     }
 

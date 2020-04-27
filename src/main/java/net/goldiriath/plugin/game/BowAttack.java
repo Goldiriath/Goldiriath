@@ -74,6 +74,6 @@ public class BowAttack extends AbstractService {
         Player player = (Player) arrow.getShooter();
 
         // TODO: Handle if the player switches the item in hand
-        plugin.bm.attack(player, player.getItemInHand(), arrow);
+        plugin.dam.attack(player, player.getItemInHand(), arrow);
     }
 }

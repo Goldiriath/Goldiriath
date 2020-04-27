@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.wand;
+package net.goldiriath.plugin.game.wand;
 
 import thirdparty.de.slikey.effectlib.Effect;
 import thirdparty.de.slikey.effectlib.EffectManager;

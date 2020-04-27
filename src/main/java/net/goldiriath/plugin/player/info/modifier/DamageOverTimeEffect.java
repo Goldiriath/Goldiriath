@@ -11,7 +11,7 @@ public class DamageOverTimeEffect extends OverTimeEffect {
 
     @Override
     protected void act(Player player) {
-        Goldiriath.instance().hm.damage(player, value);
+        Goldiriath.instance().dam.attack(value, player);
     }
 
 }

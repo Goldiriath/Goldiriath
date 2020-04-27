@@ -13,7 +13,7 @@ public class ItemTierDelegate extends ConfigDelegate<ItemTier> {
     @Override
     public ItemTier loadValue(ConfigurationSection config, Field field) {
         String tierString = config.getString(key, null);
-        return tierString == null ? null : ItemTier.fromName(tierString);
+        return tierString == null ? null : ItemTier.valueOf(tierString);
     }
 
     @Override

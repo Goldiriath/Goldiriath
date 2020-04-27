@@ -24,7 +24,7 @@ public class BowPowerShot extends ActiveSkill {
 
             @Override
             public void call(Entity hit) {
-                plugin.bm.attack(player, InventoryUtil.getWeapon(player), hit,
+                plugin.dam.attack(player, InventoryUtil.getWeapon(player), hit,
                         new Modifier(ModifierType.DAMAGE_MULTIPLIER, 1.7),
                         new Modifier(ModifierType.ARMOR_MULTIPLIER, 0.7));
             }

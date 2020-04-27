@@ -9,8 +9,9 @@ import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.DevMode;
+import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
-import net.goldiriath.plugin.game.mobspawn.citizens.MobProfileTrait;
+import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
@@ -27,7 +28,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -109,38 +109,36 @@ public class LootManager extends AbstractService {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerKillMob(EntityDeathEvent event) {
         LivingEntity mob = event.getEntity();
-        if (!(mob.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
-            return;
-        }
-        EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) mob.getLastDamageCause();
-        if (!(damageEvent.getDamager() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) damageEvent.getDamager();
 
-        // TODO: This does not work!
         NPC npc = plugin.msm.getBridge().getNPC(mob);
         if (npc == null) {
-            logger.warning(player.getName() + " killed mob that is not a NPC!");
             return;
         }
 
-        MobProfileTrait trait = npc.getTrait(MobProfileTrait.class);
+        HostileMobTrait trait = npc.getTrait(HostileMobTrait.class);
         if (trait == null) {
-            logger.warning(player.getName() + " killed NPC that does not have a mobspawn profile!");
+            logger.warning("An NPC died that did not have a mobspawn profile!");
             return;
         }
 
         MobSpawnProfile profile = trait.getProfile();
-
-        LootProfile loot = profile.getLoot();
+        LootProfile loot = profile.getLootProfile();
         if (loot == null) {
-            logger.warning(player.getName() + " killed NPC that does not have a loot profile!");
             return;
         }
 
-        List<ItemStack> drops = loot.drop(profile.getTier());
-        player.getInventory().addItem(drops.toArray(new ItemStack[]{}));
+        // TODO: Beta - roll loot according to https://github.com/Goldiriath/Goldiriath/issues/71
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            int damage = trait.getInflictedDamage(player);
+            if (damage < 1) {
+                continue;
+            }
+
+            List<ItemStack> stacks = loot.drop(profile.getLootTier());
+            for (ItemStack stack : stacks) {
+                InventoryUtil.storeItem(player.getInventory(), stack, false);
+            }
+        }
     }
 
     // Chestspawns

@@ -41,7 +41,7 @@ public class BowSpreadShot extends ActiveSkill {
 
                 @Override
                 public void call(Entity hit) {
-                    plugin.bm.attack(player, InventoryUtil.getWeapon(player), hit,
+                    plugin.dam.attack(player, InventoryUtil.getWeapon(player), hit,
                             new Modifier(ModifierType.DAMAGE_MULTIPLIER, 0.7),
                             new Modifier(ModifierType.SLOWNESS, 0, 1 * 20));
                 }

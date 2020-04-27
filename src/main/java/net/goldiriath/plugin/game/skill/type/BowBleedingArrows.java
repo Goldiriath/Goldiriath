@@ -24,7 +24,7 @@ public class BowBleedingArrows extends ActiveSkill {
 
             @Override
             public void call(Entity hit) {
-                plugin.bm.attack(player, InventoryUtil.getWeapon(player), hit,
+                plugin.dam.attack(player, InventoryUtil.getWeapon(player), hit,
                         new Modifier(ModifierType.DAMAGE_MULTIPLIER, 1.2),
                         new Modifier(ModifierType.DAMAGE_BLEED_WITH_MULTIPLIER, 0.2, 4 * 20));
             }

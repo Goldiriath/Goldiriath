@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import net.citizensnpcs.api.trait.Trait;
+import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
 import org.bukkit.entity.Player;
 
 public class HostileMobTrait extends Trait {
@@ -15,21 +16,26 @@ public class HostileMobTrait extends Trait {
     private final int maxHealth;
     //
     @Getter
+    private MobSpawnProfile profile;
+    @Getter
     private int health;
+    @Getter
+    private UUID lastAttacker;
     private final Map<UUID, Integer> inflictMap = new HashMap<>();
 
-    public HostileMobTrait(int health) {
+    public HostileMobTrait(MobSpawnProfile profile) {
         super(NAME);
-        this.maxHealth = health;
-        this.health = health;
+        this.profile = profile;
+        this.maxHealth = profile.getHealth();
+        this.health = profile.getHealth();
+
     }
 
     public int getInflictedDamage(Player player) {
-        Integer damage = inflictMap.get(player.getUniqueId());
-        return damage == null ? 0 : damage;
+        return inflictMap.getOrDefault(player.getUniqueId(), 0);
     }
 
-    public boolean inflict(Player player, int trueDamage) {
+    public boolean inflict(Player player, int effectiveDamage) {
         final UUID uuid = player.getUniqueId();
         Integer inflicted = inflictMap.get(uuid);
 
@@ -37,10 +43,12 @@ public class HostileMobTrait extends Trait {
             inflicted = 0;
         }
 
-        inflicted += trueDamage;
+        inflicted += effectiveDamage;
         inflictMap.put(uuid, inflicted);
 
-        health -= trueDamage;
+        health -= effectiveDamage;
+
+        lastAttacker = uuid;
 
         return health > 0;
     }

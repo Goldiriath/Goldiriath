@@ -8,8 +8,12 @@ import net.goldiriath.plugin.game.item.meta.ItemTier;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 
 public class DamageMath {
 
@@ -64,8 +68,14 @@ public class DamageMath {
         }
     }
 
-    public static double attackDamage(double baseDamage, Player player, Modifier[] modifiers) {
-        return a(baseDamage, skillMod(modifiers), inventoryMod(player.getInventory()), environmentMod(player));
+    public static double attackDamage(Entity attacker, double baseDamage, Modifier[] modifiers) {
+        if (attacker instanceof Player) {
+            Player player = (Player) attacker;
+            return a(baseDamage, skillModifier(modifiers), inventoryModifier(player.getInventory()), environmentMod(player));
+        } else {
+            // TODO: Mobs with skill/inventory modifiers?
+            return a(baseDamage, 1, 1, environmentMod(attacker));
+        }
     }
 
     /**
@@ -83,7 +93,7 @@ public class DamageMath {
         return b * s * i * i;
     }
 
-    public static double skillMod(Modifier[] modifiers) {
+    public static double skillModifier(Modifier[] modifiers) {
         double mod = 1.0;
 
         for (Modifier m : modifiers) {
@@ -95,12 +105,13 @@ public class DamageMath {
         return mod;
     }
 
-    public static double inventoryMod(Inventory inventory) {
+    public static double inventoryModifier(Inventory inventory) {
+        // TODO: Weight system
         return 1.0;
     }
 
-    public static double environmentMod(Player player) {
-        Location loc = player.getLocation();
+    public static double environmentMod(Entity entity) {
+        Location loc = entity.getLocation();
 
         // TODO: Check if Y=90 appropriate
         if (loc.getBlockY() > 90) {
@@ -142,6 +153,24 @@ public class DamageMath {
     @VisibleForTesting
     static double e(double a, double d, double i) {
         return Math.max(a * d * i, 1);
+    }
+
+    public static double effectiveDamage(double attack, Entity defender) {
+        if (!(defender instanceof LivingEntity)) {
+            return attack;
+        }
+
+        LivingEntity living = (LivingEntity) defender;
+
+        double i = 1;
+        double d = ArmorMath.armorModifier(living.getEquipment());
+
+        if (defender instanceof HumanEntity) {
+            PlayerInventory inv = ((HumanEntity) defender).getInventory();
+            i = inventoryModifier(inv);
+        }
+
+        return e(attack, d, i);
     }
 
 }
