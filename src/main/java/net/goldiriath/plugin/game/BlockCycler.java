@@ -30,41 +30,34 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class MetaCycler extends AbstractService {
+public class BlockCycler extends AbstractService {
 
     private static final List<Material> FORBIDDEN_MATERIALS = Arrays.asList(
-            Material.DOUBLE_PLANT
+            Material.SUGAR_CANE
     );
     //
-    private Material metaTool;
-    private Material biomeTool;
-    private final Map<UUID, Byte> dataMap = new HashMap<>();
+    private Material tool;
     private final Map<UUID, Biome> biomeMap = new HashMap<>();
 
-    public MetaCycler(Goldiriath plugin) {
+    public BlockCycler(Goldiriath plugin) {
         super(plugin);
     }
 
     @Override
     public void onStart() {
-        if (!plugin.config.getBoolean(ConfigPath.METACYCLER_ENABLED)) {
+        if (!plugin.config.getBoolean(ConfigPath.CYCLER_ENABLED)) {
             return;
         }
 
-        metaTool = Util.parseMaterial(plugin.config.getString(ConfigPath.METACYCLER_META_TOOL));
-        biomeTool = Util.parseMaterial(plugin.config.getString(ConfigPath.METACYCLER_BIOME_TOOL));
+        tool = Util.parseMaterial(plugin.config.getString(ConfigPath.CYCLER_TOOL));
 
-        if (metaTool == null) {
-            plugin.logger.warning("Could not parse MetaCycler meta tool: " + plugin.config.getString(ConfigPath.METACYCLER_META_TOOL));
-        }
-        if (biomeTool == null) {
-            plugin.logger.warning("Could not parse MetaCycler biome tool: " + plugin.config.getString(ConfigPath.METACYCLER_BIOME_TOOL));
+        if (tool == null) {
+            plugin.logger.warning("Could not parse cycler tool: " + plugin.config.getString(ConfigPath.CYCLER_TOOL));
         }
     }
 
     @Override
     public void onStop() {
-        dataMap.clear();
         biomeMap.clear();
     }
 
@@ -106,7 +99,7 @@ public class MetaCycler extends AbstractService {
 
     @SuppressWarnings("deprecation")
     private void setDisplay(ItemStack item, Block block) {
-        setDisplay(item, block.getTypeId() + ":" + block.getData() + " (" + block.getBiome().name() + ")");
+        setDisplay(item, block.getType().toString() + ":" + block.getData() + " (" + block.getBiome().name() + ")");
     }
 
     private void setDisplay(ItemStack item, String display) {
@@ -116,83 +109,12 @@ public class MetaCycler extends AbstractService {
     }
 
     private void playTick(Player player) {
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_SNARE, 1f, 1f);
-    }
-
-    @EventHandler
-    @SuppressWarnings("deprecation")
-    public void onDataCycleRight(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, metaTool)) {
-            return;
-        }
-
-        event.setCancelled(true);
-
-        final Block block = event.getClickedBlock();
-        block.setData((byte) ((block.getData() + 1) % 16));
-        setDisplay(event.getItem(), block);
-        playTick(event.getPlayer());
-    }
-
-    @EventHandler
-    @SuppressWarnings("deprecation")
-    public void onDataCycleLeft(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, metaTool)) {
-            return;
-        }
-
-        event.setCancelled(true);
-
-        final Block block = event.getClickedBlock();
-        final byte newData = (byte) (block.getData() - 1);
-        block.setData(newData < 0 ? 15 : newData);
-        setDisplay(event.getItem(), block);
-        playTick(event.getPlayer());
-    }
-
-    @EventHandler
-    @SuppressWarnings("deprecation")
-    public void onDataCycleCopy(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, metaTool)) {
-            return;
-        }
-
-        event.setCancelled(true);
-
-        final Block block = event.getClickedBlock();
-        dataMap.put(event.getPlayer().getUniqueId(), block.getData());
-        setDisplay(event.getItem(), block);
-        playTick(event.getPlayer());
-    }
-
-    @EventHandler
-    @SuppressWarnings("deprecation")
-    public void onDataCyclePaste(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, metaTool)) {
-            return;
-        }
-
-        event.setCancelled(true);
-
-        if (event.getClickedBlock().getType() == Material.DOUBLE_PLANT) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot edit this block's meta data.");
-            return;
-        }
-
-        final Byte data = dataMap.get(event.getPlayer().getUniqueId());
-        if (data == null) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You don't have any block data set!");
-            return;
-        }
-        final Block block = event.getClickedBlock();
-        block.setData(data);
-        setDisplay(event.getItem(), block);
-        playTick(event.getPlayer());
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_SNARE, 1f, 1f);
     }
 
     @EventHandler
     public void onBiomeCycleRight(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, biomeTool)) {
+        if (!validate(event, false, Action.RIGHT_CLICK_BLOCK, tool)) {
             return;
         }
 
@@ -215,7 +137,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCycleLeft(PlayerInteractEvent event) {
-        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, biomeTool)) {
+        if (!validate(event, false, Action.LEFT_CLICK_BLOCK, tool)) {
             return;
         }
 
@@ -238,7 +160,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCycleCopy(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, biomeTool)) {
+        if (!validate(event, true, Action.LEFT_CLICK_BLOCK, tool)) {
             return;
         }
 
@@ -252,7 +174,7 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler
     public void onBiomeCyclePaste(PlayerInteractEvent event) {
-        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, biomeTool)) {
+        if (!validate(event, true, Action.RIGHT_CLICK_BLOCK, tool)) {
             return;
         }
         event.setCancelled(true);
@@ -271,7 +193,7 @@ public class MetaCycler extends AbstractService {
     @EventHandler
     public void onPaintingCycleRight(PlayerInteractEntityEvent event) {
         if (event.getPlayer().getItemInHand() == null
-                || event.getPlayer().getItemInHand().getType() != metaTool) {
+                || event.getPlayer().getItemInHand().getType() != tool) {
             return;
         }
 
@@ -309,7 +231,7 @@ public class MetaCycler extends AbstractService {
         final Player player = (Player) event.getRemover();
 
         if (player.getItemInHand() == null
-                || player.getItemInHand().getType() != metaTool) {
+                || player.getItemInHand().getType() != tool) {
             return;
         }
 
@@ -344,8 +266,7 @@ public class MetaCycler extends AbstractService {
         final Player player = event.getPlayer();
 
         if (player.getItemInHand() == null
-                || (player.getItemInHand().getType() != metaTool
-                && player.getItemInHand().getType() != biomeTool)) {
+                || player.getItemInHand().getType() != tool) {
             return;
         }
 
@@ -372,7 +293,6 @@ public class MetaCycler extends AbstractService {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        dataMap.remove(event.getPlayer().getUniqueId());
         biomeMap.remove(event.getPlayer().getUniqueId());
     }
 

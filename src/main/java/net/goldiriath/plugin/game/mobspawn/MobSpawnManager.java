@@ -218,7 +218,8 @@ public class MobSpawnManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        if (event.getBlock().getType() != Material.SIGN_POST) {
+        // TODO: Check
+        if (event.getBlock().getType() != Material.LEGACY_SIGN_POST) {
             return;
         }
 
@@ -263,8 +264,9 @@ public class MobSpawnManager extends AbstractService {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDispense(BlockDispenseEvent event) {
         ItemStack stack = event.getItem();
-        if (stack.getType() != Material.MONSTER_EGG
-                && stack.getType() != Material.MONSTER_EGGS) {
+        // TODO: Check
+        if (stack.getType() != Material.LEGACY_MONSTER_EGG
+                && stack.getType() != Material.LEGACY_MONSTER_EGGS) {
             logger.info("Not monster egg!");
             return;
         }
@@ -316,7 +318,7 @@ public class MobSpawnManager extends AbstractService {
         }
 
         final Block spawner = spawn.getLocation().getBlock();
-        spawner.setType(Material.SIGN_POST);
+        spawner.setType(Material.LEGACY_SIGN_POST);
 
         if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
             plugin.logger.warning("Could set sign for mobspawner! Invalid sign state!");

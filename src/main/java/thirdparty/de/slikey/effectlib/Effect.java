@@ -1,65 +1,71 @@
 package thirdparty.de.slikey.effectlib;
 
+import thirdparty.de.slikey.effectlib.EffectType;
 import thirdparty.de.slikey.effectlib.util.DynamicLocation;
-import thirdparty.de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Bukkit;
+
+import org.bukkit.Particle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Effect implements Runnable {
 
     /**
      * Handles the type, the effect is played.
      *
-     * @see {@link thirdparty.de.slikey.effectlib.EffectType}
+     * @see {@link de.slikey.effectlib.EffectType}
      */
     public EffectType type = EffectType.INSTANT;
 
     /**
-     * Can be used to colorize certain particles. As of 1.8, those
-     * include SPELL_MOB_AMBIENT, SPELL_MOB and REDSTONE.
+     * Can be used to colorize certain particles. As of 1.8, those include SPELL_MOB_AMBIENT, SPELL_MOB and REDSTONE.
      */
     public Color color = null;
 
     /**
-     * This can be used to give particles a set speed when spawned.
-     * This will not work with colored particles.
+     * This can be used to give particles a set speed when spawned. This will not work with colored particles.
      */
+    @Deprecated
     public float speed = 0;
+
+    /**
+     * This can be used to give particles a set speed when spawned. This will not work with colored particles.
+     *
+     * This is a replacement for "speed"
+     */
+    public float particleData = 0;
 
     /**
      * Delay to wait for delayed effects.
      *
-     * @see {@link thirdparty.de.slikey.effectlib.EffectType}
+     * @see {@link de.slikey.effectlib.EffectType}
      */
     public int delay = 0;
 
     /**
      * Interval to wait for repeating effects.
      *
-     * @see {@link thirdparty.de.slikey.effectlib.EffectType}
+     * @see {@link de.slikey.effectlib.EffectType}
      */
     public int period = 1;
 
     /**
-     * Amount of repetitions to do.
-     * Set this to -1 for an infinite effect
+     * Amount of repetitions to do. Set this to -1 for an infinite effect
      *
-     * @see {@link thirdparty.de.slikey.effectlib.EffectType}
+     * @see {@link de.slikey.effectlib.EffectType}
      */
     public int iterations = 0;
 
     /**
      * Total duration of this effect in milliseconds.
      *
-     * If set, this will adjust iterations to match
-     * the defined delay such that the effect lasts
-     * a specific duration.
+     * If set, this will adjust iterations to match the defined delay such that the effect lasts a specific duration.
      */
     public Integer duration = null;
 
@@ -76,8 +82,7 @@ public abstract class Effect implements Runnable {
     public float visibleRange = 32;
 
     /**
-     * If true, and a "target" Location or Entity is set, the two Locations
-     * will orient to face one another.
+     * If true, and a "target" Location or Entity is set, the two Locations will orient to face one another.
      */
     public boolean autoOrient = false;
 
@@ -115,50 +120,67 @@ public abstract class Effect implements Runnable {
     public boolean updateDirections = true;
 
     /**
+     * A specific player who should see this effect.
+     */
+    public Player targetPlayer;
+
+    /**
+     * A group of players who should see this effect.
+     */
+    public List<Player> targetPlayers;
+
+    /**
      * The Material and data to use for block and item break particles
      */
     public Material material;
-    public Byte materialData;
+    public byte materialData;
 
     /**
-     * These can be used to spawn multiple particles per packet.
-     * It will not work with colored particles, however.
+     * These can be used to spawn multiple particles per packet. It will not work with colored particles, however.
      */
     public int particleCount = 1;
 
     /**
-     * These can be used to apply an offset to spawned particles, particularly
-     * useful when spawning multiples.
+     * These can be used to apply an offset to spawned particles, particularly useful when spawning multiples.
      */
-    public int particleOffsetX = 0;
-    public int particleOffsetY = 0;
-    public int particleOffsetZ = 0;
+    public float particleOffsetX = 0;
+    public float particleOffsetY = 0;
+    public float particleOffsetZ = 0;
 
     /**
-     * If set, will run asynchronously.
-     * Some effects don't support this (TurnEffect, JumpEffect)
+     * This can be used to scale up or down a particle's size.
      *
-     * Generally this shouldn't be changed, unless you want to
-     * make an async effect synchronous.
+     * This currently only works with the redstone particle in 1.13 and up.
+     */
+    public float particleSize = 1;
+
+    /**
+     * If set, will run asynchronously. Some effects don't support this (TurnEffect, JumpEffect)
+     *
+     * Generally this shouldn't be changed, unless you want to make an async effect synchronous.
      */
     public boolean asynchronous = true;
     protected final EffectManager effectManager;
 
-    private DynamicLocation origin = null;
-    private DynamicLocation target = null;
-    
+    protected DynamicLocation origin = null;
+    protected DynamicLocation target = null;
+
     /**
-     * Should this effect stop playing if the origin entity becomes null?
+     * This will store the base number of iterations
+     */
+    protected int maxIterations;
+
+    /**
+     * Should this effect stop playing if the origin entity becomes invalid?
      */
     public boolean disappearWithOriginEntity = false;
-    
+
     /**
-     * Should this effect stop playing if the target entity becomes null?
+     * Should this effect stop playing if the target entity becomes invalid?
      */
     public boolean disappearWithTargetEntity = false;
 
     private boolean done = false;
-    private Player targetPlayer;
 
     public Effect(EffectManager effectManager) {
         if (effectManager == null) {
@@ -221,16 +243,19 @@ public abstract class Effect implements Runnable {
     }
 
     /**
-     * Effects should override this if they want to be reusable, this is called prior to starting so
-     * state can be reset.
+     * Effects should override this if they want to be reusable, this is called prior to starting so state can be reset.
      */
     protected void reset() {
         this.done = false;
     }
 
-    public final void start() {
+    public void prepare() {
         reset();
         updateDuration();
+    }
+
+    public final void start() {
+        prepare();
         effectManager.start(this);
     }
 
@@ -240,42 +265,35 @@ public abstract class Effect implements Runnable {
     }
 
     /**
-     * Extending Effect classes can use this to determine the Entity this
-     * Effect is centered upon.
+     * Extending Effect classes can use this to determine the Entity this Effect is centered upon.
      *
-     * This may return null, even for an Effect that was set with an Entity,
-     * if the Entity gets GC'd.
+     * This may return null, even for an Effect that was set with an Entity, if the Entity gets GC'd.
      */
     public Entity getEntity() {
         return origin == null ? null : origin.getEntity();
     }
 
     /**
-     * Extending Effect classes can use this to determine the Entity this
-     * Effect is targeted upon. This is probably a very rare case, such as
-     * an Effect that "links" two Entities together somehow. (Idea!)
+     * Extending Effect classes can use this to determine the Entity this Effect is targeted upon. This is probably a very rare case, such as an Effect that "links" two Entities together somehow.
+     * (Idea!)
      *
-     * This may return null, even for an Effect that was set with a target Entity,
-     * if the Entity gets GC'd.
+     * This may return null, even for an Effect that was set with a target Entity, if the Entity gets GC'd.
      */
     public Entity getTargetEntity() {
         return target == null ? null : target.getEntity();
     }
 
     /**
-     * Extending Effect classes should use this method to obtain the
-     * current "root" Location of the effect.
+     * Extending Effect classes should use this method to obtain the current "root" Location of the effect.
      *
-     * This method will not return null when called from onRun. Effects
-     * with invalid locations will be cancelled.
+     * This method will not return null when called from onRun. Effects with invalid locations will be cancelled.
      */
     public final Location getLocation() {
         return origin == null ? null : origin.getLocation();
     }
 
     /**
-     * Extending Effect classes should use this method to obtain the
-     * current "target" Location of the effect.
+     * Extending Effect classes should use this method to obtain the current "target" Location of the effect.
      *
      * Unlike getLocation, this may return null.
      */
@@ -291,7 +309,6 @@ public abstract class Effect implements Runnable {
             throw new IllegalArgumentException("Origin Location cannot be null!");
         }
         origin = location;
-        if (origin == null) return;
 
         if (offset != null) {
             origin.addOffset(offset);
@@ -323,14 +340,14 @@ public abstract class Effect implements Runnable {
 
     protected final boolean validate() {
         // Check if the origin and target entities are present
-        if (disappearWithOriginEntity && (origin != null && origin.getEntity() == null)) {
+        if (disappearWithOriginEntity && (origin != null && !origin.hasValidEntity())) {
             return false;
         }
-        
-        if (disappearWithTargetEntity && (target != null && target.getEntity() == null)) {
+
+        if (disappearWithTargetEntity && (target != null && !target.hasValidEntity())) {
             return false;
         }
-        
+
         // Check for a valid Location
         updateLocation();
         updateTarget();
@@ -357,6 +374,7 @@ public abstract class Effect implements Runnable {
             }
             iterations = duration / period / 50;
         }
+        maxIterations = iterations;
     }
 
     protected void updateLocation() {
@@ -371,21 +389,25 @@ public abstract class Effect implements Runnable {
         }
     }
 
-    protected void display(ParticleEffect effect, Location location) {
+    protected void display(Particle effect, Location location) {
         display(effect, location, this.color);
     }
 
-    protected void display(ParticleEffect particle, Location location, Color color) {
-        display(particle, location, color, speed, particleCount);
+    protected void display(Particle particle, Location location, Color color) {
+        display(particle, location, color, particleData != 0 ? particleData : speed, particleCount);
     }
 
-    protected void display(ParticleEffect particle, Location location, float speed, int amount) {
+    protected void display(Particle particle, Location location, float speed, int amount) {
         display(particle, location, this.color, speed, amount);
     }
 
-    protected void display(ParticleEffect particle, Location location, Color color, float speed, int amount) {
-        if (this.targetPlayer != null) particle.setTargetPlayer(this.targetPlayer);
-        particle.display(particle.getData(material, materialData), location, color, visibleRange, particleOffsetX, particleOffsetY, particleOffsetZ, speed, amount);
+    protected void display(Particle particle, Location location, Color color, float speed, int amount) {
+        if (targetPlayers == null && targetPlayer != null) {
+            targetPlayers = new ArrayList<Player>();
+            targetPlayers.add(targetPlayer);
+        }
+        effectManager.display(particle, location, particleOffsetX, particleOffsetY, particleOffsetZ, speed, amount,
+                particleSize, color, material, materialData, visibleRange, targetPlayers);
     }
 
     private void done() {
@@ -409,13 +431,13 @@ public abstract class Effect implements Runnable {
     public int getPeriod() {
         return period;
     }
-    
+
     public void setEntity(Entity entity) {
-        origin = new DynamicLocation(entity);
+        setDynamicOrigin(new DynamicLocation(entity));
     }
 
     public void setLocation(Location location) {
-        origin = new DynamicLocation(location);
+        setDynamicOrigin(new DynamicLocation(location));
     }
 
     public void setTargetEntity(Entity entity) {
@@ -426,6 +448,11 @@ public abstract class Effect implements Runnable {
         target = new DynamicLocation(location);
     }
 
-    public Player getTargetPlayer() {return this.targetPlayer; }
-    public void setTargetPlayer(Player p){ this.targetPlayer = p; }
+    public Player getTargetPlayer() {
+        return this.targetPlayer;
+    }
+
+    public void setTargetPlayer(Player p) {
+        this.targetPlayer = p;
+    }
 }

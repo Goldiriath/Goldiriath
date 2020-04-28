@@ -14,11 +14,9 @@ import org.bukkit.Bukkit;
 /**
  * ReflectionHandler v1.0
  *
- * This class makes dealing with reflection much easier, especially when working
- * with Bukkit
+ * This class makes dealing with reflection much easier, especially when working with Bukkit
  *
- * You are welcome to use it, modify it and redistribute it under the following
- * conditions: 1. Don't claim this class as your own 2. Don't remove this text
+ * You are welcome to use it, modify it and redistribute it under the following conditions: 1. Don't claim this class as your own 2. Don't remove this text
  *
  * (Would be nice if you provide credit to me)
  *
@@ -270,8 +268,7 @@ public final class ReflectionHandler {
     }
 
     /**
-     * This class is part of the ReflectionHandler and follows the same usage
-     * conditions
+     * This class is part of the ReflectionHandler and follows the same usage conditions
      *
      * @author DarkBlade12
      */
@@ -356,12 +353,11 @@ public final class ReflectionHandler {
     }
 
     /**
-     * This class is part of the ReflectionHandler and follows the same usage
-     * conditions
+     * This class is part of the ReflectionHandler and follows the same usage conditions
      *
      * @author DarkBlade12
      */
-    public final class FieldPair {
+    public final static class FieldPair {
 
         private final String name;
         private final Object value;
@@ -381,8 +377,7 @@ public final class ReflectionHandler {
     }
 
     /**
-     * This class is part of the ReflectionHandler and follows the same usage
-     * conditions
+     * This class is part of the ReflectionHandler and follows the same usage conditions
      *
      * @author DarkBlade12
      */
@@ -408,8 +403,7 @@ public final class ReflectionHandler {
     }
 
     /**
-     * This class is part of the ReflectionHandler and follows the same usage
-     * conditions
+     * This class is part of the ReflectionHandler and follows the same usage conditions
      *
      * @author DarkBlade12
      */
@@ -451,8 +445,7 @@ public final class ReflectionHandler {
     }
 
     /**
-     * This class is part of the ReflectionHandler and follows the same usage
-     * conditions
+     * This class is part of the ReflectionHandler and follows the same usage conditions
      *
      * @author DarkBlade12
      */
@@ -573,7 +566,7 @@ public final class ReflectionHandler {
         }
 
         public String getName() {
-            return this.getName();
+            return this.name;
         }
 
         public Class<?> getPacket() throws Exception {

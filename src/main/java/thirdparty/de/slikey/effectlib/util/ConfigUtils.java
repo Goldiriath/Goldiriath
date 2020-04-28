@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigUtils {
+
     public static Collection<ConfigurationSection> getNodeList(ConfigurationSection node, String path) {
         Collection<ConfigurationSection> results = new ArrayList<ConfigurationSection>();
         List<Map<?, ?>> mapList = node.getMapList(path);
@@ -33,29 +34,43 @@ public class ConfigUtils {
         return newSection;
     }
 
-    public static void set(ConfigurationSection node, String path, Object value)
-    {
+    public static ConfigurationSection toStringConfiguration(Map<String, String> stringMap) {
+        if (stringMap == null) {
+            return null;
+        }
+        ConfigurationSection configMap = new MemoryConfiguration();
+        for (Map.Entry<String, String> entry : stringMap.entrySet()) {
+            configMap.set(entry.getKey(), entry.getValue());
+        }
+
+        return configMap;
+    }
+
+    public static void set(ConfigurationSection node, String path, Object value) {
         if (value == null) {
-            node.set(path, value);
+            node.set(path, null);
             return;
         }
-        // This is a bunch of hackery... I suppose I ought to change the NBT
-        // types to match and make this smarter?
+
         boolean isTrue = value.equals("true");
         boolean isFalse = value.equals("false");
         if (isTrue || isFalse) {
             node.set(path, isTrue);
         } else {
             try {
-                Double d = (value instanceof Double) ? (Double)value : (
-                        (value instanceof Float) ? (Float)value :
-                                Double.parseDouble(value.toString())
-                );
-                node.set(path, d);
+                Integer i = (value instanceof Integer) ? (Integer) value : Integer.parseInt(value.toString());
+                node.set(path, i);
             } catch (Exception ex) {
                 try {
-                    Integer i = (value instanceof Integer) ? (Integer)value : Integer.parseInt(value.toString());
-                    node.set(path, i);
+                    Double d;
+                    if (value instanceof Double) {
+                        d = (Double) value;
+                    } else if (value instanceof Float) {
+                        d = (double) (Float) value;
+                    } else {
+                        d = Double.parseDouble(value.toString());
+                    }
+                    node.set(path, d);
                 } catch (Exception ex2) {
                     node.set(path, value);
                 }
@@ -63,23 +78,25 @@ public class ConfigUtils {
         }
     }
 
-    public static ConfigurationSection getConfigurationSection(ConfigurationSection base, String key)
-    {
+    public static ConfigurationSection getConfigurationSection(ConfigurationSection base, String key) {
+        ConfigurationSection section = base.getConfigurationSection(key);
+        if (section != null) {
+            return section;
+        }
         Object value = base.get(key);
-        if (value == null) return null;
-
-        if (value instanceof ConfigurationSection)
-        {
-            return (ConfigurationSection)value;
+        if (value == null) {
+            return null;
         }
 
-        if (value instanceof Map)
-        {
+        if (value instanceof ConfigurationSection) {
+            return (ConfigurationSection) value;
+        }
+
+        if (value instanceof Map) {
             ConfigurationSection newChild = base.createSection(key);
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>)value;
-            for (Map.Entry<String, Object> entry : map.entrySet())
-            {
+            Map<String, Object> map = (Map<String, Object>) value;
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
                 newChild.set(entry.getKey(), entry.getValue());
             }
             base.set(key, newChild);

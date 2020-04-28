@@ -72,7 +72,7 @@ public class OptionMenu implements Listener {
             Inventory topInv = top ? shopInventory : other;
             Inventory bottomInv = top ? other : shopInventory;
 
-            view = new SimpleInventoryView(player, topInv, bottomInv);
+            view = new SimpleInventoryView(name, player, topInv, bottomInv);
             player.openInventory(view);
         }
 

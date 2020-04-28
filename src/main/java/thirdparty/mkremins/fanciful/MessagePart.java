@@ -1,21 +1,20 @@
-package mkremins.fanciful;
+package thirdparty.mkremins.fanciful;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.gson.stream.JsonWriter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 /**
- * Internal class: Represents a component of a JSON-serializable
- * {@link FancyMessage}.
+ * Internal class: Represents a component of a JSON-serializable {@link FancyMessage}.
  */
 final class MessagePart implements JsonRepresentedObject, ConfigurationSerializable, Cloneable {
 

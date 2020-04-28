@@ -1,14 +1,14 @@
 package net.goldiriath.plugin.game.wand;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import thirdparty.de.slikey.effectlib.Effect;
 import thirdparty.de.slikey.effectlib.EffectManager;
 import thirdparty.de.slikey.effectlib.EffectType;
-import thirdparty.de.slikey.effectlib.util.ParticleEffect;
 
 public class SplashEffect extends Effect {
 
-    public static final ParticleEffect PARTICLE = ParticleEffect.REDSTONE;
+    public static final Particle PARTICLE = Particle.REDSTONE;
     public static final int RAYS = 3;
     public static final double DENSITY = 30; // In particles/m
     public static final double MIN_RAY_LENGTH = 0.7;

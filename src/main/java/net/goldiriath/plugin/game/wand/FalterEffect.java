@@ -1,13 +1,13 @@
 package net.goldiriath.plugin.game.wand;
 
+import org.bukkit.Particle;
 import thirdparty.de.slikey.effectlib.Effect;
 import thirdparty.de.slikey.effectlib.EffectManager;
 import thirdparty.de.slikey.effectlib.EffectType;
-import thirdparty.de.slikey.effectlib.util.ParticleEffect;
 
 public class FalterEffect extends Effect {
 
-    public static final ParticleEffect PARTICLE = ParticleEffect.SMOKE_NORMAL;
+    public static final Particle PARTICLE = Particle.SMOKE_NORMAL;
     public static final double MAX_OFFSET = 0.4;
     public static final double Y_OFFSET = -0.2;
     public static final int ITERATIONS = 15;

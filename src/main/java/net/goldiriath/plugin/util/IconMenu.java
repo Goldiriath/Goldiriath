@@ -68,7 +68,7 @@ public class IconMenu implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryClick(InventoryClickEvent event) {
         // TODO: Fix this for multiplayer compatibility
-        if (event.getInventory().getTitle().equals(title)) {
+        if (event.getView().getTitle().equals(title)) {
             event.setCancelled(true);
 
             int slot = event.getRawSlot();
@@ -99,7 +99,7 @@ public class IconMenu implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().equals(title)) {
+        if (event.getView().getTitle().equals(title)) {
             destroy();
         }
     }

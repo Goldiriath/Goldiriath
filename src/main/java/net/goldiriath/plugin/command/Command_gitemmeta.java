@@ -95,24 +95,24 @@ public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
                         break;
                     case "level":
                         try {
-                            meta.setLevel(Integer.parseInt(value));
-                        } catch (NumberFormatException nfex) {
-                            msg("Invalid level: " + value, ChatColor.RED);
-                            return true;
-                        }
-                        break;
+                        meta.setLevel(Integer.parseInt(value));
+                    } catch (NumberFormatException nfex) {
+                        msg("Invalid level: " + value, ChatColor.RED);
+                        return true;
+                    }
+                    break;
                     case "lore":
                         meta.setLore(Arrays.asList(value));
                         break;
                     case "tier":
                         try {
-                            ItemTier tier = ItemTier.valueOf(value);
-                            meta.setTier(tier);
-                        } catch (Exception ex) {
-                            msg("Unknown tier: " + value, ChatColor.RED);
-                            return true;
-                        }
-                        break;
+                        ItemTier tier = ItemTier.valueOf(value);
+                        meta.setTier(tier);
+                    } catch (Exception ex) {
+                        msg("Unknown tier: " + value, ChatColor.RED);
+                        return true;
+                    }
+                    break;
                     default:
                         msg("Unknown property: " + args[1], ChatColor.RED);
                         return true;

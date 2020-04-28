@@ -41,8 +41,8 @@ public class SwordDevineLight extends ActiveSkill {
 
                     // Add a healing effect
                     PlayerData playerData = plugin.pm.getData(player);
-                    double healing = 0.08*playerData.getMaxHealth()+0.16*(playerData.getMaxHealth()-playerData.getHealth());
-                    int amount = (int) healing/8;
+                    double healing = 0.08 * playerData.getMaxHealth() + 0.16 * (playerData.getMaxHealth() - playerData.getHealth());
+                    int amount = (int) healing / 8;
                     plugin.pm.getData((Player) e).getModifiers().addModifier(new HealthOverTimeEffect(8 * 20, 1 * 20, amount));
                     return;
                 }

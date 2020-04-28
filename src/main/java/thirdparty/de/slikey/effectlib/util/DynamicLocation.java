@@ -10,6 +10,7 @@ import org.bukkit.util.Vector;
  * Represents a Location that can move, possibly bound to an Entity.
  */
 public class DynamicLocation {
+
     private final Location location;
     private final Location originalLocation;
     private final WeakReference<Entity> entity;
@@ -58,7 +59,7 @@ public class DynamicLocation {
         } else {
             this.entity = null;
         }
-        this.originalLocation = location;
+        this.originalLocation = this.location == null ? null : this.location.clone();
     }
 
     public void addOffset(Vector offset) {
@@ -124,7 +125,9 @@ public class DynamicLocation {
     }
 
     public void updateOffsets() {
-        if (originalLocation == null || location == null) return;
+        if (originalLocation == null || location == null) {
+            return;
+        }
         location.setX(originalLocation.getX());
         location.setY(originalLocation.getY());
         location.setZ(originalLocation.getZ());
@@ -151,12 +154,10 @@ public class DynamicLocation {
         Entity entityReference = entity == null ? null : entity.get();
         if (entityReference != null) {
             Location currentLocation = getEntityLocation(entityReference);
-            if (updateDirection)
-            {
+            if (updateDirection) {
                 setDirection(currentLocation.getDirection());
             }
-            if (updateLocation)
-            {
+            if (updateLocation) {
                 updateFrom(currentLocation);
             }
         }
@@ -177,5 +178,10 @@ public class DynamicLocation {
 
     public void setYaw(Float yaw) {
         this.yaw = yaw;
+    }
+
+    public boolean hasValidEntity() {
+        Entity entity = this.getEntity();
+        return entity != null && entity.isValid();
     }
 }

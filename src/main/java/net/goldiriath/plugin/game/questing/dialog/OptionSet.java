@@ -3,7 +3,7 @@ package net.goldiriath.plugin.game.questing.dialog;
 import java.util.Collections;
 import java.util.List;
 import com.google.common.collect.Lists;
-import mkremins.fanciful.FancyMessage;
+import thirdparty.mkremins.fanciful.FancyMessage;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Validatable;

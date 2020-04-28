@@ -62,7 +62,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
             data.setMoney(data.getMoney() + amt);
 
             player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 0.9f);
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1f, 1.3f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1f, 1.3f);
 
             if (callback != null) {
                 callback.run();
@@ -91,7 +91,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
             // Give the player the item back
             InventoryUtil.storeItem(player.getInventory(), product.getStack(), true);
 
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 0.8f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 0.8f);
             return;
         }
 
@@ -117,7 +117,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
         }
         if (product == null) {
             // Can't sell this product
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, 1f, 1f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1f, 1f);
             return;
         }
 
@@ -133,7 +133,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
         amt++;
         transaction.put(product, amt);
         TransactionUtil.updateTransaction(event.getEvent().getInventory(), SIZE - 9, transaction);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1.2f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
     }
 
     @Override

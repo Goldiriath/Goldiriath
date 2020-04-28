@@ -52,7 +52,6 @@ public class SkillManager extends AbstractService {
     public void onInteract(PlayerInteractEvent event) {
 
         // TODO: look at being able to use skillbook on blocks.
-
         if (event.getAction() != Action.RIGHT_CLICK_AIR) {
             return;
         }
@@ -95,14 +94,14 @@ public class SkillManager extends AbstractService {
         data.setMana(100);
 
         // Checks if the skill is on cooldown.
-        if (System.nanoTime() - skill.getLastUse() < (long) skill.getType().getDelayTicks() * 50000000 ) {
+        if (System.nanoTime() - skill.getLastUse() < (long) skill.getType().getDelayTicks() * 50000000) {
             player.sendMessage(ChatColor.GOLD + "This Skill is still on cooldown!");
             return;
         }
 
         PlayerInventory inventory = player.getInventory();
         ItemStack usedSkill = inventory.getItem(inventory.first(skill.getType().getDisplay().getStack()));
-        usedSkill.setAmount(skill.getType().getDelayTicks()/20);
+        usedSkill.setAmount(skill.getType().getDelayTicks() / 20);
 
         putSkillOnCooldown(player, inventory, InventoryUtil.firstSimilar(inventory, usedSkill), skill.getType());
 
@@ -145,7 +144,7 @@ public class SkillManager extends AbstractService {
                 }
 
                 inventory.getItem(pos).setAmount(inventory.getItem(pos).getAmount() - 1);
-                if(inventory.getItem(pos).getAmount() == 1) {
+                if (inventory.getItem(pos).getAmount() == 1) {
                     cancel();
                 }
             }
@@ -182,14 +181,14 @@ public class SkillManager extends AbstractService {
     @EventHandler(ignoreCancelled = true)
     public void activateSkill(PlayerItemHeldEvent event) {
         int[] skillSlots = SlotType.SKILL.getIndices();
-        if(event.getPreviousSlot() == 0 && event.getNewSlot() >= skillSlots[0] && event.getNewSlot() <= skillSlots[skillSlots.length-1]) {
+        if (event.getPreviousSlot() == 0 && event.getNewSlot() >= skillSlots[0] && event.getNewSlot() <= skillSlots[skillSlots.length - 1]) {
             event.setCancelled(true);
 
             PlayerInventory inventory = event.getPlayer().getInventory();
             PlayerData data = plugin.pm.getData(event.getPlayer());
             ItemStack stack = inventory.getItem(event.getNewSlot());
 
-            if(stack != null) {
+            if (stack != null) {
                 Skill usedSkill = data.getSkills().getSkills().get(InventoryUtil.getSkill(stack));
                 useSkill(event.getPlayer(), usedSkill);
             }

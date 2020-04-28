@@ -44,15 +44,12 @@ mobspawner:
     # Set to 0 to always spawn.
     radius_threshold: 50
 
-# Metacycler
-metacycler:
+# Biomecycler
+cycler:
     enabled: true
 
-    # The tool for block and painting meta
-    meta_tool: STICK
-
-    # The tool for biome meta
-    biome_tool: BLAZE_ROD
+    # The tool for biome meta and paintings
+    tool: BLAZE_ROD
 
 
 # If enabled, dispensers will never run out

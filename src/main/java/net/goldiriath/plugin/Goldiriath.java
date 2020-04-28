@@ -10,8 +10,8 @@ import net.goldiriath.plugin.game.AutoClose;
 import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.EffectsTicker;
 import net.goldiriath.plugin.game.InfiDispenser;
-import net.goldiriath.plugin.game.MetaCycler;
 import net.goldiriath.plugin.game.PressurePlateFixer;
+import net.goldiriath.plugin.game.BlockCycler;
 import net.goldiriath.plugin.game.XPManager;
 import net.goldiriath.plugin.game.damage.ArrowHitTracker;
 import net.goldiriath.plugin.game.damage.DamageManager;
@@ -68,7 +68,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public WandBasicAttack wba;
     public ArrowHitTracker at;
     public InventoryManager iv;
-    public MetaCycler ms;
+    public BlockCycler bcl;
     public AutoClose ac;
     public InfiDispenser id;
     public PressurePlateFixer pf;
@@ -107,7 +107,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         wba = services.registerService(WandBasicAttack.class);
         at = services.registerService(ArrowHitTracker.class);
         iv = services.registerService(InventoryManager.class);
-        ms = services.registerService(MetaCycler.class);
+        bcl = services.registerService(BlockCycler.class);
         ac = services.registerService(AutoClose.class);
         id = services.registerService(InfiDispenser.class);
         pf = services.registerService(PressurePlateFixer.class);

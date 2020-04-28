@@ -31,7 +31,8 @@ public class PressurePlateFixer extends AbstractService {
 
         Block block = event.getClickedBlock();
         Material type = block.getType();
-        if (type != Material.STONE_PLATE && type != Material.WOOD_PLATE) {
+        // TODO: Check
+        if (type != Material.STONE_PRESSURE_PLATE && type != Material.LEGACY_WOOD_PLATE) {
             return;
         }
 

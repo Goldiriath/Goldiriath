@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
 
 public class VectorTransform {
+
     private Transform xTransform;
     private Transform yTransform;
     private Transform zTransform;
@@ -27,8 +28,7 @@ public class VectorTransform {
         Vector result = new Vector(xValue, yValue, zValue);
 
         // Rotates to player's direction
-        if (orient && source != null)
-        {
+        if (orient && source != null) {
             result = VectorUtils.rotateVector(result, source);
         }
 

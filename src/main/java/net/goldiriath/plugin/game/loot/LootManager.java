@@ -235,7 +235,8 @@ public class LootManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        if (event.getBlock().getType() != Material.SIGN_POST) {
+        // TODO: Check this
+        if (event.getBlock().getType() != Material.LEGACY_SIGN_POST) {
             return;
         }
 
@@ -288,7 +289,8 @@ public class LootManager extends AbstractService {
         }
 
         final Block spawner = spawn.getLocation().getBlock();
-        spawner.setType(Material.SIGN_POST);
+        // TODO: Check
+        spawner.setType(Material.LEGACY_SIGN_POST);
 
         if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
             plugin.logger.warning("Could set sign for chestspawn! Invalid sign state!");

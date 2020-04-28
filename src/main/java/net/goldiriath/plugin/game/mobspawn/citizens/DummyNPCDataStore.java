@@ -39,4 +39,8 @@ public class DummyNPCDataStore implements NPCDataStore {
     public void storeAll(NPCRegistry npcr) {
     }
 
+    @Override
+    public void reloadFromSource() {
+    }
+
 }

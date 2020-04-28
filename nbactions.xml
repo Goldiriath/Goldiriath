@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-force-update</actionName>
+            <displayName>force-update</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>-U</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-purge-local-install</actionName>
+            <displayName>purge-local-install</displayName>
+            <goals>
+                <goal>dependency:purge-local-repository</goal>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+        </action>
+    </actions>

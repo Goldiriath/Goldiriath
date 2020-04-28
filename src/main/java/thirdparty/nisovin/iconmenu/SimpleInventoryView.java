@@ -9,14 +9,21 @@ import org.bukkit.inventory.ItemStack;
 
 public class SimpleInventoryView extends InventoryView {
 
+    private final String title;
     private final HumanEntity player;
     private final Inventory top;
     private final Inventory bottom;
 
-    public SimpleInventoryView(HumanEntity player, Inventory top, Inventory bottom) {
+    public SimpleInventoryView(String title, HumanEntity player, Inventory top, Inventory bottom) {
+        this.title = title;
         this.player = player;
         this.top = top;
         this.bottom = bottom;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
     }
 
     @Override

@@ -73,7 +73,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
             }
 
             player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 1f, 1.2f);
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1f, 1.3f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1f, 1.3f);
 
             if (callback != null) {
                 callback.run();
@@ -100,7 +100,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
             }
 
             TransactionUtil.updateTransaction(iClick.getInventory(), SIZE - 9, transaction);
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1.2f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.2f);
 
             return;
         }
@@ -129,7 +129,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
         if (TransactionUtil.transactionWorth(transaction) + product.getPrice() > money) {
             player.sendMessage(ChatColor.RED + "The shopkeeper looks at you angrily and says: "
                     + "\"Do you have enough money for that?\"");
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, 1f, 1f);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1f, 1f);
             return;
         }
 
@@ -138,7 +138,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
         amt++;
         transaction.put(product, amt);
         TransactionUtil.updateTransaction(iClick.getInventory(), SIZE - 9, transaction);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 0.8f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 0.8f);
     }
 
     @Override

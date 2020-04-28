@@ -4,18 +4,12 @@ package thirdparty.de.slikey.effectlib.util;
  * *****************************************************************************
  * Copyright 2011 See AUTHORS file.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *****************************************************************************
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing permissions and limitations under the License. ****************************************************************************
  */
 import java.util.Random;
 
@@ -159,7 +153,7 @@ public final class MathUtils {
     }
 
     // ---
-    static public Random random = new Random();
+    static public final Random random = new Random();
 
     /**
      * Returns a random number between 0 (inclusive) and the specified value (inclusive).
@@ -272,40 +266,35 @@ public final class MathUtils {
     static private final double BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
 
     /**
-     * Returns the largest integer less than or equal to the specified float. This method will only properly floor floats from
-     * -(2^14) to (Float.MAX_VALUE - 2^14).
+     * Returns the largest integer less than or equal to the specified float. This method will only properly floor floats from -(2^14) to (Float.MAX_VALUE - 2^14).
      */
     static public int floor(float x) {
         return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
     }
 
     /**
-     * Returns the largest integer less than or equal to the specified float. This method will only properly floor floats that are
-     * positive. Note this method simply casts the float to int.
+     * Returns the largest integer less than or equal to the specified float. This method will only properly floor floats that are positive. Note this method simply casts the float to int.
      */
     static public int floorPositive(float x) {
         return (int) x;
     }
 
     /**
-     * Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats from
-     * -(2^14) to (Float.MAX_VALUE - 2^14).
+     * Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats from -(2^14) to (Float.MAX_VALUE - 2^14).
      */
     static public int ceil(float x) {
         return (int) (x + BIG_ENOUGH_CEIL) - BIG_ENOUGH_INT;
     }
 
     /**
-     * Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats that
-     * are positive.
+     * Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats that are positive.
      */
     static public int ceilPositive(float x) {
         return (int) (x + CEIL);
     }
 
     /**
-     * Returns the closest integer to the specified float. This method will only properly round floats from -(2^14) to
-     * (Float.MAX_VALUE - 2^14).
+     * Returns the closest integer to the specified float. This method will only properly round floats from -(2^14) to (Float.MAX_VALUE - 2^14).
      */
     static public int round(float x) {
         return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;

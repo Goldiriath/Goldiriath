@@ -19,9 +19,9 @@ public class InventoryUtil {
 
     public static boolean isWeapon(Material mat) {
         switch (mat) {
-            case WOOD_SWORD:
             case STONE_SWORD:
-            case GOLD_SWORD:
+            case WOODEN_SWORD:
+            case GOLDEN_SWORD:
             case IRON_SWORD:
             case DIAMOND_SWORD:
             case BOW:
@@ -43,10 +43,10 @@ public class InventoryUtil {
                 || mat == Material.IRON_LEGGINGS
                 || mat == Material.IRON_CHESTPLATE
                 || mat == Material.IRON_HELMET
-                || mat == Material.GOLD_BOOTS
-                || mat == Material.GOLD_LEGGINGS
-                || mat == Material.GOLD_CHESTPLATE
-                || mat == Material.GOLD_HELMET
+                || mat == Material.GOLDEN_BOOTS
+                || mat == Material.GOLDEN_LEGGINGS
+                || mat == Material.GOLDEN_CHESTPLATE
+                || mat == Material.GOLDEN_HELMET
                 || mat == Material.DIAMOND_BOOTS
                 || mat == Material.DIAMOND_LEGGINGS
                 || mat == Material.DIAMOND_CHESTPLATE
@@ -71,8 +71,8 @@ public class InventoryUtil {
     public static boolean isSkillOnCooldown(ItemStack stack) {
 
         // Loops through all Skills defined in SkillType and checks if stack is that skill.
-        for (int i = 0; i < SkillType.values().length; i++) {
-            if (SkillType.values()[i].getDisplay().getStack().equals(stack)) {
+        for (SkillType value : SkillType.values()) {
+            if (value.getDisplay().getStack().equals(stack)) {
                 return false;
             }
         }
@@ -202,9 +202,9 @@ public class InventoryUtil {
         }
 
         switch (stack.getType()) {
-            case WOOD_SWORD:
+            case WOODEN_SWORD:
             case STONE_SWORD:
-            case GOLD_SWORD:
+            case GOLDEN_SWORD:
             case IRON_SWORD:
             case DIAMOND_SWORD:
                 return WeaponType.SWORD;
@@ -224,9 +224,8 @@ public class InventoryUtil {
     }
 
     /**
-     * Returns an integer that is the first position where an item is found that
-     * is similar to the search object. The inventory argument is the inventory
-     * to search in, and the Itemstack argument is the Itemstack to find.
+     * Returns an integer that is the first position where an item is found that is similar to the search object. The inventory argument is the inventory to search in, and the Itemstack argument is
+     * the Itemstack to find.
      *
      * @param inventory the PlayerInventory to search.
      * @param stack the ItemStack to search for.

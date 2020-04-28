@@ -121,9 +121,16 @@ public class DamageMath {
         Biome biome = loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
 
         switch (biome) {
-            case COLD_BEACH:
-            case ICE_MOUNTAINS:
-            case ICE_FLATS:
+            case ICE_SPIKES:
+            case COLD_OCEAN:
+            case DEEP_COLD_OCEAN:
+            case DEEP_FROZEN_OCEAN:
+            case SNOWY_BEACH:
+            case SNOWY_MOUNTAINS:
+            case SNOWY_TAIGA:
+            case SNOWY_TAIGA_HILLS:
+            case SNOWY_TUNDRA:
+            case SNOWY_TAIGA_MOUNTAINS:
             case FROZEN_RIVER:
             case FROZEN_OCEAN:
                 return 0.7;

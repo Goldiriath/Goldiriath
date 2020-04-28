@@ -31,17 +31,17 @@ public class Command_gskillpoint extends SimpleCommand<Goldiriath> {
             return true;
         }
 
-        if(amount < 0) {
+        if (amount < 0) {
             msg("Skillpoints cannot be lower than 0");
             return true;
         }
 
-        if(args[0].equals("add")) {
-           data.setSkillPoints(data.getSkillPoints() + amount);
-           msg("set skillpoints to " + data.getSkillPoints());
-           return true;
+        if (args[0].equals("add")) {
+            data.setSkillPoints(data.getSkillPoints() + amount);
+            msg("set skillpoints to " + data.getSkillPoints());
+            return true;
         }
-        if(args[0].equals("set")) {
+        if (args[0].equals("set")) {
             data.setSkillPoints(amount);
             msg("set skillpoints to " + amount);
             return true;

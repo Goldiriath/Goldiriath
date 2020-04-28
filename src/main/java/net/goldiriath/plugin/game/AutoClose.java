@@ -107,7 +107,7 @@ public class AutoClose extends AbstractService {
             return null;
         }
 
-        if (block.getType() == Material.IRON_DOOR_BLOCK) {
+        if (block.getType() == Material.IRON_DOOR) {
             return null;
         }
 

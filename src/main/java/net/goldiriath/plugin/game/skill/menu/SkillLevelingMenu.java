@@ -43,27 +43,27 @@ public class SkillLevelingMenu extends PluginComponent<Goldiriath> implements Ic
         List<SkillType> weaponSkills = SkillType.findForWeapon(type.getWeapon());
         List<SkillType> unlockedSkills = new ArrayList<>();
 
-        for(int i = 0; i < weaponSkills.size(); i++) {
-            if(data.getSkills().getSkills().containsKey(weaponSkills.get(i))) {
+        for (int i = 0; i < weaponSkills.size(); i++) {
+            if (data.getSkills().getSkills().containsKey(weaponSkills.get(i))) {
                 unlockedSkills.add(weaponSkills.get(i));
             }
         }
 
-        if(unlockedSkills.size() < type.getReqSkills()) {
+        if (unlockedSkills.size() < type.getReqSkills()) {
             event.getPlayer().sendMessage(ChatColor.RED + "You have " + unlockedSkills.size() + " and need " + type.getReqSkills() + " unlocked " + type.getWeapon() + " skill(s) to unlock " + type.getName());
             event.setWillClose(true);
             event.setWillDestroy(true);
             return;
         }
 
-        if(data.getSkillPoints() < 1) {
+        if (data.getSkillPoints() < 1) {
             event.getPlayer().sendMessage(ChatColor.RED + "You do not have a free Skill Point to level this skill with!");
             event.setWillClose(true);
             event.setWillDestroy(true);
             return;
         } else {
             // Removes one SkillPoint from the player to level the skill.
-            data.setSkillPoints(data.getSkillPoints()-1);
+            data.setSkillPoints(data.getSkillPoints() - 1);
         }
 
         plugin.sm.setSkillLevel(event.getPlayer(), type, 1);
@@ -79,4 +79,3 @@ public class SkillLevelingMenu extends PluginComponent<Goldiriath> implements Ic
     }
 
 }
-

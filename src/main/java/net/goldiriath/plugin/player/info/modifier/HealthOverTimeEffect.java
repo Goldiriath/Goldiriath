@@ -16,7 +16,7 @@ public class HealthOverTimeEffect extends OverTimeEffect {
     public void act(Player player) {
         // Heal player
         Goldiriath.instance().dam.heal(player, value);
-        Util.sound(player, Sound.BLOCK_NOTE_PLING, 0.9f);
+        Util.sound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.9f);
         Util.effect(player, Effect.BOW_FIRE);
     }
 

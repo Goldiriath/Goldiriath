@@ -1,25 +1,25 @@
 package net.goldiriath.plugin.game.wand;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import thirdparty.de.slikey.effectlib.Effect;
 import thirdparty.de.slikey.effectlib.EffectManager;
 import thirdparty.de.slikey.effectlib.EffectType;
 import thirdparty.de.slikey.effectlib.util.DynamicLocation;
-import thirdparty.de.slikey.effectlib.util.ParticleEffect;
 
 public class RayEffect extends Effect {
 
     public static final double RANGE = 15; // In m
     public static final double SPEED = 30; // In m/s
     public static final double DENSITY = 15; // In particles/m
-    public static final ParticleEffect PARTICLE = ParticleEffect.FLAME;
+    public static final Particle PARTICLE = Particle.FLAME;
 
-    private final LocationCallback callback;
+    private final LocationCallback locationCallback;
     private double lastParticlePos; // In [0, RANGE]
 
     public RayEffect(EffectManager effectManager, LocationCallback callback) {
         super(effectManager);
-        this.callback = callback;
+        this.locationCallback = callback;
         type = EffectType.REPEATING;
         reset();
     }
@@ -53,7 +53,7 @@ public class RayEffect extends Effect {
             lastParticlePos = particlePos;
         }
 
-        boolean cancel = callback.call(toLocation(lastParticlePos));
+        boolean cancel = locationCallback.call(toLocation(lastParticlePos));
 
         // Should we continue next tick?
         if (!cancel && lastParticlePos + particleSpacing <= RANGE) {
