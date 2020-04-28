@@ -20,7 +20,7 @@ public class ChooseMenu extends PluginComponent<Goldiriath> implements IconMenu.
     }
 
     public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player, Runnable callback) {
-        int money = plugin.pm.getData(player).getMoney();
+        int money = plugin.pym.getData(player).getMoney();
         ChooseMenu handler = new ChooseMenu(plugin, profile, callback);
         IconMenu menu = new IconMenu(profile.getName() + " - Wallet: " + money + "Pm", 9, handler, plugin);
 

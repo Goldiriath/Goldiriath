@@ -38,7 +38,7 @@ public class DataQuests extends Data {
 
     protected void parseData() {
         for (Entry<String, String> entry : unparsed.entrySet()) {
-            final Quest quest = plugin.qm.getQuest(entry.getKey());
+            final Quest quest = plugin.qst.getQuest(entry.getKey());
             if (quest == null) {
                 plugin.logger.warning("Ignoring quest data for player: " + data.getPlayer().getName() + ", quest: " + entry.getKey() + ". Quest not found!");
                 continue;

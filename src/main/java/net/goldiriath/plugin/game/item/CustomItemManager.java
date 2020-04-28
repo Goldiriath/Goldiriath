@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomItemManager extends AbstractService {
 
@@ -64,9 +65,9 @@ public class CustomItemManager extends AbstractService {
             }
 
             // Data
-            byte data = Integer.valueOf(section.getInt("data", 0)).byteValue();
-            if (data < 0) {
-                logger.warning("Skipping item: " + id + ". Invalid data: " + data + "!");
+            int model = section.getInt("model", 0);
+            if (model < 0) {
+                logger.warning("Skipping item: " + id + ". Invalid model data: " + model + "!");
                 continue;
             }
 
@@ -91,12 +92,22 @@ public class CustomItemManager extends AbstractService {
 
             // Set data loaded from this config here.
             stack.addEnchantments(enchantments);
-            stack.getData().setData(data);
+
+            // Set custom data
+            if (model != 0) {
+                ItemMeta meta = stack.getItemMeta();
+                if (meta == null) {
+                    logger.warning("Skipping item: " + id + ". Type with model data is not item!");
+                    continue;
+                }
+                meta.setCustomModelData(model);
+                stack.setItemMeta(meta);
+            }
 
             // Create and load metadata, if present
             UUID stackUuid = UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8));
             final GItemMeta meta = GItemMeta.createItemMeta(stack, stackUuid);
-            plugin.im.getItemMeta().getMetaCache().put(stackUuid, meta);
+            plugin.itm.getItemMeta().getMetaCache().put(stackUuid, meta);
 
             // Load metadata from this section
             // Most importantly: name, level, (armor type), tier, and lore

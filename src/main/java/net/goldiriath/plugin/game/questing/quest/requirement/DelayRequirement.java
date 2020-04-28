@@ -25,7 +25,7 @@ public class DelayRequirement extends AbstractRequirement {
     @Override
     public boolean has(Player player) {
 
-        final DataFlags flags = plugin.pm.getData(player).getFlags();
+        final DataFlags flags = plugin.pym.getData(player).getFlags();
 
         if (!flags.has(flag)) {
             flags.put(flag, getOffsetTime());

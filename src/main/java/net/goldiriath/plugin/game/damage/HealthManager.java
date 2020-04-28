@@ -43,14 +43,14 @@ public class HealthManager extends AbstractService {
         player.setHealthScale(20.0);
 
         // Set the player's stored max health
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         data.setMaxHealth(maxHealth);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
 
         // Set and scale health
         player.setMaxHealth(data.getMaxHealth());
@@ -92,12 +92,12 @@ public class HealthManager extends AbstractService {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Reset player's health
-        final PlayerData data = plugin.pm.getData(event.getEntity());
+        final PlayerData data = plugin.pym.getData(event.getEntity());
         data.setHealth(data.getMaxHealth());
     }
 
     public void damage(Player player, int amount) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         int newHealth = data.getHealth() - amount;
         if (newHealth < 0) {
             player.setHealth(0);
@@ -107,7 +107,7 @@ public class HealthManager extends AbstractService {
     }
 
     public void heal(Player player, int amount) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         int newHealth = data.getHealth() + amount;
         int maxHealth = data.getMaxHealth();
         data.setHealth(newHealth > maxHealth ? maxHealth : newHealth);
@@ -118,7 +118,7 @@ public class HealthManager extends AbstractService {
         @Override
         public void run() {
             for (Player player : plugin.getServer().getOnlinePlayers()) {
-                plugin.pm.getData(player).getBattle().autoHeal();
+                plugin.pym.getData(player).getBattle().autoHeal();
             }
         }
 

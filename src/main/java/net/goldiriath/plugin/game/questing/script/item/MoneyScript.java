@@ -26,7 +26,7 @@ public class MoneyScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
 
         int newMoney = data.getMoney() + amt;
 

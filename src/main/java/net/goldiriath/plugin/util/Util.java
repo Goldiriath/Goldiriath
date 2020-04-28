@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -19,35 +20,43 @@ public class Util {
     private Util() {
     }
 
-    @SuppressWarnings("deprecation")
     public static ItemStack parseItem(String parseString) {
         if (parseString == null) {
             return null;
         }
 
         if (parseString.startsWith("_")) {
-            return Goldiriath.instance().im.getItem(parseString.substring(1));
+            return Goldiriath.instance().itm.getItem(parseString.substring(1));
         }
 
-        final String[] parts = parseString.split(":");
+        int modelData = 0;
+        if (parseString.contains(":")) {
+            String[] split = parseString.split(":");
+            parseString = split[0];
+            try {
+                Integer.parseInt(split[1]);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
 
-        final Material type = parseMaterial(parts[0]);
+        final Material type = parseMaterial(parseString);
         if (type == null) {
             return null;
         }
 
-        final byte data;
-        try {
-            if (parts.length == 2) {
-                data = new Integer(Integer.parseInt(parts[1])).byteValue();
-            } else {
-                data = 0;
+        // Set model data
+        ItemStack s = new ItemStack(type, 1);
+        if (modelData != 0) {
+            ItemMeta m = s.getItemMeta();
+            if (m == null) {
+                return null;
             }
-        } catch (NumberFormatException ex) {
-            return null;
+            m.setCustomModelData(modelData);
+            s.setItemMeta(m);
         }
 
-        return new ItemStack(type, 1, (short) 0, data);
+        return s;
     }
 
     public static Material parseMaterial(String material) {
@@ -76,7 +85,7 @@ public class Util {
     public static String prepareLine(String line, Player player) {
 
         if (line.contains("<")) {
-            PlayerData data = Goldiriath.instance().pm.getData(player);
+            PlayerData data = Goldiriath.instance().pym.getData(player);
             line = line
                     .replace("<player>", player.getName())
                     .replace("<money>", "" + data.getMoney())

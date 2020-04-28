@@ -8,7 +8,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.game.mobspawn.citizens.CitizensBridge;
+import net.goldiriath.plugin.game.citizens.CitizensBridge;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.Util;
 
@@ -65,10 +65,8 @@ public class InfoBattle extends Info {
     }
 
     private void cleanAssailing() {
-        CitizensBridge cb = plugin.msm.getBridge();
-
         for (Iterator<UUID> it = assailants.iterator(); it.hasNext();) {
-            NPC npc = cb.getNPC(it.next());
+            NPC npc = plugin.czb.getNPC(it.next());
             if (npc == null || !npc.isSpawned()) {
                 it.remove();
             }

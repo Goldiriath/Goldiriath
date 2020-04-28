@@ -37,7 +37,7 @@ public class BowSpreadShot extends ActiveSkill {
             Arrow arrow = w.spawnArrow(player.getLocation(), vec, 0.6f, 12f);
             arrow.setCritical(true); // Skill arrows are critical
 
-            plugin.at.track(arrow, new Callback<Entity>() {
+            plugin.aht.track(arrow, new Callback<Entity>() {
 
                 @Override
                 public void call(Entity hit) {

@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.game.mobspawn.citizens;
+package net.goldiriath.plugin.game.citizens;
 
 import java.util.HashMap;
 import java.util.Map;

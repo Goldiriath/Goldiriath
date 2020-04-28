@@ -7,8 +7,8 @@ import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.loot.LootProfile;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobBehavior;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.citizens.HostileMobBehavior;
+import net.goldiriath.plugin.game.citizens.HostileMobTrait;
 import net.goldiriath.plugin.util.ConfigLoadable;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.Validatable;
@@ -80,7 +80,7 @@ public class MobSpawnProfile extends PluginComponent<Goldiriath> implements Conf
         if (type == EntityType.PLAYER) {
             throw new UnsupportedOperationException("Players are not yet supported!");
         } else {
-            npc = manager.getBridge().createMob(type);
+            npc = manager.getPlugin().czb.createMob(type);
         }
 
         // Spawn
@@ -187,12 +187,13 @@ public class MobSpawnProfile extends PluginComponent<Goldiriath> implements Conf
             lootTier = null;
         } else {
             String profileId = config.getString("loot.profile", null);
-            lootProfile = plugin.lm.getProfile(profileId);
+            lootProfile = plugin.ltm.getProfile(profileId);
             if (lootProfile == null) {
                 logger.warning("Could not load mobspawn profile '" + id + "'. Invalid loot table id: " + profileId);
             }
             String tierName = config.getString("loot.tier", null);
             try {
+                // TODO: Numerical mob tier support
                 lootTier = MobTier.valueOf(tierName);
             } catch (Exception ex) {
                 lootTier = null;
@@ -209,11 +210,41 @@ public class MobSpawnProfile extends PluginComponent<Goldiriath> implements Conf
             leggings = null;
             boots = null;
         } else {
-            hand = Util.parseItem(config.getString("items.hand", null));
-            helmet = Util.parseItem(config.getString("items.helmet", null));
-            chestplate = Util.parseItem(config.getString("items.chestplate", null));
-            leggings = Util.parseItem(config.getString("items.leggings", null));
-            boots = Util.parseItem(config.getString("items.boots", null));
+            String s = config.getString("items.hand", null);
+            if (s != null) {
+                hand = Util.parseItem(s);
+                if (hand == null) {
+                    logger.warning("Could not load mobspawn profile '" + id + "'. Invalid item: " + s);
+                }
+            }
+            s = config.getString("items.helmet", null);
+            if (s != null) {
+                helmet = Util.parseItem(s);
+                if (helmet == null) {
+                    logger.warning("Could not load mobspawn profile '" + id + "'. Invalid item: " + s);
+                }
+            }
+            s = config.getString("items.chestplate", null);
+            if (s != null) {
+                chestplate = Util.parseItem(s);
+                if (chestplate == null) {
+                    logger.warning("Could not load mobspawn profile '" + id + "'. Invalid item: " + s);
+                }
+            }
+            s = config.getString("items.leggings", null);
+            if (s != null) {
+                leggings = Util.parseItem(s);
+                if (leggings == null) {
+                    logger.warning("Could not load mobspawn profile '" + id + "'. Invalid item: " + s);
+                }
+            }
+            s = config.getString("items.boots", null);
+            if (s != null) {
+                boots = Util.parseItem(s);
+                if (boots == null) {
+                    logger.warning("Could not load mobspawn profile '" + id + "'. Invalid item: " + s);
+                }
+            }
         }
 
         if (damage == -1 && hand == null) {

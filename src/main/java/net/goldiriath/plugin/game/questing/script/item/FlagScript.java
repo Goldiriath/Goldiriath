@@ -41,9 +41,9 @@ public class FlagScript extends ScriptItem {
     @Override
     public void execute(Player player) {
         if (set) {
-            plugin.pm.getData(player).getFlags().put(flag, amt);
+            plugin.pym.getData(player).getFlags().put(flag, amt);
         } else {
-            plugin.pm.getData(player).getFlags().increment(flag, amt);
+            plugin.pym.getData(player).getFlags().increment(flag, amt);
         }
     }
 

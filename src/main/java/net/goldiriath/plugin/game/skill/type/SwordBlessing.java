@@ -15,7 +15,7 @@ public class SwordBlessing extends ActiveSkill {
     @Override
     public void use() {
         // Heal player
-        PlayerData playerData = plugin.pm.getData(player);
+        PlayerData playerData = plugin.pym.getData(player);
         double healing = 0.05 * playerData.getMaxHealth() + 0.1 * (playerData.getMaxHealth() - playerData.getHealth());
 
         plugin.dam.heal(player, (int) healing);

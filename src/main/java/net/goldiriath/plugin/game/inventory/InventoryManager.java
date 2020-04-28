@@ -5,6 +5,7 @@ import net.goldiriath.plugin.game.item.StaticItem;
 import net.goldiriath.plugin.util.service.AbstractService;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -120,11 +121,8 @@ public class InventoryManager extends AbstractService {
         }
 
         // Put it in the correct place next tick
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                validateInventory(event.getPlayer().getInventory());
-            }
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            validateInventory(event.getPlayer().getInventory());
         });
     }
 
@@ -177,7 +175,9 @@ public class InventoryManager extends AbstractService {
     }
 
     private void validateInventory(PlayerInventory inventory) {
-        if (inventory.getHolder().getGameMode() != GameMode.SURVIVAL) {
+        HumanEntity ent = inventory.getHolder();
+
+        if (ent == null || ent.getGameMode() != GameMode.SURVIVAL) {
             return;
         }
 

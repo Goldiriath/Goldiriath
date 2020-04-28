@@ -14,7 +14,7 @@ public class QuestScript extends ScriptItem {
     public QuestScript(Script script, String[] args) {
         super(script);
 
-        quest = plugin.qm.getQuest(args[1]);
+        quest = plugin.qst.getQuest(args[1]);
         if (quest == null) {
             throw new ParseException("Could not find quest: " + args[1]);
         }

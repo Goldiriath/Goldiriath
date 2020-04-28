@@ -45,7 +45,7 @@ public class Command_gskill extends SimpleCommand<Goldiriath> {
         }
 
         if (args[1].equals("list")) {
-            DataSkills data = plugin.pm.getData(player).getSkills();
+            DataSkills data = plugin.pym.getData(player).getSkills();
             if (data.getSkills().isEmpty()) {
                 msg(ChatColor.GOLD + "That player has no skills (He's a scrub).");
                 return true;
@@ -86,7 +86,7 @@ public class Command_gskill extends SimpleCommand<Goldiriath> {
             return true;
         }
 
-        DataSkills data = plugin.pm.getData(player).getSkills();
+        DataSkills data = plugin.pym.getData(player).getSkills();
 
         if (level <= 0) {
             data.getSkills().remove(type);

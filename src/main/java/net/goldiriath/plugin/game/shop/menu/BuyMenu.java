@@ -35,7 +35,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
     }
 
     public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player, Runnable callback) {
-        int money = plugin.pm.getData(player).getMoney();
+        int money = plugin.pym.getData(player).getMoney();
         BuyMenu handler = new BuyMenu(plugin, profile, callback);
         IconMenu menu = new IconMenu("Buy items - Wallet: " + money + "Pm", SIZE, handler, plugin);
 
@@ -62,7 +62,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
 
             // Subtract money, we assume the player has enough money
             // since adding an item to the transaction performs this check
-            PlayerData data = plugin.pm.getData(player);
+            PlayerData data = plugin.pym.getData(player);
             data.setMoney(data.getMoney() - TransactionUtil.transactionWorth(transaction));
 
             // Add items
@@ -125,7 +125,7 @@ public class BuyMenu extends PluginComponent<Goldiriath> implements IconMenu.Opt
         }
 
         // Check if we have enough money
-        int money = plugin.pm.getData(player).getMoney();
+        int money = plugin.pym.getData(player).getMoney();
         if (TransactionUtil.transactionWorth(transaction) + product.getPrice() > money) {
             player.sendMessage(ChatColor.RED + "The shopkeeper looks at you angrily and says: "
                     + "\"Do you have enough money for that?\"");

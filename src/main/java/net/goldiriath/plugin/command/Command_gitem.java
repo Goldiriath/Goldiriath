@@ -28,18 +28,18 @@ public class Command_gitem extends SimpleCommand<Goldiriath> {
         switch (args[0]) {
 
             case "list": {
-                msg("Items: " + ChatColor.GREEN + StringUtils.join(plugin.im.getItemStorage().getItemMap().keySet(), ", "), ChatColor.GOLD);
+                msg("Items: " + ChatColor.GREEN + StringUtils.join(plugin.itm.getItemStorage().getItemMap().keySet(), ", "), ChatColor.GOLD);
                 return true;
             }
 
             case "get": {
-                ItemStack stack = plugin.im.getItem(args[1]);
+                ItemStack stack = plugin.itm.getItem(args[1]);
                 if (stack == null) {
                     msg("That custom item does not exist!", ChatColor.RED);
                     return true;
                 }
                 // Precache meta
-                plugin.im.getMeta(stack, true);
+                plugin.itm.getMeta(stack, true);
 
                 playerSender.getInventory().addItem(stack);
                 msg("Here you go!", ChatColor.GREEN);

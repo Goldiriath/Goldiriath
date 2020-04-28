@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.game.mobspawn.citizens;
+package net.goldiriath.plugin.game.citizens;
 
 import java.util.Random;
 import net.citizensnpcs.api.ai.TargetType;
@@ -136,7 +136,7 @@ public class HostileMobBehavior implements Behavior {
             }
 
             // Don't attack NPCs
-            if (plugin.msm.getBridge().isNPC(player)) {
+            if (plugin.czb.isNPC(player)) {
                 continue;
             }
 
@@ -145,7 +145,7 @@ public class HostileMobBehavior implements Behavior {
                 continue;
             }
 
-            final PlayerData data = plugin.pm.getData(player);
+            final PlayerData data = plugin.pym.getData(player);
 
             // Can we attack this player?
             if (!AggroMath.canAttack(npc, data)) {

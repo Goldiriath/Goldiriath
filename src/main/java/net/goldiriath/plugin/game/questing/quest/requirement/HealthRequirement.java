@@ -25,7 +25,7 @@ public class HealthRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
 
         if (!perc) {
             return data.getHealth() >= health;

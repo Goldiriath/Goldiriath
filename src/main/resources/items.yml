@@ -2,8 +2,8 @@
 evagarna:
     name: '&cEvagarna'
     type: IRON_SWORD
-    data: 2
     level: 8
+    model: 5
     tier: CRAFTED
     lore:
     - '&2The <name> is a very rare sword that deals massive amounts of damage.'
@@ -12,7 +12,7 @@ evagarna:
 goliath:
     name: '&4G&co&4l&ci&4a&ct&4h'
     type: DIAMOND_SWORD
-    data: 2
+    model: 2
     level: 16
     tier: LEGENDARY
     enchantments:

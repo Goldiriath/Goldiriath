@@ -40,8 +40,8 @@ public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
         switch (args[0]) {
             case "info": {
                 final UUID uuid = GItemMeta.getMetaUuid(stack);
-                final boolean cached = uuid != null && plugin.im.getItemMeta().getMetaCache().containsKey(uuid);
-                GItemMeta meta = plugin.im.getMeta(stack, false);
+                final boolean cached = uuid != null && plugin.itm.getItemMeta().getMetaCache().containsKey(uuid);
+                GItemMeta meta = plugin.itm.getMeta(stack, false);
                 if (meta == null) {
                     msg("No itemmeta found for this item.", ChatColor.GOLD);
                     msg("Create itemmeta with /gitemmeta create", ChatColor.GOLD);
@@ -64,13 +64,13 @@ public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
             }
 
             case "create": {
-                GItemMeta meta = plugin.im.getMeta(stack, true);
+                GItemMeta meta = plugin.itm.getMeta(stack, true);
                 msg("Itemmeta created: " + meta.getUniqueId());
                 return true;
             }
 
             case "delete": {
-                if (plugin.im.deleteMeta(stack)) {
+                if (plugin.itm.deleteMeta(stack)) {
                     msg("Deleted item's meta data", ChatColor.GREEN);
                 } else {
                     msg("Could not delete item's meta data (is there even meta data attached?)", ChatColor.RED);
@@ -82,7 +82,7 @@ public class Command_gitemmeta extends SimpleCommand<Goldiriath> {
                 if (args.length < 3) {
                     return false;
                 }
-                GItemMeta meta = plugin.im.getMeta(stack, true);
+                GItemMeta meta = plugin.itm.getMeta(stack, true);
 
                 // 0: "set"
                 // 1: key

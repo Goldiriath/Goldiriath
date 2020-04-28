@@ -35,7 +35,7 @@ public class EffectsTicker extends AbstractService {
 
     public void tick() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            for (Effect m : plugin.pm.getData(player).getModifiers().getActiveModifiers()) {
+            for (Effect m : plugin.pym.getData(player).getModifiers().getActiveModifiers()) {
                 m.tick(player);
             }
         }

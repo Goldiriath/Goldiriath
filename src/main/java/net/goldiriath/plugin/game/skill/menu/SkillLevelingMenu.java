@@ -38,7 +38,7 @@ public class SkillLevelingMenu extends PluginComponent<Goldiriath> implements Ic
             return;
         }
 
-        PlayerData data = plugin.pm.getData(event.getPlayer());
+        PlayerData data = plugin.pym.getData(event.getPlayer());
 
         List<SkillType> weaponSkills = SkillType.findForWeapon(type.getWeapon());
         List<SkillType> unlockedSkills = new ArrayList<>();
@@ -66,7 +66,7 @@ public class SkillLevelingMenu extends PluginComponent<Goldiriath> implements Ic
             data.setSkillPoints(data.getSkillPoints() - 1);
         }
 
-        plugin.sm.setSkillLevel(event.getPlayer(), type, 1);
+        plugin.skl.setSkillLevel(event.getPlayer(), type, 1);
 
         event.setWillClose(true);
         event.setWillDestroy(true);

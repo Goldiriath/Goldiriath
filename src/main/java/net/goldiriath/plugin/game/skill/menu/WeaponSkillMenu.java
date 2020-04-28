@@ -32,7 +32,7 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
 
         menu.setOption(26, StaticItem.MENU_DONE.getStack(), "done");
 
-        DataSkills data = plugin.pm.getData(player).getSkills();
+        DataSkills data = plugin.pym.getData(player).getSkills();
 
         int i = 0;
         for (SkillType s : SkillType.findForWeapon(weapon)) {
@@ -44,7 +44,7 @@ public class WeaponSkillMenu extends PluginComponent<Goldiriath> implements Icon
                 lore.add(ChatColor.AQUA.toString() + ChatColor.ITALIC + s.getName());
                 lore.add(ChatColor.GOLD + "Requires:");
 
-                PlayerData dataPlayer = plugin.pm.getData(player);
+                PlayerData dataPlayer = plugin.pym.getData(player);
 
                 List<SkillType> weaponSkills = SkillType.findForWeapon(s.getWeapon());
                 List<SkillType> unlockedSkills = new ArrayList<>();

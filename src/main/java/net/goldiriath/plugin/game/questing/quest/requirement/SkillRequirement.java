@@ -20,7 +20,7 @@ public class SkillRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        return plugin.pm.getData(player).getSkills().getSkills().containsKey(skill);
+        return plugin.pym.getData(player).getSkills().getSkills().containsKey(skill);
     }
 
 }

@@ -84,7 +84,7 @@ public class SkillManager extends AbstractService {
         }
 
         // Checks if the player has enough mana, and updates the players mana.
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         if (data.getMana() < skill.getType().getManaCost()) {
             player.sendMessage(ChatColor.RED + "You do not have enough mana to use this skill!");
             return;
@@ -111,7 +111,7 @@ public class SkillManager extends AbstractService {
     }
 
     public void setSkillLevel(Player player, SkillType type, int level) {
-        DataSkills data = plugin.pm.getData(player).getSkills();
+        DataSkills data = plugin.pym.getData(player).getSkills();
 
         if (level <= 0) {
             data.getSkills().remove(type);
@@ -185,7 +185,7 @@ public class SkillManager extends AbstractService {
             event.setCancelled(true);
 
             PlayerInventory inventory = event.getPlayer().getInventory();
-            PlayerData data = plugin.pm.getData(event.getPlayer());
+            PlayerData data = plugin.pym.getData(event.getPlayer());
             ItemStack stack = inventory.getItem(event.getNewSlot());
 
             if (stack != null) {

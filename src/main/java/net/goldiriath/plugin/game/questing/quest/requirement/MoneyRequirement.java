@@ -15,7 +15,7 @@ public class MoneyRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        return plugin.pm.getData(player).getMoney() >= money;
+        return plugin.pym.getData(player).getMoney() >= money;
     }
 
 }

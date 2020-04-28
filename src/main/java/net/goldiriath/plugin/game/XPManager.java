@@ -3,7 +3,7 @@ package net.goldiriath.plugin.game;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.citizens.HostileMobTrait;
 import net.goldiriath.plugin.math.HealthMath;
 import net.goldiriath.plugin.math.XPMath;
 import net.goldiriath.plugin.player.PlayerData;
@@ -56,7 +56,7 @@ public class XPManager extends AbstractService {
         // Zero minecraft XP is dropped
         event.setDroppedExp(0);
 
-        final PlayerData data = plugin.pm.getData(player);
+        final PlayerData data = plugin.pym.getData(player);
 
         final int oldXp = data.getXp();
         final int oldLevel = XPMath.xpToLevel(oldXp);
@@ -70,7 +70,7 @@ public class XPManager extends AbstractService {
         if (newLevel != oldLevel) {
             // Level health and Mana
             int newMaxHealth = HealthMath.levelToMaxHealth(newLevel);
-            plugin.pm.getData(player).setMaxHealth(newMaxHealth);
+            plugin.pym.getData(player).setMaxHealth(newMaxHealth);
 
             // Play effect
             levelUpEffect(player);

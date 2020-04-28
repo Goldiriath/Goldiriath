@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.goldiriath.plugin.ConfigPath;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.DevMode;
-import net.goldiriath.plugin.game.mobspawn.citizens.CitizensBridge;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
@@ -15,9 +14,12 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,8 +30,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Dispenser;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -37,8 +38,6 @@ public class MobSpawnManager extends AbstractService {
 
     private final YamlConfig profileConfig;
     private final YamlConfig spawnConfig;
-    @Getter
-    private final CitizensBridge bridge;
     @Getter
     private final Set<MobSpawnProfile> profiles = Sets.newHashSet();
     @Getter
@@ -55,9 +54,8 @@ public class MobSpawnManager extends AbstractService {
 
     public MobSpawnManager(Goldiriath plugin) {
         super(plugin);
-        this.profileConfig = new YamlConfig(plugin, "profiles.yml", true);
+        this.profileConfig = new YamlConfig(plugin, "mobs.yml", true);
         this.spawnConfig = new YamlConfig(plugin, "mobspawns.yml", false);
-        this.bridge = new CitizensBridge(plugin);
     }
 
     public int killAll() {
@@ -104,8 +102,6 @@ public class MobSpawnManager extends AbstractService {
             return;
         }
 
-        bridge.start();
-
         // Start ticking
         spawnTask = new BukkitRunnable() {
 
@@ -127,8 +123,6 @@ public class MobSpawnManager extends AbstractService {
     @Override
     public void onStop() {
         saveConfig();
-
-        bridge.stop();
 
         try {
             spawnTask.cancel();
@@ -218,8 +212,7 @@ public class MobSpawnManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        // TODO: Check
-        if (event.getBlock().getType() != Material.LEGACY_SIGN_POST) {
+        if (Tag.SIGNS.isTagged(event.getBlock().getType())) {
             return;
         }
 
@@ -264,20 +257,19 @@ public class MobSpawnManager extends AbstractService {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onItemDispense(BlockDispenseEvent event) {
         ItemStack stack = event.getItem();
-        // TODO: Check
-        if (stack.getType() != Material.LEGACY_MONSTER_EGG
-                && stack.getType() != Material.LEGACY_MONSTER_EGGS) {
+        ItemMeta meta = stack.getItemMeta();
+
+        if (meta == null || !(stack.getItemMeta() instanceof SpawnEggMeta)) {
             logger.info("Not monster egg!");
             return;
         }
 
-        ItemMeta meta = stack.getItemMeta();
         if (!meta.hasDisplayName()) {
             return;
         }
 
         String name = meta.getDisplayName();
-        if (name == null) {
+        if (name.isEmpty()) {
             return;
         }
 
@@ -286,7 +278,7 @@ public class MobSpawnManager extends AbstractService {
             return;
         }
 
-        MaterialData data = event.getBlock().getState().getData();
+        BlockData data = event.getBlock().getState().getBlockData();
         if (!(data instanceof Dispenser)) {
             return;
         }
@@ -318,7 +310,13 @@ public class MobSpawnManager extends AbstractService {
         }
 
         final Block spawner = spawn.getLocation().getBlock();
-        spawner.setType(Material.LEGACY_SIGN_POST);
+
+        // Solidify the block below if we must
+        if (!spawner.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            spawner.getRelative(BlockFace.DOWN).setType(Material.STONE);
+        }
+
+        spawner.setType(Material.OAK_SIGN);
 
         if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
             plugin.logger.warning("Could set sign for mobspawner! Invalid sign state!");

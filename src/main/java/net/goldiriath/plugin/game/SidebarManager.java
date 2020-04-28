@@ -62,7 +62,7 @@ public class SidebarManager extends AbstractService {
         @Override
         public void run() {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                PlayerData data = plugin.pm.getData(player);
+                PlayerData data = plugin.pym.getData(player);
                 InfoSidebar sb = data.getSidebar();
 
                 // Apply threshold

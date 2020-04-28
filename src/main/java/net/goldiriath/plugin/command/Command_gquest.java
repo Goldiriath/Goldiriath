@@ -34,17 +34,17 @@ public class Command_gquest extends SimpleCommand<Goldiriath> {
             return true;
         }
 
-        final DataQuests quests = plugin.pm.getData(player).getQuests();
+        final DataQuests quests = plugin.pym.getData(player).getQuests();
 
         if (args[1].equals("list")) {
-            for (Quest quest : plugin.qm.getQuestMap().values()) {
+            for (Quest quest : plugin.qst.getQuestMap().values()) {
                 final Stage stage = quests.getStage(quest);
                 msg(ChatColor.GREEN + "+ " + ChatColor.GOLD + quest.getId() + ChatColor.GRAY + " - " + getDisplay(quest, stage));
             }
             return true;
         }
 
-        Quest quest = plugin.qm.getQuest(args[1]);
+        Quest quest = plugin.qst.getQuest(args[1]);
         if (quest == null) {
             msg(ChatColor.RED + "Quest not found: " + args[1]);
             return true;

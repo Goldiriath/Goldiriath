@@ -16,7 +16,7 @@ public class LevelRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        return XPMath.xpToLevel(plugin.pm.getData(player).getXp()) >= minimumLevel;
+        return XPMath.xpToLevel(plugin.pym.getData(player).getXp()) >= minimumLevel;
     }
 
 }

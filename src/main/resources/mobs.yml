@@ -1,0 +1,23 @@
+
+hellzombie:
+    name: '&4Zombie of Hell'
+    spawn_threshold: 600
+    type: ZOMBIE
+    stats:
+        level: 5
+        health: 15
+        damage: 4
+    loot:
+        profile: hzombie
+        tier: NORMAL
+    items:
+        item: IRON_SWORD:5
+        helmet: LEATHER_HELMET:3
+        chestplate: DIAMOND_CHESTPLATE:2
+        leggings: GOLDEN_LEGGINGS
+        boots: GOLDEN_BOOTS
+    potions:
+        SPEED:
+            duration: -1
+            amplifier: 1
+            ambient: true

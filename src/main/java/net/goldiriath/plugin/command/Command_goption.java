@@ -47,7 +47,7 @@ public class Command_goption extends SimpleCommand<Goldiriath> {
             }
         }
 
-        final PlayerData gp = plugin.pm.getData(playerSender);
+        final PlayerData gp = plugin.pym.getData(playerSender);
         final InfoDialogs info = gp.getDialogs();
         if (!optionSet.equals(info.getCurrentOption())) {
             msg("Choice is no longer available.", ChatColor.RED);

@@ -73,7 +73,7 @@ public class ItemPacketAdapter extends PacketAdapter {
             return;
         }
 
-        GItemMeta gMeta = gold.im.getMeta(stack, false);
+        GItemMeta gMeta = gold.itm.getMeta(stack, false);
         if (gMeta == null) {
             plugin.getLogger().fine("  No itemmeta: " + desc);
             return;

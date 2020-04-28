@@ -149,7 +149,7 @@ public class Quest implements ConfigLoadable, Triggerable<Player>, TriggerSource
 
     @Override
     public void onTrigger(Player player) {
-        final DataQuests data = plugin.pm.getData(player).getQuests();
+        final DataQuests data = plugin.pym.getData(player).getQuests();
 
         // Check quest already started
         // Quests may be re-started if they're cancelled

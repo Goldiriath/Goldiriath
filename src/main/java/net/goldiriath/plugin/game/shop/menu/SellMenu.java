@@ -32,7 +32,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
     }
 
     public static void openMenu(Goldiriath plugin, ShopProfile profile, Player player, Runnable callback) {
-        int money = plugin.pm.getData(player).getMoney();
+        int money = plugin.pym.getData(player).getMoney();
         SellMenu handler = new SellMenu(plugin, profile, callback);
         IconMenu menu = new IconMenu("Sell items - Wallet: " + money + "Pm", SIZE, handler, plugin);
 
@@ -57,7 +57,7 @@ public class SellMenu extends PluginComponent<Goldiriath> implements IconMenu.Op
             event.setWillDestroy(true);
 
             // Add money
-            PlayerData data = plugin.pm.getData(player);
+            PlayerData data = plugin.pym.getData(player);
             int amt = (int) (TransactionUtil.transactionWorth(transaction) * profile.getExchange());
             data.setMoney(data.getMoney() + amt);
 

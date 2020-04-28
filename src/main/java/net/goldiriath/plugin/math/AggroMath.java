@@ -2,7 +2,7 @@ package net.goldiriath.plugin.math;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.citizensnpcs.api.npc.NPC;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.citizens.HostileMobTrait;
 import net.goldiriath.plugin.player.PlayerData;
 
 public class AggroMath {

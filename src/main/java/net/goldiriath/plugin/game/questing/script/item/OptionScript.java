@@ -23,7 +23,7 @@ public class OptionScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        plugin.pm.getData(player).getDialogs().showOption(option);
+        plugin.pym.getData(player).getDialogs().showOption(option);
     }
 
 }

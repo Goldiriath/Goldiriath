@@ -81,7 +81,7 @@ public class LootProfile implements ConfigLoadable {
                 // Determines itemcontainer
                 ItemContainer cunt = null;
                 if (itemArray[0].equals("group")) {
-                    Group group = plugin.lm.getGroupMap().get(itemArray[1]);
+                    Group group = plugin.ltm.getGroupMap().get(itemArray[1]);
                     if (group == null) {
                         plugin.logger.warning("error 404 group: " + itemArray[1] + " not found");
                         return;

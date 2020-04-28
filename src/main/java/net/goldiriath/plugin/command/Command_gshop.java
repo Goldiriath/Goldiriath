@@ -22,7 +22,7 @@ public class Command_gshop extends SimpleCommand<Goldiriath> {
             return false;
         }
 
-        ShopProfile profile = plugin.sh.getProfiles().get(args[0]);
+        ShopProfile profile = plugin.shm.getProfiles().get(args[0]);
         if (profile == null) {
             msg(ChatColor.RED + "Could not find shop profile: " + args[0]);
             return true;

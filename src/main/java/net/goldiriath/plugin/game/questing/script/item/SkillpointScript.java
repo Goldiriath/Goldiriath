@@ -15,7 +15,7 @@ public class SkillpointScript extends ScriptItem {
 
     @Override
     public void execute(Player player) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         data.setSkillPoints(data.getSkillPoints() + amt);
     }
 

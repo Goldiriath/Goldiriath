@@ -40,7 +40,7 @@ public class RequirementParser {
                 switch (args[0]) {
 
                     case "global":
-                        req = plugin.qm.getGlobalRequirements().get(args[1]);
+                        req = plugin.qst.getGlobalRequirements().get(args[1]);
                         if (req == null) {
                             logger.warning("[\" + id + \"] Skipping global requirement: " + args[1] + ". Could not find global!");
                             continue;

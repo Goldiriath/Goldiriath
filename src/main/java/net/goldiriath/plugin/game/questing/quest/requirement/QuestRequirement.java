@@ -15,7 +15,7 @@ public class QuestRequirement extends AbstractRequirement {
     public QuestRequirement(Goldiriath plugin, String args[]) {
         super(plugin, Message.QUEST_QUEST_NOT_DONE);
 
-        quest = plugin.qm.getQuest(args[1]);
+        quest = plugin.qst.getQuest(args[1]);
         if (quest == null) {
             throw new ParseException("Quest '" + args[1] + "' not found.");
         }
@@ -33,7 +33,7 @@ public class QuestRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        final Stage questStage = plugin.pm.getData(player).getQuests().getStage(quest);
+        final Stage questStage = plugin.pym.getData(player).getQuests().getStage(quest);
 
         // Started?
         if (stage == null) {

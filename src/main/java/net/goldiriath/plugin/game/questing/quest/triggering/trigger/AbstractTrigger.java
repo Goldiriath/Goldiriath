@@ -30,7 +30,7 @@ public abstract class AbstractTrigger extends RegistrableListener implements Tri
 
         // Only let stages triggers trigger if they're currently in that stage
         if (source instanceof Stage) {
-            final Stage currentStage = plugin.pm.getData(triggerer).getQuests().getStage(((Stage) source).getQuest());
+            final Stage currentStage = plugin.pym.getData(triggerer).getQuests().getStage(((Stage) source).getQuest());
             if (!currentStage.equals(source)) {
                 return;
             }

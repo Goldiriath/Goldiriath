@@ -23,7 +23,7 @@ public class ArmorMath {
             return 0;
         }
 
-        GItemMeta meta = Goldiriath.instance().im.getMeta(item, false);
+        GItemMeta meta = Goldiriath.instance().itm.getMeta(item, false);
         if (meta == null) {
             return 0;
         }

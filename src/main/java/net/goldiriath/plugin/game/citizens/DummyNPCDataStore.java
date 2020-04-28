@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.game.mobspawn.citizens;
+package net.goldiriath.plugin.game.citizens;
 
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCDataStore;

@@ -21,7 +21,7 @@ public class BowPunchShot extends ActiveSkill {
         arrow.setCritical(true); // Skill arrows are critical
         arrow.setKnockbackStrength(2);
 
-        plugin.at.track(arrow, new Callback<Entity>() {
+        plugin.aht.track(arrow, new Callback<Entity>() {
 
             @Override
             public void call(Entity hit) {

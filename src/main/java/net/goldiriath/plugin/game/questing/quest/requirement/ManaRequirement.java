@@ -25,7 +25,7 @@ public class ManaRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        final PlayerData data = plugin.pm.getData(player);
+        final PlayerData data = plugin.pym.getData(player);
 
         if (!perc) {
             return data.getMana() >= mana;

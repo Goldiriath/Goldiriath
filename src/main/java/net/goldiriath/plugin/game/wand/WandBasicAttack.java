@@ -50,7 +50,7 @@ public class WandBasicAttack extends AbstractService {
         }
 
         Player player = event.getPlayer();
-        InfoBattle info = plugin.pm.getData(player).getBattle();
+        InfoBattle info = plugin.pym.getData(player).getBattle();
 
         // Limit fire rate
         long time = System.nanoTime();

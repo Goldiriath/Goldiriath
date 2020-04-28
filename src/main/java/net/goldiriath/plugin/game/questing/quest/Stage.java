@@ -85,7 +85,7 @@ public class Stage implements ConfigLoadable, Triggerable<Player>, TriggerSource
 
     @Override
     public final void onTrigger(Player player) {
-        final DataQuests data = plugin.pm.getData(player).getQuests();
+        final DataQuests data = plugin.pym.getData(player).getQuests();
 
         // Set current stage
         data.setStage(quest, this);

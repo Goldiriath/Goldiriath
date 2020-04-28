@@ -25,7 +25,7 @@ public class FlagRequirement extends AbstractRequirement {
 
     @Override
     public boolean has(Player player) {
-        return op.operate(plugin.pm.getData(player).getFlags().get(flag), amount);
+        return op.operate(plugin.pym.getData(player).getFlags().get(flag), amount);
     }
 
 }

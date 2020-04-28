@@ -47,7 +47,7 @@ public class DeathManager extends AbstractService {
             return;
         }
 
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
         int money = data.getMoney();
 
         money *= multiplier;
@@ -84,7 +84,7 @@ public class DeathManager extends AbstractService {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        PlayerData data = plugin.pm.getData(event.getPlayer());
+        PlayerData data = plugin.pym.getData(event.getPlayer());
         data.setHealth(data.getMaxHealth());
     }
 

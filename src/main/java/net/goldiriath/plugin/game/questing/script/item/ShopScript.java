@@ -20,7 +20,7 @@ public class ShopScript extends ScriptItem {
             throw new ParseException("Invalid argument length. Should be either 1 or 2.");
         }
 
-        profile = plugin.sh.getProfiles().get(args[1]);
+        profile = plugin.shm.getProfiles().get(args[1]);
         if (profile == null) {
             throw new ParseException("Could not find shop profile: " + args[1]);
         }

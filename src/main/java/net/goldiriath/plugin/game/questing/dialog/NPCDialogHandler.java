@@ -161,7 +161,7 @@ public class NPCDialogHandler extends RegistrableListener implements Triggerable
         event.setCancelled(true);
 
         final Player player = event.getClicker();
-        final PlayerData data = plugin.pm.getData(player);
+        final PlayerData data = plugin.pym.getData(player);
 
         if (data.getDialogs().isInDialog()) {
             player.sendMessage(ChatColor.RED + "You are already speaking to someone!");

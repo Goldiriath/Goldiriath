@@ -7,7 +7,7 @@ import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.damage.modifier.Modifier;
 import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.item.meta.GItemMeta;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.citizens.HostileMobTrait;
 import net.goldiriath.plugin.math.DamageMath;
 import net.goldiriath.plugin.player.PlayerData;
 import net.goldiriath.plugin.util.Util;
@@ -51,7 +51,7 @@ public class DamageManager extends AbstractService {
     }
 
     public void attack(Entity attacker, ItemStack stack, Entity e, Modifier... modifiers) {
-        GItemMeta m = plugin.im.getMeta(stack, false);
+        GItemMeta m = plugin.itm.getMeta(stack, false);
 
         if (m == null) {
             logger.warning(attacker.getName() + " tried to attack entity " + e.getEntityId() + " with an item without item meta!");
@@ -122,7 +122,7 @@ public class DamageManager extends AbstractService {
         }
 
         // One less mob attacking the player
-        plugin.pm.getData(attacker).getBattle().ease(defender);
+        plugin.pym.getData(attacker).getBattle().ease(defender);
 
         // Destroy later
         new BukkitRunnable() {
@@ -135,7 +135,7 @@ public class DamageManager extends AbstractService {
     }
 
     public int effectiveOnPlayer(double effectiveDamage, Player defender) {
-        PlayerData data = plugin.pm.getData(defender);
+        PlayerData data = plugin.pym.getData(defender);
 
         int damage = Math.max(1, (int) effectiveDamage);
         int health = Math.max(0, data.getHealth() - damage);
@@ -257,7 +257,7 @@ public class DamageManager extends AbstractService {
     }
 
     public void heal(Player player, int amount) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
 
         int health = data.getHealth() + amount;
         health = Math.min(data.getMaxHealth(), health);
@@ -266,7 +266,7 @@ public class DamageManager extends AbstractService {
     }
 
     private void updateHealth(Player player) {
-        PlayerData data = plugin.pm.getData(player);
+        PlayerData data = plugin.pym.getData(player);
 
         double health = (data.getHealth() * 20D) / data.getMaxHealth();
         health = Math.max(0, health);
@@ -284,7 +284,7 @@ public class DamageManager extends AbstractService {
         @Override
         public void run() {
             for (Player player : plugin.getServer().getOnlinePlayers()) {
-                plugin.pm.getData(player).getBattle().autoHeal();
+                plugin.pym.getData(player).getBattle().autoHeal();
             }
         }
 

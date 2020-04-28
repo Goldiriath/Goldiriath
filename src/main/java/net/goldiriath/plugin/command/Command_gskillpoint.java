@@ -18,7 +18,7 @@ public class Command_gskillpoint extends SimpleCommand<Goldiriath> {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        PlayerData data = plugin.pm.getData(playerSender);
+        PlayerData data = plugin.pym.getData(playerSender);
         if (args.length < 2 || args.length > 2) {
             return showUsage();
         }

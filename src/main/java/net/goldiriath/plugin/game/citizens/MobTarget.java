@@ -1,4 +1,4 @@
-package net.goldiriath.plugin.game.mobspawn.citizens;
+package net.goldiriath.plugin.game.citizens;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class MobTarget {
 
     public void unapplyTo(NPC npc) {
         if (getType() == TargetType.ENTITY) {
-            Goldiriath.instance().pm.getData(player).getBattle().ease(npc);
+            Goldiriath.instance().pym.getData(player).getBattle().ease(npc);
         }
     }
 
@@ -46,7 +46,7 @@ public class MobTarget {
 
         if (getType() == TargetType.ENTITY) {
             nav.setTarget((Entity) player, true);
-            Goldiriath.instance().pm.getData(player).getBattle().assail(npc);
+            Goldiriath.instance().pym.getData(player).getBattle().assail(npc);
         } else {
             nav.setTarget(location);
         }

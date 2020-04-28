@@ -1,24 +1,26 @@
 package net.goldiriath.plugin.game.loot;
 
+import com.google.common.collect.Maps;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.citizensnpcs.api.npc.NPC;
 import net.goldiriath.plugin.Goldiriath;
 import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.inventory.InventoryUtil;
 import net.goldiriath.plugin.game.mobspawn.MobSpawnProfile;
-import net.goldiriath.plugin.game.mobspawn.citizens.HostileMobTrait;
+import net.goldiriath.plugin.game.citizens.HostileMobTrait;
 import net.goldiriath.plugin.util.Util;
 import net.goldiriath.plugin.util.service.AbstractService;
 import net.pravian.aero.config.YamlConfig;
 import net.pravian.aero.util.Locations;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
@@ -110,7 +112,7 @@ public class LootManager extends AbstractService {
     public void onPlayerKillMob(EntityDeathEvent event) {
         LivingEntity mob = event.getEntity();
 
-        NPC npc = plugin.msm.getBridge().getNPC(mob);
+        NPC npc = plugin.czb.getNPC(mob);
         if (npc == null) {
             return;
         }
@@ -235,8 +237,7 @@ public class LootManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        // TODO: Check this
-        if (event.getBlock().getType() != Material.LEGACY_SIGN_POST) {
+        if (Tag.SIGNS.isTagged(event.getBlock().getType())) {
             return;
         }
 
@@ -289,8 +290,13 @@ public class LootManager extends AbstractService {
         }
 
         final Block spawner = spawn.getLocation().getBlock();
-        // TODO: Check
-        spawner.setType(Material.LEGACY_SIGN_POST);
+
+        // Solidify the block below if we must
+        if (!spawner.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            spawner.getRelative(BlockFace.DOWN).setType(Material.STONE);
+        }
+
+        spawner.setType(Material.OAK_SIGN);
 
         if (!Sign.class.isAssignableFrom(spawner.getState().getClass())) {
             plugin.logger.warning("Could set sign for chestspawn! Invalid sign state!");

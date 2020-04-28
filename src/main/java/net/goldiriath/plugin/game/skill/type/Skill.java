@@ -29,10 +29,10 @@ public abstract class Skill {
     }
 
     protected PlayerData data() {
-        return plugin.pm.getData(player);
+        return plugin.pym.getData(player);
     }
 
     protected PlayerData data(Player player) {
-        return plugin.pm.getData(player);
+        return plugin.pym.getData(player);
     }
 }

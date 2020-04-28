@@ -1,18 +1,18 @@
 package net.goldiriath.plugin;
 
-import net.goldiriath.plugin.game.SidebarManager;
-import net.goldiriath.plugin.game.EffectLibBridge;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 import net.goldiriath.plugin.command.Command_goldiriath;
 import net.goldiriath.plugin.game.AutoClose;
+import net.goldiriath.plugin.game.BlockCycler;
 import net.goldiriath.plugin.game.DevMode;
+import net.goldiriath.plugin.game.EffectLibBridge;
 import net.goldiriath.plugin.game.EffectsTicker;
 import net.goldiriath.plugin.game.InfiDispenser;
-import net.goldiriath.plugin.game.PressurePlateFixer;
-import net.goldiriath.plugin.game.BlockCycler;
+import net.goldiriath.plugin.game.SidebarManager;
 import net.goldiriath.plugin.game.XPManager;
+import net.goldiriath.plugin.game.citizens.CitizensBridge;
 import net.goldiriath.plugin.game.damage.ArrowHitTracker;
 import net.goldiriath.plugin.game.damage.DamageManager;
 import net.goldiriath.plugin.game.damage.DeathManager;
@@ -24,11 +24,11 @@ import net.goldiriath.plugin.game.questing.dialog.DialogManager;
 import net.goldiriath.plugin.game.questing.quest.QuestManager;
 import net.goldiriath.plugin.game.shop.ShopManager;
 import net.goldiriath.plugin.game.skill.SkillManager;
+import net.goldiriath.plugin.game.wand.WandBasicAttack;
 import net.goldiriath.plugin.player.PlayerManager;
 import net.goldiriath.plugin.util.PlayerList;
 import net.goldiriath.plugin.util.logging.GLogger;
 import net.goldiriath.plugin.util.logging.PlayerListLogSink;
-import net.goldiriath.plugin.game.wand.WandBasicAttack;
 import net.pravian.aero.command.handler.AeroCommandHandler;
 import net.pravian.aero.command.handler.SimpleCommandHandler;
 import net.pravian.aero.config.YamlConfig;
@@ -50,30 +50,30 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public File dataLoadFolder;
     //
     protected ServiceManager services;
-    public ItemManager im;
-    public PlayerManager pm;
-    public XPManager xm;
+    public ItemManager itm;
+    public PlayerManager pym;
+    public XPManager xpm;
     public DevMode dev;
-    public ShopManager sh;
-    public QuestManager qm;
+    public ShopManager shm;
+    public QuestManager qst;
     public DialogManager dlm;
-    public LootManager lm;
+    public LootManager ltm;
+    public CitizensBridge czb;
     public MobSpawnManager msm;
     public DamageManager dam;
-    public DeathManager dtm;
-    public SidebarManager sb;
-    public SkillManager sm;
-    public EffectsTicker et;
+    public DeathManager dth;
+    public SidebarManager sbm;
+    public SkillManager skl;
+    public EffectsTicker eft;
     public EffectLibBridge elb;
     public WandBasicAttack wba;
-    public ArrowHitTracker at;
-    public InventoryManager iv;
+    public ArrowHitTracker aht;
+    public InventoryManager ivt;
     public BlockCycler bcl;
-    public AutoClose ac;
-    public InfiDispenser id;
-    public PressurePlateFixer pf;
+    public AutoClose atc;
+    public InfiDispenser ifd;
     //
-    public AeroCommandHandler<Goldiriath> ch;
+    public AeroCommandHandler<Goldiriath> commands;
 
     @Override
     public void load() {
@@ -89,31 +89,31 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
 
         // Services
         services = new ServiceManager(plugin);
-        im = services.registerService(ItemManager.class);
-        pm = services.registerService(PlayerManager.class);
-        xm = services.registerService(XPManager.class);
+        itm = services.registerService(ItemManager.class);
+        pym = services.registerService(PlayerManager.class);
+        xpm = services.registerService(XPManager.class);
         dev = services.registerService(DevMode.class);
-        sh = services.registerService(ShopManager.class);
-        qm = services.registerService(QuestManager.class);
+        shm = services.registerService(ShopManager.class);
+        qst = services.registerService(QuestManager.class);
         dlm = services.registerService(DialogManager.class);
-        lm = services.registerService(LootManager.class);
+        ltm = services.registerService(LootManager.class);
+        czb = services.registerService(CitizensBridge.class);
         msm = services.registerService(MobSpawnManager.class);
         dam = services.registerService(DamageManager.class);
-        dtm = services.registerService(DeathManager.class);
-        sb = services.registerService(SidebarManager.class);
-        sm = services.registerService(SkillManager.class);
-        et = services.registerService(EffectsTicker.class);
+        dth = services.registerService(DeathManager.class);
+        sbm = services.registerService(SidebarManager.class);
+        skl = services.registerService(SkillManager.class);
+        eft = services.registerService(EffectsTicker.class);
         elb = services.registerService(EffectLibBridge.class);
         wba = services.registerService(WandBasicAttack.class);
-        at = services.registerService(ArrowHitTracker.class);
-        iv = services.registerService(InventoryManager.class);
+        aht = services.registerService(ArrowHitTracker.class);
+        ivt = services.registerService(InventoryManager.class);
         bcl = services.registerService(BlockCycler.class);
-        ac = services.registerService(AutoClose.class);
-        id = services.registerService(InfiDispenser.class);
-        pf = services.registerService(PressurePlateFixer.class);
+        atc = services.registerService(AutoClose.class);
+        ifd = services.registerService(InfiDispenser.class);
 
         // Commands
-        ch = new SimpleCommandHandler<>(plugin);
+        commands = new SimpleCommandHandler<>(plugin);
     }
 
     @Override
@@ -128,15 +128,17 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         services.start();
 
         // Setup command handler
-        ch.setCommandClassPrefix("Command_");
-        ch.loadFrom(Command_goldiriath.class.getPackage());
-        ch.registerAll("goldiriath", true);
+        commands.setCommandClassPrefix("Command_");
+        commands.loadFrom(Command_goldiriath.class.getPackage());
+        commands.registerAll("goldiriath", true);
 
         logger.info(getName() + " v" + getDescription().getVersion() + "-" + buildVersion + " by Prozza and derpfacedirk is enabled");
     }
 
     @Override
     public void disable() {
+        // Unregister commands
+        commands.clearCommands();
 
         // Stop services
         services.stop();

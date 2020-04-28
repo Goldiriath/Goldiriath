@@ -31,7 +31,7 @@ public class Command_gflag extends SimpleCommand<Goldiriath> {
             return true;
         }
 
-        DataFlags flags = plugin.pm.getData(player).getFlags();
+        DataFlags flags = plugin.pym.getData(player).getFlags();
 
         if (args[1].equals("list")) {
             msg(player.getName() + "'s flags:", ChatColor.RED);

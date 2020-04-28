@@ -24,7 +24,7 @@ public class Dialog implements Triggerable<Player>, ConfigLoadable, Validatable 
     public Dialog(NPCDialogHandler dialog, String id) {
         this.handler = dialog;
         this.id = id;
-        this.pm = dialog.getManager().getPlugin().pm;
+        this.pm = dialog.getManager().getPlugin().pym;
     }
 
     @Override
