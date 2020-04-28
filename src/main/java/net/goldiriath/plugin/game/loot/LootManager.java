@@ -43,6 +43,7 @@ public class LootManager extends AbstractService {
     private final YamlConfig spawnConfig;
     private BukkitTask spawnTask;
     //
+    @Getter
     private final Set<ChestSpawn> spawns;
     @Getter
     private final Map<String, Group> groupMap = Maps.newHashMap();
@@ -237,7 +238,7 @@ public class LootManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        if (Tag.SIGNS.isTagged(event.getBlock().getType())) {
+        if (!Tag.SIGNS.isTagged(event.getBlock().getType())) {
             return;
         }
 

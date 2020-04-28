@@ -212,7 +212,7 @@ public class MobSpawnManager extends AbstractService {
 
     @EventHandler
     public void onSignDelete(BlockBreakEvent event) {
-        if (Tag.SIGNS.isTagged(event.getBlock().getType())) {
+        if (!Tag.SIGNS.isTagged(event.getBlock().getType())) {
             return;
         }
 

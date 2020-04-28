@@ -10,6 +10,7 @@ import net.goldiriath.plugin.game.DevMode;
 import net.goldiriath.plugin.game.EffectLibBridge;
 import net.goldiriath.plugin.game.EffectsTicker;
 import net.goldiriath.plugin.game.InfiDispenser;
+import net.goldiriath.plugin.game.WorldLimiter;
 import net.goldiriath.plugin.game.SidebarManager;
 import net.goldiriath.plugin.game.XPManager;
 import net.goldiriath.plugin.game.citizens.CitizensBridge;
@@ -72,6 +73,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
     public BlockCycler bcl;
     public AutoClose atc;
     public InfiDispenser ifd;
+    public WorldLimiter wlt;
     //
     public AeroCommandHandler<Goldiriath> commands;
 
@@ -111,6 +113,7 @@ public class Goldiriath extends AeroPlugin<Goldiriath> {
         bcl = services.registerService(BlockCycler.class);
         atc = services.registerService(AutoClose.class);
         ifd = services.registerService(InfiDispenser.class);
+        wlt = services.registerService(WorldLimiter.class);
 
         // Commands
         commands = new SimpleCommandHandler<>(plugin);

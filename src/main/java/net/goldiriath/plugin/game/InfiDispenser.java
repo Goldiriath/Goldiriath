@@ -47,35 +47,4 @@ public class InfiDispenser extends AbstractService {
         disp.update();
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onDispenserOpen(InventoryOpenEvent event) {
-        HumanEntity entity = event.getPlayer();
-        if (entity.getGameMode() != GameMode.SURVIVAL) {
-            return;
-        }
-
-        if (!(entity instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player) entity;
-
-        // TODO: Prevent opening non-lootchests.
-        switch (event.getInventory().getType()) {
-            case DISPENSER:
-            case FURNACE:
-            case ENCHANTING:
-            case ENDER_CHEST:
-            case ANVIL:
-            case MERCHANT:
-            case BEACON:
-            case HOPPER:
-            case DROPPER:
-            case BREWING:
-                player.sendMessage(ChatColor.RED + "You cannot open this.");
-                event.setCancelled(true);
-                break;
-        }
-    }
-
 }
