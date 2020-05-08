@@ -3,6 +3,7 @@ package net.goldiriath.plugin.game.questing.quest.triggering;
 import java.util.List;
 import java.util.logging.Logger;
 import net.goldiriath.plugin.Goldiriath;
+import net.goldiriath.plugin.game.questing.quest.triggering.trigger.NPCTrigger;
 import net.goldiriath.plugin.game.questing.script.ParseException;
 import net.goldiriath.plugin.game.questing.quest.triggering.trigger.AbstractTrigger;
 import net.goldiriath.plugin.game.questing.quest.triggering.trigger.LocationTrigger;
@@ -45,8 +46,9 @@ public class TriggerParser {
                     case "obtain":
                         trig = new ObtainTrigger(source, args);
                         break;
-
-                    // TODO: Implement NPC trigger
+                    case "npc":
+                        trig = new NPCTrigger(source, args);
+                        break;
                     default:
                         logger.warning("[" + id + "] Skipping requirement: " + reqLine + ". Could not be found! (Is it supported?)");
                 }
