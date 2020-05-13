@@ -12,12 +12,12 @@ public class NPCTrigger extends AbstractTrigger {
 
 
     private final int npcID;
-    private final int radiusSquared;
+    private final int radius;
 
     public NPCTrigger(TriggerSource source, String[] args) {
         super(source);
         npcID = parseInt(args[1]);
-        radiusSquared = parseInt(args[2]);
+        radius = parseInt(args[2]);
     }
 
     @EventHandler
@@ -36,7 +36,7 @@ public class NPCTrigger extends AbstractTrigger {
             return;
         }
 
-        if (event.getTo().distanceSquared(npc.getStoredLocation()) <= radiusSquared) {
+        if (event.getTo().distanceSquared(npc.getStoredLocation()) <= radius * radius) {
             trigger(event.getPlayer());
         }
     }
