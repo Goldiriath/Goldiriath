@@ -180,6 +180,10 @@ public class SkillManager extends AbstractService {
 
     @EventHandler(ignoreCancelled = true)
     public void activateSkill(PlayerItemHeldEvent event) {
+        if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+            return;
+        }
+
         int[] skillSlots = SlotType.SKILL.getIndices();
         if (event.getPreviousSlot() == 0 && event.getNewSlot() >= skillSlots[0] && event.getNewSlot() <= skillSlots[skillSlots.length - 1]) {
             event.setCancelled(true);
